@@ -1887,6 +1887,16 @@ function managerOverview(payments){
  const card=payments.filter(p=>effectiveMethod(p)==='Kart').reduce((s,p)=>s+correctedAmount(p),0);
  return '<div class="manager-stats">'+[['Toplam Tahsilat',money(total)],['Nakit',money(cash)],['Kart',money(card)],['Geçerli Ödeme',String(payments.filter(p=>correctedAmount(p)>0).length)]].map(x=>'<div class="manager-stat"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>';
 }
+function discountedTableCount(payments,tariff=manager.tariffFilter){
+ const orders=new Set();
+ for(const p of payments||[]){
+  if(p.order_id==null||paymentCorrection(p)?.correction_type==='void')continue;
+  if((p.payment_items||[]).some(i=>i.adjustment_kind==='discount'&&Number(i.quantity)>0&&(tariff==='all'||(i.tariff||'normal')===tariff))){
+   orders.add(String(p.order_id));
+  }
+ }
+ return orders.size;
+}
 function managerRenderReports(){
  const groups=new Map();
  manager.payments.forEach(p=>{
@@ -1899,6 +1909,7 @@ function managerRenderReports(){
  const serviced=groupSoldProducts(manager.payments.filter(p=>paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
  const gross=serviced.reduce((n,p)=>n+p.gross,0),gift=serviced.reduce((n,p)=>n+p.gift,0),discount=serviced.reduce((n,p)=>n+p.discount,0),giftQty=serviced.reduce((n,p)=>n+p.giftQ,0);
  const netSales=serviced.reduce((n,p)=>n+p.amount,0);
+ const discountedTables=discountedTableCount(manager.payments);
  const normalNet=serviced.reduce((n,p)=>n+p.variants.filter(v=>v.tariff==='normal').reduce((vsum,v)=>vsum+v.amount,0),0);
  const esnafNet=serviced.reduce((n,p)=>n+p.variants.filter(v=>v.tariff==='esnaf').reduce((vsum,v)=>vsum+v.amount,0),0);
  const total=items.reduce((a,[,x])=>a+x.total,0);
@@ -1917,14 +1928,15 @@ function managerRenderReports(){
  const stat=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  const tariffStats=(manager.tariffFilter!=='esnaf'?stat('Normal Net Ciro',money(normalNet)):'')+(manager.tariffFilter!=='normal'?stat('Esnaf Net Ciro',money(esnafNet)):'');
  manager.exportName='sams_gunluk_rapor';
- manager.exportRows=[['Tarih','Brüt Ürün Değeri (TL)','İkram Bedeli (TL)','İkram Adedi','İndirim Tutarı (TL)','Net Satış Tutarı (TL)','Normal Net Ciro (TL)','Esnaf Net Ciro (TL)','Net Tahsilat (TL)','Nakit (TL)','Kart (TL)','Kapatılan Masa Sayısı'],
+ manager.exportRows=[['Tarih','Brüt Ürün Değeri (TL)','İkram Bedeli (TL)','İkram Adedi','İndirim Tutarı (TL)','İndirim Uygulanan Masa Sayısı','Net Satış Tutarı (TL)','Normal Net Ciro (TL)','Esnaf Net Ciro (TL)','Net Tahsilat (TL)','Nakit (TL)','Kart (TL)','Kapatılan Masa Sayısı'],
  ...items.map(([d,x])=>{
-  const daily=groupSoldProducts(manager.payments.filter(p=>istDate(new Date(p.created_at))===d&&paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
-  return [d,daily.reduce((s,p)=>s+p.gross,0),daily.reduce((s,p)=>s+p.gift,0),daily.reduce((s,p)=>s+p.giftQ,0),daily.reduce((s,p)=>s+p.discount,0),daily.reduce((s,p)=>s+p.amount,0),daily.reduce((s,p)=>s+p.variants.filter(v=>v.tariff==='normal').reduce((a,v)=>a+v.amount,0),0),daily.reduce((s,p)=>s+p.variants.filter(v=>v.tariff==='esnaf').reduce((a,v)=>a+v.amount,0),0),x.total,x.cash,x.card,matchingOrders.filter(o=>istDate(new Date(o.updated_at))===d).length];
+  const dailyPayments=manager.payments.filter(p=>istDate(new Date(p.created_at))===d);
+  const daily=groupSoldProducts(dailyPayments.filter(p=>paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
+  return [d,daily.reduce((s,p)=>s+p.gross,0),daily.reduce((s,p)=>s+p.gift,0),daily.reduce((s,p)=>s+p.giftQ,0),daily.reduce((s,p)=>s+p.discount,0),discountedTableCount(dailyPayments),daily.reduce((s,p)=>s+p.amount,0),daily.reduce((s,p)=>s+p.variants.filter(v=>v.tariff==='normal').reduce((a,v)=>a+v.amount,0),0),daily.reduce((s,p)=>s+p.variants.filter(v=>v.tariff==='esnaf').reduce((a,v)=>a+v.amount,0),0),x.total,x.cash,x.card,matchingOrders.filter(o=>istDate(new Date(o.updated_at))===d).length];
  })];
  $('manager-content').innerHTML=tariffFilters()+
  '<h3>Günlük Finansal Raporlar</h3><p class="note">Seçili tarihlerdeki tahsilatların günlük dağılımı. Ürün detayları Satış Analizi bölümündedir.</p>'+
- '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Brüt Ürün Değeri',money(gross))+stat('İkram Bedeli',money(gift))+stat('İkram Adedi',String(giftQty))+stat('İndirim Tutarı',money(discount))+stat('Net Satış Tutarı',money(netSales))+tariffStats+stat('Kapatılan Masa Sayısı',String(matchingOrders.length))+stat('Günlük Ortalama',money(activeDays?total/activeDays:0))+stat('Masa Başı Ortalama',money(tableAverage))+stat('Nakit',money(cash))+stat('Kart',money(card))+'</div>'+
+ '<div class="manager-stats">'+stat('Brüt Ürün Değeri',money(gross))+stat('Net Satış Tutarı',money(netSales))+stat('İkram Bedeli',money(gift))+stat('İkram Adedi',String(giftQty))+stat('İndirim Tutarı',money(discount))+stat('İndirim Uygulanan Masa Sayısı',String(discountedTables))+tariffStats+stat('Toplam Tahsilat',money(total))+stat('Kapatılan Masa Sayısı',String(matchingOrders.length))+stat('Nakit',money(cash))+stat('Kart',money(card))+stat('Günlük Ortalama',money(activeDays?total/activeDays:0))+stat('Masa Başı Ortalama',money(tableAverage))+'</div>'+
  (items.length?'<div class="manager-days">'+items.map(([day,x])=>'<button type="button" class="alt" data-report-day="'+esc(day)+'">'+esc(dateLabel(day))+' · '+money(x.total)+'</button>').join('')+'</div>':'<p class="note">Bu tarihlerde ödeme kaydı yok.</p>')+
  '<div id="manager-day-detail"></div><p class="note">Net Satış Tutarı ve tarife ciroları tahsil edilen ürün kalemlerinden, Toplam Tahsilat ödeme kayıtlarından hesaplanır. Eski, ürün detayı eksik kayıtlarda farklılık olabilir.</p><p class="note">Masa Başı Ortalama, seçilen tarihlerde kapanan hesapların ilgili tarifedeki tahsilat toplamının o tarifede satış bulunan kapanmış masa sayısına bölünmesiyle hesaplanır. Parça ödemeler dahildir, iptal edilen ödemeler hariçtir. Raporlar kayıtları değiştirmez.</p>';
  bindTariffFilters(managerRenderReports);
@@ -1941,12 +1953,13 @@ function managerDayDetail(day){
  const serviced=groupSoldProducts(payments.filter(p=>paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
  const gross=serviced.reduce((n,p)=>n+p.gross,0),gifts=serviced.reduce((n,p)=>n+p.gift,0),discounts=serviced.reduce((n,p)=>n+p.discount,0),giftUnits=serviced.reduce((n,p)=>n+p.giftQ,0);
  const netSales=serviced.reduce((n,p)=>n+p.amount,0);
+ const discountedTables=discountedTableCount(payments);
  const normalNet=serviced.reduce((n,p)=>n+p.variants.filter(v=>v.tariff==='normal').reduce((a,v)=>a+v.amount,0),0);
  const esnafNet=serviced.reduce((n,p)=>n+p.variants.filter(v=>v.tariff==='esnaf').reduce((a,v)=>a+v.amount,0),0);
  const stat=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  const tariffStats=(manager.tariffFilter!=='esnaf'?stat('Normal Net Ciro',money(normalNet)):'')+(manager.tariffFilter!=='normal'?stat('Esnaf Net Ciro',money(esnafNet)):'');
  $('manager-day-detail').innerHTML='<div class="divider"></div><h3>'+esc(dateLabel(day))+'</h3>'+
- '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Nakit',money(cash))+stat('Kart',money(card))+stat('Ödeme Sayısı',String(count))+stat('Brüt Ürün Değeri',money(gross))+stat('İkram Bedeli',money(gifts))+stat('İkram Adedi',String(giftUnits))+stat('İndirim Tutarı',money(discounts))+stat('Net Satış Tutarı',money(netSales))+tariffStats+'</div>'+
+ '<div class="manager-stats">'+stat('Brüt Ürün Değeri',money(gross))+stat('Net Satış Tutarı',money(netSales))+stat('İkram Bedeli',money(gifts))+stat('İkram Adedi',String(giftUnits))+stat('İndirim Tutarı',money(discounts))+stat('İndirim Uygulanan Masa Sayısı',String(discountedTables))+tariffStats+stat('Toplam Tahsilat',money(total))+stat('Ödeme Sayısı',String(count))+stat('Nakit',money(cash))+stat('Kart',money(card))+'</div>'+
  '<p class="note">Bu günün ürün bazlı dağılımını Satış Analizi bölümünden aynı tarihi seçerek inceleyebilirsiniz.</p>';
  document.querySelectorAll('[data-report-day]').forEach(b=>b.classList.toggle('active',b.dataset.reportDay===day));
 }
