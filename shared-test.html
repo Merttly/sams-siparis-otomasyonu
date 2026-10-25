@@ -1513,21 +1513,22 @@ function groupSoldProducts(lines){
  const products=new Map();
  for(const i of lines||[]){
   const name=String(i.product_name||'').trim()||'Ürün';
-  const quantity=Number(i.quantity),price=Number(i.unit_price);
-  if(!Number.isFinite(quantity)||quantity<=0||!Number.isFinite(price))continue;
-  const tariff=i.tariff==='esnaf'?'esnaf':'normal';
+  const q=Number(i.quantity),net=Number(i.unit_price),gross=Number(i.gross_unit_price??i.unit_price);
+  if(!Number.isFinite(q)||q<=0||!Number.isFinite(net)||!Number.isFinite(gross))continue;
+  const tariff=i.tariff==='esnaf'?'esnaf':'normal',kind=i.adjustment_kind==='gift'?'gift':i.adjustment_kind==='discount'?'discount':null;
+  const netAmount=Math.round(net*q*100)/100,grossAmount=Math.round(gross*q*100)/100;
+  const cut=Number(i.adjustment_unit_amount??(gross-net));
+  const gift=kind==='gift'?Math.round(cut*q*100)/100:0,discount=kind==='discount'?Math.round(cut*q*100)/100:0;
   let p=products.get(name);
-  if(!p){p={name,q:0,amount:0,variants:new Map()};products.set(name,p)}
-  p.q+=quantity;p.amount+=quantity*price;
-  const key=tariff+'|'+price;
+  if(!p){p={name,q:0,paidQ:0,giftQ:0,amount:0,gross:0,gift:0,discount:0,variants:new Map()};products.set(name,p)}
+  p.q+=q;p.paidQ+=kind==='gift'?0:q;p.giftQ+=kind==='gift'?q:0;
+  p.amount+=netAmount;p.gross+=grossAmount;p.gift+=gift;p.discount+=discount;
+  const key=[tariff,gross,net,kind||'',i.adjustment_rate??''].join('|');
   let v=p.variants.get(key);
-  if(!v){v={tariff,price,q:0,amount:0};p.variants.set(key,v)}
-  v.q+=quantity;v.amount+=quantity*price;
+  if(!v){v={tariff,price:net,grossPrice:gross,kind,rate:i.adjustment_rate==null?null:Number(i.adjustment_rate),q:0,amount:0,gross:0,gift:0,discount:0};p.variants.set(key,v)}
+  v.q+=q;v.amount+=netAmount;v.gross+=grossAmount;v.gift+=gift;v.discount+=discount;
  }
- return [...products.values()].map(p=>({
-  name:p.name,q:p.q,amount:p.amount,
-  variants:[...p.variants.values()].sort((a,b)=>a.tariff===b.tariff?b.price-a.price:a.tariff==='normal'?-1:1)
- })).sort((a,b)=>b.q-a.q||a.name.localeCompare(b.name,'tr'));
+ return [...products.values()].map(p=>({...p,amount:Math.round(p.amount*100)/100,gross:Math.round(p.gross*100)/100,gift:Math.round(p.gift*100)/100,discount:Math.round(p.discount*100)/100,variants:[...p.variants.values()].sort((a,b)=>a.tariff===b.tariff?b.grossPrice-a.grossPrice:a.tariff==='normal'?-1:1)})).sort((a,b)=>b.q-a.q||a.name.localeCompare(b.name,'tr'));
 }
 function soldProductLabel(product,filter='all'){
  return product.name+(filter==='esnaf'?' (Esnaf)':'');
@@ -1535,21 +1536,23 @@ function soldProductLabel(product,filter='all'){
 function renderSoldVariants(product){
  if(!product.variants.length)return '';
  return '<div class="sold-variant-list">'+product.variants.map(v=>
-  '<div class="sold-variant">'+(v.tariff==='esnaf'?'Esnaf':'Normal')+
-  ' · '+v.q+' adet × '+money(v.price)+' = '+money(v.amount)+'</div>'
- ).join('')+'</div>';
+ '<div class="sold-variant">'+(v.tariff==='esnaf'?'Esnaf':'Normal')+' · '+v.q+' adet × '+money(v.grossPrice)+
+ (v.kind==='gift'?' · İkram −'+money(v.gift):v.kind==='discount'?' · %'+v.rate+' indirim −'+money(v.discount):'')+
+ ' = '+money(v.amount)+'</div>').join('')+'</div>';
 }
 
 async function report(){
  if(state.role!=='manager'){message('Gün sonu raporu yalnızca yöneticilere açık.',true);return}
- const {data,error}=await db.from('payments').select('amount,payment_method,created_at,payment_items(product_name,unit_price,quantity,tariff)').gte('created_at',new Date(new Date().toLocaleDateString('en-CA',{timeZone:'Europe/Istanbul'})+'T00:00:00+03:00').toISOString()).order('created_at',{ascending:false});
+ const {data,error}=await db.from('payments').select('amount,payment_method,created_at,payment_items(product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount),payment_corrections(correction_type,replacement_method)').gte('created_at',new Date(new Date().toLocaleDateString('en-CA',{timeZone:'Europe/Istanbul'})+'T00:00:00+03:00').toISOString()).order('created_at',{ascending:false});
  if(error){$('summary-title').textContent='Gün Sonu · Hata';$('summary-body').textContent=error.message;show('summary',true);message('Rapor okunamadı: '+error.message,true);return}
  const sums={Nakit:0,Kart:0};
- (data||[]).forEach(p=>{sums[p.payment_method]=(sums[p.payment_method]||0)+Number(p.amount)});
- const products=groupSoldProducts((data||[]).flatMap(p=>p.payment_items||[]));
+ const valid=(data||[]).filter(p=>!(p.payment_corrections||[]).some(x=>x.correction_type==='void'));
+ valid.forEach(p=>{const m=(p.payment_corrections||[]).find(x=>x.replacement_method)?.replacement_method||p.payment_method;if(m==='Nakit'||m==='Kart')sums[m]+=Number(p.amount)});
+ const products=groupSoldProducts(valid.flatMap(p=>p.payment_items||[]));
+ const gross=products.reduce((s,p)=>s+p.gross,0),gifts=products.reduce((s,p)=>s+p.gift,0),discounts=products.reduce((s,p)=>s+p.discount,0);
  $('summary-title').textContent='Gün Sonu · '+new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',timeZone:'Europe/Istanbul'});
- $('summary-body').innerHTML='<p>Toplam: <b>'+money(Object.values(sums).reduce((a,b)=>a+b,0))+'</b></p><p>Nakit: '+money(sums.Nakit)+' · Kart: '+money(sums.Kart)+'</p><h3>Satılan Ürünler</h3>'+
- (products.length?products.map(p=>'<div class="sold-product-entry"><div class="sold-product-line"><span>'+esc(soldProductLabel(p))+' · '+p.q+' adet</span><strong>'+money(p.amount)+'</strong></div>'+renderSoldVariants(p)+'</div>').join(''):'<p class="note">Bugün henüz satış kaydı yok.</p>')+
+ $('summary-body').innerHTML='<p>Net Tahsilat: <b>'+money(Object.values(sums).reduce((a,b)=>a+b,0))+'</b></p><p>Nakit: '+money(sums.Nakit)+' · Kart: '+money(sums.Kart)+'</p><p>Brüt Ürün Değeri: '+money(gross)+' · İkram: −'+money(gifts)+' · İndirim: −'+money(discounts)+'</p><h3>Servis Edilen Ürünler</h3>'+
+ (products.length?products.map(p=>'<div class="sold-product-entry"><div class="sold-product-line"><span>'+esc(soldProductLabel(p))+' · '+p.q+' adet'+(p.giftQ?' ('+p.giftQ+' ikram)':'')+'</span><strong>'+money(p.amount)+'</strong></div>'+renderSoldVariants(p)+'</div>').join(''):'<p class="note">Bugün henüz satış kaydı yok.</p>')+
  '<p class="note">Bu rapor güncel tahsilat kayıtlarından hesaplanır. Geçmiş kayıtlar korunur; ayrıca gün kapatma işlemi gerekmez.</p>';
  show('summary',true);
 }
@@ -1750,9 +1753,9 @@ async function managerLoad(){
   const fromUTC=(tab==='overview'?new Date(dateAt(istDate()).getTime()-30*86400000):dateAt(from)).toISOString(),toUTC=tab==='overview'?isoDay(dateAt(istDate())):isoDay(dateAt(to));
   const needPayment=['overview','reports','analysis','performance','corrections'].includes(manager.tab),needLogs=['logs','performance','overview'].includes(manager.tab);
   const requested=[db.from('staff_accounts').select('user_id,display_name,role,active')];
-  if(needPayment)requested.push(managerPageAll('payments','id,amount,payment_method,created_at,order_id,payment_items(product_name,unit_price,quantity,tariff)',fromUTC,toUTC));
+  if(needPayment)requested.push(managerPageAll('payments','id,amount,payment_method,created_at,order_id,payment_items(product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount)',fromUTC,toUTC));
  if(needPayment)requested.push(db.from('payment_corrections').select('id,payment_id,correction_type,replacement_method,reason,manager_id,created_at'));
- if(tab==='reports')requested.push(managerPageAll('orders','id,table_id,status,updated_at,payments(id,amount,payment_items(unit_price,quantity,tariff),payment_corrections(correction_type))',fromUTC,toUTC,10000,'updated_at').then(rows=>rows.filter(o=>o.status==='closed')));
+ if(tab==='reports')requested.push(managerPageAll('orders','id,table_id,status,updated_at,payments(id,amount,payment_items(unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount),payment_corrections(correction_type))',fromUTC,toUTC,10000,'updated_at').then(rows=>rows.filter(o=>o.status==='closed')));
  if(tab==='overview')requested.push(db.from('orders').select('id,table_id,order_items(unit_price,quantity)').eq('status','open'));
   if(needLogs)requested.push(managerPageAll('audit_events','id,event_type,table_id,details,created_at,actor_id',tab==='performance'?'2020-01-01T00:00:00.000Z':fromUTC,toUTC));
   const results=await Promise.all(requested);
