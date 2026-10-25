@@ -1879,7 +1879,11 @@ function managerRenderReports(){
  const card=items.reduce((a,[,x])=>a+x.card,0);
  const stat=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  manager.exportName='sams_gunluk_rapor';
- manager.exportRows=[['Tarih','Toplam (TL)','Nakit (TL)','Kart (TL)','Kapatılan Masa Sayısı'],...items.map(([d,x])=>[d,x.total,x.cash,x.card,matchingOrders.filter(o=>istDate(new Date(o.updated_at))===d).length])];
+ manager.exportRows=[['Tarih','Brüt Ürün Değeri (TL)','İkram Değeri (TL)','İkram Adedi','İndirim Tutarı (TL)','Net Tahsilat (TL)','Nakit (TL)','Kart (TL)','Kapatılan Masa Sayısı'],
+ ...items.map(([d,x])=>{
+  const daily=groupSoldProducts(manager.payments.filter(p=>istDate(new Date(p.created_at))===d&&paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
+  return [d,daily.reduce((s,p)=>s+p.gross,0),daily.reduce((s,p)=>s+p.gift,0),daily.reduce((s,p)=>s+p.giftQ,0),daily.reduce((s,p)=>s+p.discount,0),x.total,x.cash,x.card,matchingOrders.filter(o=>istDate(new Date(o.updated_at))===d).length];
+ })];
  $('manager-content').innerHTML=tariffFilters()+
  '<h3>Günlük Finansal Raporlar</h3><p class="note">Seçili tarihlerdeki tahsilatların günlük dağılımı. Ürün detayları Satış Analizi bölümündedir.</p>'+
  '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Brüt Ürün Değeri',money(gross))+stat('İkram Değeri',money(gift))+stat('İkram Adedi',String(giftQty))+stat('İndirim Tutarı',money(discount))+stat('Kapatılan Masa Sayısı',String(matchingOrders.length))+stat('Günlük Ortalama',money(activeDays?total/activeDays:0))+stat('Masa Başı Ortalama',money(tableAverage))+stat('Nakit',money(cash))+stat('Kart',money(card))+'</div>'+
