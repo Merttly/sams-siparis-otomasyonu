@@ -1248,6 +1248,7 @@ document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>change(Number
 document.querySelectorAll('[data-plus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.plus),1));
 $('note').value=state.note;$('total').textContent=money(state.lines.reduce((s,x)=>s+x.p*x.q,0));
 $('pay-cash').disabled=$('pay-card').disabled=$('split').disabled=$('transfer').disabled=state.loading||!state.lines.length;
+let previewBtn=$('adjust-preview-btn');if(!previewBtn){previewBtn=document.createElement('button');previewBtn.id='adjust-preview-btn';previewBtn.type='button';previewBtn.className='alt';previewBtn.textContent='İndirim / İkram (Önizleme)';$('split').insertAdjacentElement('afterend',previewBtn);previewBtn.onclick=previewAdjustment;}previewBtn.style.display=state.role==='manager'?'':'none';previewBtn.disabled=state.loading||!state.lines.length;
 }
 function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
 function showOptions(title, options){
@@ -1389,6 +1390,35 @@ async function transfer(){
   await loadTables();await openTable(dest);
  }catch(e){message('Taşıma/birleştirme yapılamadı: '+e.message,true)}
  finally{state.loading=false}
+}
+function previewAdjustment(){
+ if(state.role!=='manager'){message('Yalnızca yönetici kullanabilir.',true);return}
+ if(!state.selected||!state.lines.length){message('Önce masaya ürün ekleyin.',true);return}
+ const units=state.lines.flatMap((x,i)=>Array.from({length:x.q},(_,j)=>({key:i+'-'+j,n:x.n,p:x.p,tariff:x.tariff})));
+ const el=document.createElement('div');el.className='panel';el.id='adjust-preview';
+ el.style.cssText='position:fixed;inset:12px;z-index:2800;overflow:auto;max-width:650px;margin:auto;background:var(--paper);color:var(--ink);border:2px solid var(--sage);box-shadow:0 0 0 100vmax #0009';
+ el.innerHTML='<div class="row"><h2>İndirim / İkram · Önizleme</h2><button class="alt" id="adj-close">Kapat</button></div>'+
+ '<p class="note">Bu ekran hesaplama önizlemesidir. Gerçek siparişe, tahsilata ve raporlara henüz kayıt yapmaz.</p>'+
+ '<label>İşlem<select id="adj-kind"><option value="all">Tüm hesaba indirim</option><option value="selected">Seçili ürünlere indirim</option><option value="gift">Seçili ürünleri ikram et</option></select></label>'+
+ '<label id="adj-rate-label">İndirim oranı (%)<input id="adj-rate" type="number" min="0" max="100" step="0.01" value="10"></label>'+
+ '<div id="adj-units">'+units.map((u,i)=>'<label class="row" style="padding:7px 0"><span><input type="checkbox" data-adj-unit="'+i+'" style="width:auto"> '+esc(u.n)+'</span><b>'+money(u.p)+'</b></label>').join('')+'</div>'+
+ '<div class="divider"></div><div id="adj-summary"></div>';
+ document.body.appendChild(el);
+ const update=()=>{
+  const kind=el.querySelector('#adj-kind').value,rate=Number(el.querySelector('#adj-rate').value);
+  const checked=new Set([...el.querySelectorAll('[data-adj-unit]:checked')].map(x=>Number(x.dataset.adjUnit)));
+  el.querySelector('#adj-rate-label').style.display=kind==='gift'?'none':'';
+  el.querySelector('#adj-units').style.display=kind==='all'?'none':'';
+  const valid=Number.isFinite(rate)&&rate>=0&&rate<=100;
+  const gross=Math.round(units.reduce((s,x)=>s+x.p,0)*100);
+  const targets=units.map((u,i)=>kind==='all'||checked.has(i)?i:-1).filter(i=>i>=0);
+  const eligible=Math.round(targets.reduce((s,i)=>s+units[i].p,0)*100);
+  const discount=kind==='gift'?eligible:valid?Math.round(eligible*rate/100):0;
+  el.querySelector('#adj-summary').innerHTML=valid?'<p>Brüt: <b>'+money(gross/100)+'</b></p><p>'+(kind==='gift'?'İkram':'İndirim')+': <b>−'+money(discount/100)+'</b></p><h3>Net: '+money((gross-discount)/100)+'</h3><p class="note">Bu yalnızca önizlemedir. Kaydetme devre dışıdır.</p>':'<p class="note">Oran 0–100 arasında olmalı.</p>';
+ };
+ el.querySelector('#adj-close').onclick=()=>el.remove();
+ el.querySelectorAll('input,select').forEach(x=>x.addEventListener('change',update));
+ el.querySelector('#adj-rate').addEventListener('input',update);update();
 }
 async function split(){
  if(document.getElementById('split-modal'))return;
