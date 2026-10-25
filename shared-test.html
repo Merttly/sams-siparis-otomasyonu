@@ -1446,12 +1446,11 @@ function groupSoldProducts(lines){
   variants:[...p.variants.values()].sort((a,b)=>a.tariff===b.tariff?b.price-a.price:a.tariff==='normal'?-1:1)
  })).sort((a,b)=>b.q-a.q||a.name.localeCompare(b.name,'tr'));
 }
-function soldProductLabel(product){
- const variants=product.variants||[];
- return product.name+(variants.length&&variants.every(v=>v.tariff==='esnaf')?' (Esnaf)':'');
+function soldProductLabel(product,filter='all'){
+ return product.name+(filter==='esnaf'?' (Esnaf)':'');
 }
 function renderSoldVariants(product){
- if(product.variants.length<2)return '';
+ if(!product.variants.length)return '';
  return '<div class="sold-variant-list">'+product.variants.map(v=>
   '<div class="sold-variant">'+(v.tariff==='esnaf'?'Esnaf':'Normal')+
   ' · '+v.q+' adet × '+money(v.price)+' = '+money(v.amount)+'</div>'
@@ -1828,7 +1827,7 @@ function managerRenderAnalysis(){
  '<div class="manager-stats">'+stat('Satılan Ürün Adedi',String(units))+stat('Ürün Çeşidi',String(items.length))+stat('Normal Tarife Cirosu',money(normal))+stat('Esnaf Tarife Cirosu',money(esnaf))+'</div>'+
  (items.length?'<h4>En Çok Ciro Getiren Ürünler</h4><div class="manager-analysis-bars">'+items.slice(0,5).map((p,i)=>'<div class="manager-analysis-bar"><div class="manager-analysis-bar-head"><span>'+esc(p.name)+'</span><b>'+money(p.amount)+'</b></div><div class="manager-analysis-track"><div class="manager-analysis-fill" style="width:'+Math.max(0,Math.min(100,p.amount/(items[0].amount||1)*100))+'%"></div></div></div>').join('')+'</div>'+
  '<h4>Tüm Ürünler</h4><table class="manager-table manager-analysis-table"><thead><tr><th>Ürün</th><th>Adet</th><th>Toplam</th></tr></thead><tbody>'+
- items.map(i=>'<tr class="sold-product-row'+(i.variants.length>1?' with-variants':'')+'"><td>'+esc(soldProductLabel(i))+'</td><td>'+i.q+'</td><td>'+money(i.amount)+'</td></tr>'+
+ items.map(i=>'<tr class="sold-product-row'+(i.variants.length>0?' with-variants':'')+'"><td>'+esc(soldProductLabel(i,manager.tariffFilter))+'</td><td>'+i.q+'</td><td>'+money(i.amount)+'</td></tr>'+
  (i.variants.length>1?'<tr class="sold-detail-row"><td colspan="3">'+renderSoldVariants(i)+'</td></tr>':'')).join('')+
  '</tbody></table>':'<p class="note">Bu aralıkta satılan ürün yok.</p>');
  bindTariffFilters(managerRenderAnalysis);
