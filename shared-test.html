@@ -1214,9 +1214,9 @@ document.querySelectorAll('[data-custom-rename]').forEach(b=>b.onclick=()=>renam
 document.querySelectorAll('[data-custom-archive]').forEach(b=>b.onclick=()=>archiveCustomTable(b.dataset.customArchive,b));
 if(state.selected&&!state.dirty) await readSelected();
 }
-async function readSelected(){let {data,error}=await db.from('orders').select('id,table_id,note,status,version,order_items(id,product_name,unit_price,quantity,tariff)').eq('table_id',state.selected).eq('status','open').maybeSingle();
+async function readSelected(){let {data,error}=await db.from('orders').select('id,table_id,note,status,version,order_items(id,product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount)').eq('table_id',state.selected).eq('status','open').maybeSingle();
 if(error){message('Masa okunamadı: '+error.message,true);return}
-state.order=data;state.lines=(data?.order_items||[]).map(x=>({id:x.id,n:x.product_name,p:Number(x.unit_price),q:x.quantity,tariff:x.tariff||'normal'}));
+state.order=data;state.lines=(data?.order_items||[]).map(x=>({id:x.id,n:x.product_name,p:Number(x.unit_price),gross:Number(x.gross_unit_price??x.unit_price),q:x.quantity,tariff:x.tariff||'normal',kind:x.adjustment_kind||null,rate:x.adjustment_rate==null?null:Number(x.adjustment_rate),cut:Number(x.adjustment_unit_amount||0)}));
 state.note=data?.note||'';state.dirty=false;renderEditor();
 }
 async function openTable(id){if(state.dirty&&!confirm('Kaydedilmemiş değişiklikler silinsin mi?'))return;state.selected=id;await readSelected()}
@@ -1232,20 +1232,24 @@ $('products').innerHTML=list.map((x,i)=>'<button class="alt product" data-produc
 document.querySelectorAll('[data-product]').forEach(b=>b.onclick=()=>pickProduct(list[Number(b.dataset.product)]));
 $('lines').innerHTML=state.lines.length?'<div class="order-lines">'+state.lines.map((x,i)=>
  '<div class="order-line"><div class="order-line-details">'+
- '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+'</div>'+
- '<div class="order-line-meta">Birim '+money(x.p)+'</div></div>'+
+ '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+(x.kind==='gift'?' · İkram':x.kind==='discount'?' · %'+x.rate+' indirim':'')+'</div>'+
+ '<div class="order-line-meta">Birim '+money(x.p)+(x.kind?' · Menü '+money(x.gross):'')+'</div>'+(x.kind&&state.role==='manager'?'<button type="button" class="alt" data-undo-adjust="'+x.id+'" style="margin-top:6px;min-height:32px;padding:5px 9px;font-size:12px">İşlemi Geri Al</button>':'')+'</div>'+
  '<div class="order-line-actions"><strong class="order-line-sum">'+money(x.p*x.q)+'</strong>'+
  '<div class="order-line-stepper" role="group" aria-label="'+esc(x.n)+' adedi">'+
- '<button type="button" class="order-line-step" data-minus="'+i+'" aria-label="'+esc(x.n)+' azalt">−</button>'+
+ '<button type="button" class="order-line-step" data-minus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' azalt">−</button>'+
  '<span class="order-line-qty">'+x.q+'</span>'+
- '<button type="button" class="order-line-step" data-plus="'+i+'" aria-label="'+esc(x.n)+' artır">+</button>'+
+ '<button type="button" class="order-line-step" data-plus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' artır">+</button>'+
  '</div></div></div>').join('')+'</div>':'<p class="muted">Masa boş.</p>';
 document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.minus),-1));
 document.querySelectorAll('[data-plus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.plus),1));
+document.querySelectorAll('[data-undo-adjust]').forEach(b=>b.onclick=()=>undoAdjustment(Number(b.dataset.undoAdjust)));
+
 $('note').value=state.note;$('total').textContent=money(state.lines.reduce((s,x)=>s+x.p*x.q,0));
 $('pay-cash').disabled=$('pay-card').disabled=$('split').disabled=$('transfer').disabled=state.loading||!state.lines.length;
+let previewBtn=$('adjust-preview-btn');if(!previewBtn){previewBtn=document.createElement('button');previewBtn.id='adjust-preview-btn';previewBtn.type='button';previewBtn.className='alt';previewBtn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span>İndirim - İkram</span>';$('split').insertAdjacentElement('afterend',previewBtn);previewBtn.onclick=previewAdjustment;}previewBtn.style.display=state.role==='manager'?'':'none';previewBtn.disabled=state.loading||!state.lines.some(x=>!x.kind);
+let giftBtn=$('gift-close-btn');if(!giftBtn){giftBtn=document.createElement('button');giftBtn.id='gift-close-btn';giftBtn.type='button';giftBtn.className='alt';giftBtn.innerHTML='<span>🎁</span><span>Ücretsiz Hesabı Tamamla</span>';$('split').insertAdjacentElement('afterend',giftBtn);giftBtn.onclick=()=>pay('Ücretsiz');}const zeroOnly=state.lines.length>0&&state.lines.every(x=>x.kind&&x.p===0);giftBtn.style.display=state.role==='manager'&&zeroOnly?'':'none';giftBtn.disabled=state.loading||!zeroOnly;if(zeroOnly){$('pay-cash').disabled=true;$('pay-card').disabled=true;}
 }
-function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
+function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>!z.kind&&z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
 function showOptions(title, options){
  const overlay=document.createElement('div');overlay.className='option-overlay';
  const sheet=document.createElement('div');sheet.className='option-sheet';
@@ -1277,12 +1281,12 @@ function pickProduct(x){
  }else addProduct(x.n,base);
 }
 function markDirty(){state.note=$('note').value;state.dirty=true;renderEditor()}
-function change(i,d){let x=state.lines[i];x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
+function change(i,d){let x=state.lines[i];if(x.kind){message('İndirimli/ikram ürünü değiştirmek için yönetici önce işlemi geri almalı.',true);return}x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
 async function save(){
  if(!state.selected||state.loading)return false;
  state.loading=true;$('save').disabled=true;
  try{
-  const payload=state.lines.map(x=>({n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
+  const payload=state.lines.map(x=>({id:x.id??null,n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
   const {error}=await db.rpc('cafe_save_order',{p_table:state.selected,p_version:state.order?.version||0,p_items:payload,p_note:$('note').value});
   if(error)throw error;
   state.dirty=false;await readSelected();await refreshOrders();
@@ -1300,8 +1304,8 @@ async function ensureSaved(){
 async function pay(method){
  if(state.loading||!state.selected)return;
  const sum=state.lines.reduce((a,x)=>a+x.p*x.q,0);
- if(sum<=0){message('Masa boş; kapatılacak hesap yok.',true);return}
- if(!confirm(state.selected+' · '+money(sum)+' · '+method+' ile hesap kapatılsın mı?\nKaydedilmemiş ürünler önce kaydedilir.'))return;
+ if(!state.lines.length||sum<=0&&!(method==='Ücretsiz'&&state.role==='manager'&&state.lines.every(x=>x.kind&&x.p===0))){message('Bu işlem için uygun ürün veya tahsilat bulunamadı.',true);return}
+ if(!confirm(state.selected+' · '+money(sum)+' · '+(method==='Ücretsiz'?'Sıfır tutarlı ikram/indirim ürünleri tamamlanacak':method+' ile hesap kapatılsın mı?')+'\nKaydedilmemiş ürünler önce kaydedilir.'))return;
  if(!await ensureSaved())return;
  state.loading=true;
  try{
@@ -1386,6 +1390,79 @@ async function transfer(){
  }catch(e){message('Taşıma/birleştirme yapılamadı: '+e.message,true)}
  finally{state.loading=false}
 }
+async function undoAdjustment(lineId){
+ if(state.role!=='manager'||state.loading)return;
+ const line=state.lines.find(x=>x.id===lineId&&x.kind);
+ if(!line)return;
+ if(!confirm(line.n+' · '+line.q+' adet · '+(line.kind==='gift'?'İkram':'İndirim')+' geri alınsın mı?'))return;
+ if(!await ensureSaved())return;
+ state.loading=true;
+ try{
+  const {error}=await db.rpc('manager_undo_adjustment',{p_table:state.selected,p_version:state.order.version,p_line_id:lineId});
+  if(error)throw error;
+  await readSelected();await refreshOrders();message('İndirim / ikram geri alındı.');
+ }catch(e){message('Geri alma başarısız: '+e.message,true);await readSelected();}
+ finally{state.loading=false;}
+}
+async function previewAdjustment(){
+ if(state.role!=='manager'){message('Yalnızca yönetici kullanabilir.',true);return}
+ if(document.getElementById('adjust-preview')||state.loading)return;
+ if(!await ensureSaved())return;
+ if(state.role!=='manager'||!state.selected||!state.order)return;
+ const units=state.lines.filter(x=>!x.kind).flatMap(x=>Array.from({length:x.q},()=>({id:x.id,n:x.n,p:x.p,tariff:x.tariff})));
+ if(!units.length){message('İndirimsiz veya ikram edilmemiş ürün kalmadı.',true);return}
+ if(units.length>200){message('Bu işlemde en çok 200 ürün seçilebilir. Önce hesabı bölün.',true);return}
+ const el=document.createElement('div');el.className='panel';el.id='adjust-preview';
+ el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+ el.style.cssText='position:fixed;inset:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));z-index:2800;overflow:auto;max-width:650px;margin:auto;background:var(--paper);color:var(--ink);border:2px solid var(--sage);box-shadow:0 0 0 100vmax #0009';
+ el.innerHTML='<div class="row"><h2>İndirim - İkram</h2><button class="alt" id="adj-close">Vazgeç</button></div>'+
+ '<p class="note">Yalnızca henüz indirim/ikram uygulanmamış ürünler seçilebilir. İşlem yönetici onayıyla kaydedilir.</p>'+
+ '<label>İşlem<select id="adj-kind"><option value="all">Tüm uygun hesaba indirim</option><option value="selected">Seçili ürünlere indirim</option><option value="gift">Seçili ürünleri ikram et</option></select></label>'+
+ '<label id="adj-rate-label">İndirim oranı (%)<input id="adj-rate" type="number" min="0.01" max="100" step="0.01" inputmode="decimal" value="10"></label>'+
+ '<div id="adj-units">'+units.map((u,i)=>'<label class="row" style="padding:7px 0;border-bottom:1px solid var(--line)"><span><input type="checkbox" data-adj-unit="'+i+'" style="width:auto;margin-right:7px"> '+esc(u.n)+(u.tariff==='esnaf'?' · Esnaf':'')+'</span><b>'+money(u.p)+'</b></label>').join('')+'</div>'+
+ '<div class="divider"></div><div id="adj-summary"></div><div class="row"><button type="button" id="adj-apply">İşlemi Kaydet</button></div>';
+ document.body.appendChild(el);
+ const close=()=>el.remove();el.querySelector('#adj-close').onclick=close;
+ const chosen=()=>{
+  const all=el.querySelector('#adj-kind').value==='all';
+  const checked=new Set([...el.querySelectorAll('[data-adj-unit]:checked')].map(x=>Number(x.dataset.adjUnit)));
+  return units.filter((u,i)=>all||checked.has(i));
+ };
+ const calc=()=>{
+  const kind=el.querySelector('#adj-kind').value,raw=el.querySelector('#adj-rate').value,rate=Number(raw);
+  const valid=kind==='gift'||(raw.trim()!==''&&Number.isFinite(rate)&&rate>0&&rate<=100&&Math.round(rate*100)===rate*100);
+  el.querySelector('#adj-rate-label').style.display=kind==='gift'?'none':'';
+  el.querySelector('#adj-units').style.display=kind==='all'?'none':'';
+  const total=Math.round(state.lines.reduce((s,x)=>s+x.p*x.q,0)*100);
+  const target=chosen();
+  const eligible=target.reduce((s,x)=>s+Math.round(x.p*100),0);
+  const reduction=kind==='gift'?eligible:valid?Math.round(eligible*rate/100):0;
+  const ok=valid&&target.length>0&&reduction>0;
+  el.querySelector('#adj-apply').disabled=!ok;
+  el.querySelector('#adj-summary').innerHTML=valid?'<p>Mevcut hesap: <b>'+money(total/100)+'</b></p><p>Seçili ürün: <b>'+target.length+' adet</b></p><p>'+(kind==='gift'?'İkram':'İndirim')+': <b>−'+money(reduction/100)+'</b></p><h3>Yeni net hesap: '+money((total-reduction)/100)+'</h3>'+(ok?'':'<p class="note">İşlem için ürün seçin.</p>'):'<p class="note">Oran 0,01–100 arasında ve en fazla iki ondalıklı olmalı.</p>';
+  return {ok,kind,rate,reduction,target};
+ };
+ el.querySelectorAll('input,select').forEach(x=>x.addEventListener('change',calc));
+ el.querySelector('#adj-rate').addEventListener('input',calc);
+ el.querySelector('#adj-apply').onclick=async()=>{
+  const x=calc();if(!x.ok)return;
+  if(!confirm(x.target.length+' ürün için '+(x.kind==='gift'?'ikram':('%'+x.rate+' indirim'))+' · '+money(x.reduction/100)+' işlem kaydedilsin mi?'))return;
+  const grouped=new Map();
+  x.target.forEach(u=>{grouped.set(u.id,(grouped.get(u.id)||0)+1)});
+  const lines=[...grouped].map(([id,q])=>({id,q}));
+  el.querySelector('#adj-apply').disabled=true;
+  state.loading=true;
+  try{
+   const {error}=await db.rpc('manager_apply_adjustment',{p_table:state.selected,p_version:state.order.version,p_kind:x.kind==='gift'?'gift':'discount',p_rate:x.kind==='gift'?null:x.rate,p_lines:lines});
+   if(error)throw error;
+   close();await readSelected();await refreshOrders();message(x.kind==='gift'?'İkram kaydedildi.':'İndirim kaydedildi.');
+  }catch(e){
+   close();await readSelected();message('İşlem sonucu doğrulanamadı: '+e.message+' · Tekrar denemeden önce masayı kontrol edin.',true);
+  }finally{state.loading=false;}
+ };
+ calc();
+}
+
 async function split(){
  if(document.getElementById('split-modal'))return;
  if(!await ensureSaved())return;
@@ -1413,6 +1490,7 @@ async function split(){
  const s=selected();if(!s.length){message('Ödenecek ürün seçin.',true);return}
  const lines=[...new Map(s.map(x=>[x.id,x])).values()].map(x=>({id:x.id,q:s.filter(y=>y.id===x.id).length}));
  const sum=s.reduce((a,x)=>a+x.p,0);
+ if(sum<=0){message('Sıfır tutarlı ürünü ücretli ürünle birlikte seçebilir veya yönetici ücretsiz hesabı tamamlayabilir.',true);return}
  if(!confirm(method+' · '+money(sum)+' parça ödeme alınsın mı?'))return;
  wrap.querySelector('#split-cash').disabled=wrap.querySelector('#split-card').disabled=true;
  try{const {error}=await db.rpc('cafe_pay',{p_table:state.selected,p_version:state.order.version,p_method:method,p_lines:lines,p_key:crypto.randomUUID()});
@@ -1426,25 +1504,27 @@ async function split(){
  wrap.querySelector('#split-cash').onclick=()=>take('Nakit');
  wrap.querySelector('#split-card').onclick=()=>take('Kart');
 }
+
 function groupSoldProducts(lines){
  const products=new Map();
  for(const i of lines||[]){
   const name=String(i.product_name||'').trim()||'Ürün';
-  const quantity=Number(i.quantity),price=Number(i.unit_price);
-  if(!Number.isFinite(quantity)||quantity<=0||!Number.isFinite(price))continue;
-  const tariff=i.tariff==='esnaf'?'esnaf':'normal';
+  const q=Number(i.quantity),net=Number(i.unit_price),gross=Number(i.gross_unit_price??i.unit_price);
+  if(!Number.isFinite(q)||q<=0||!Number.isFinite(net)||!Number.isFinite(gross))continue;
+  const tariff=i.tariff==='esnaf'?'esnaf':'normal',kind=i.adjustment_kind==='gift'?'gift':i.adjustment_kind==='discount'?'discount':null;
+  const netAmount=Math.round(net*q*100)/100,grossAmount=Math.round(gross*q*100)/100;
+  const cut=Number(i.adjustment_unit_amount??(gross-net));
+  const gift=kind==='gift'?Math.round(cut*q*100)/100:0,discount=kind==='discount'?Math.round(cut*q*100)/100:0;
   let p=products.get(name);
-  if(!p){p={name,q:0,amount:0,variants:new Map()};products.set(name,p)}
-  p.q+=quantity;p.amount+=quantity*price;
-  const key=tariff+'|'+price;
+  if(!p){p={name,q:0,paidQ:0,giftQ:0,amount:0,gross:0,gift:0,discount:0,variants:new Map()};products.set(name,p)}
+  p.q+=q;p.paidQ+=kind==='gift'?0:q;p.giftQ+=kind==='gift'?q:0;
+  p.amount+=netAmount;p.gross+=grossAmount;p.gift+=gift;p.discount+=discount;
+  const key=[tariff,gross,net,kind||'',i.adjustment_rate??''].join('|');
   let v=p.variants.get(key);
-  if(!v){v={tariff,price,q:0,amount:0};p.variants.set(key,v)}
-  v.q+=quantity;v.amount+=quantity*price;
+  if(!v){v={tariff,price:net,grossPrice:gross,kind,rate:i.adjustment_rate==null?null:Number(i.adjustment_rate),q:0,amount:0,gross:0,gift:0,discount:0};p.variants.set(key,v)}
+  v.q+=q;v.amount+=netAmount;v.gross+=grossAmount;v.gift+=gift;v.discount+=discount;
  }
- return [...products.values()].map(p=>({
-  name:p.name,q:p.q,amount:p.amount,
-  variants:[...p.variants.values()].sort((a,b)=>a.tariff===b.tariff?b.price-a.price:a.tariff==='normal'?-1:1)
- })).sort((a,b)=>b.q-a.q||a.name.localeCompare(b.name,'tr'));
+ return [...products.values()].map(p=>({...p,amount:Math.round(p.amount*100)/100,gross:Math.round(p.gross*100)/100,gift:Math.round(p.gift*100)/100,discount:Math.round(p.discount*100)/100,variants:[...p.variants.values()].sort((a,b)=>a.tariff===b.tariff?b.grossPrice-a.grossPrice:a.tariff==='normal'?-1:1)})).sort((a,b)=>b.q-a.q||a.name.localeCompare(b.name,'tr'));
 }
 function soldProductLabel(product,filter='all'){
  return product.name+(filter==='esnaf'?' (Esnaf)':'');
@@ -1452,21 +1532,23 @@ function soldProductLabel(product,filter='all'){
 function renderSoldVariants(product){
  if(!product.variants.length)return '';
  return '<div class="sold-variant-list">'+product.variants.map(v=>
-  '<div class="sold-variant">'+(v.tariff==='esnaf'?'Esnaf':'Normal')+
-  ' · '+v.q+' adet × '+money(v.price)+' = '+money(v.amount)+'</div>'
- ).join('')+'</div>';
+ '<div class="sold-variant">'+(v.tariff==='esnaf'?'Esnaf':'Normal')+' · '+v.q+' adet × '+money(v.grossPrice)+
+ (v.kind==='gift'?' · İkram −'+money(v.gift):v.kind==='discount'?' · %'+v.rate+' indirim −'+money(v.discount):'')+
+ ' = '+money(v.amount)+'</div>').join('')+'</div>';
 }
 
 async function report(){
  if(state.role!=='manager'){message('Gün sonu raporu yalnızca yöneticilere açık.',true);return}
- const {data,error}=await db.from('payments').select('amount,payment_method,created_at,payment_items(product_name,unit_price,quantity,tariff)').gte('created_at',new Date(new Date().toLocaleDateString('en-CA',{timeZone:'Europe/Istanbul'})+'T00:00:00+03:00').toISOString()).order('created_at',{ascending:false});
+ const {data,error}=await db.from('payments').select('amount,payment_method,created_at,payment_items(product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount),payment_corrections(correction_type,replacement_method)').gte('created_at',new Date(new Date().toLocaleDateString('en-CA',{timeZone:'Europe/Istanbul'})+'T00:00:00+03:00').toISOString()).order('created_at',{ascending:false});
  if(error){$('summary-title').textContent='Gün Sonu · Hata';$('summary-body').textContent=error.message;show('summary',true);message('Rapor okunamadı: '+error.message,true);return}
  const sums={Nakit:0,Kart:0};
- (data||[]).forEach(p=>{sums[p.payment_method]=(sums[p.payment_method]||0)+Number(p.amount)});
- const products=groupSoldProducts((data||[]).flatMap(p=>p.payment_items||[]));
+ const valid=(data||[]).filter(p=>!(p.payment_corrections||[]).some(x=>x.correction_type==='void'));
+ valid.forEach(p=>{const m=(p.payment_corrections||[]).find(x=>x.replacement_method)?.replacement_method||p.payment_method;if(m==='Nakit'||m==='Kart')sums[m]+=Number(p.amount)});
+ const products=groupSoldProducts(valid.flatMap(p=>p.payment_items||[]));
+ const gross=products.reduce((s,p)=>s+p.gross,0),gifts=products.reduce((s,p)=>s+p.gift,0),discounts=products.reduce((s,p)=>s+p.discount,0);
  $('summary-title').textContent='Gün Sonu · '+new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',timeZone:'Europe/Istanbul'});
- $('summary-body').innerHTML='<p>Toplam: <b>'+money(Object.values(sums).reduce((a,b)=>a+b,0))+'</b></p><p>Nakit: '+money(sums.Nakit)+' · Kart: '+money(sums.Kart)+'</p><h3>Satılan Ürünler</h3>'+
- (products.length?products.map(p=>'<div class="sold-product-entry"><div class="sold-product-line"><span>'+esc(soldProductLabel(p))+' · '+p.q+' adet</span><strong>'+money(p.amount)+'</strong></div>'+renderSoldVariants(p)+'</div>').join(''):'<p class="note">Bugün henüz satış kaydı yok.</p>')+
+ $('summary-body').innerHTML='<p>Net Tahsilat: <b>'+money(Object.values(sums).reduce((a,b)=>a+b,0))+'</b></p><p>Nakit: '+money(sums.Nakit)+' · Kart: '+money(sums.Kart)+'</p><p>Brüt Ürün Değeri: '+money(gross)+' · İkram: −'+money(gifts)+' · İndirim: −'+money(discounts)+'</p><h3>Servis Edilen Ürünler</h3>'+
+ (products.length?products.map(p=>'<div class="sold-product-entry"><div class="sold-product-line"><span>'+esc(soldProductLabel(p))+' · '+p.q+' adet'+(p.giftQ?' ('+p.giftQ+' ikram)':'')+'</span><strong>'+money(p.amount)+'</strong></div>'+renderSoldVariants(p)+'</div>').join(''):'<p class="note">Bugün henüz satış kaydı yok.</p>')+
  '<p class="note">Bu rapor güncel tahsilat kayıtlarından hesaplanır. Geçmiş kayıtlar korunur; ayrıca gün kapatma işlemi gerekmez.</p>';
  show('summary',true);
 }
@@ -1667,9 +1749,9 @@ async function managerLoad(){
   const fromUTC=(tab==='overview'?new Date(dateAt(istDate()).getTime()-30*86400000):dateAt(from)).toISOString(),toUTC=tab==='overview'?isoDay(dateAt(istDate())):isoDay(dateAt(to));
   const needPayment=['overview','reports','analysis','performance','corrections'].includes(manager.tab),needLogs=['logs','performance','overview'].includes(manager.tab);
   const requested=[db.from('staff_accounts').select('user_id,display_name,role,active')];
-  if(needPayment)requested.push(managerPageAll('payments','id,amount,payment_method,created_at,order_id,payment_items(product_name,unit_price,quantity,tariff)',fromUTC,toUTC));
+  if(needPayment)requested.push(managerPageAll('payments','id,amount,payment_method,created_at,order_id,payment_items(product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount)',fromUTC,toUTC));
  if(needPayment)requested.push(db.from('payment_corrections').select('id,payment_id,correction_type,replacement_method,reason,manager_id,created_at'));
- if(tab==='reports')requested.push(managerPageAll('orders','id,table_id,status,updated_at,payments(id,amount,payment_items(unit_price,quantity,tariff),payment_corrections(correction_type))',fromUTC,toUTC,10000,'updated_at').then(rows=>rows.filter(o=>o.status==='closed')));
+ if(tab==='reports')requested.push(managerPageAll('orders','id,table_id,status,updated_at,payments(id,amount,payment_items(unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount),payment_corrections(correction_type))',fromUTC,toUTC,10000,'updated_at').then(rows=>rows.filter(o=>o.status==='closed')));
  if(tab==='overview')requested.push(db.from('orders').select('id,table_id,order_items(unit_price,quantity)').eq('status','open'));
   if(needLogs)requested.push(managerPageAll('audit_events','id,event_type,table_id,details,created_at,actor_id',tab==='performance'?'2020-01-01T00:00:00.000Z':fromUTC,toUTC));
   const results=await Promise.all(requested);
@@ -1774,6 +1856,8 @@ function managerRenderReports(){
   if(amount>0){x.count++;if(effectiveMethod(p)==='Nakit')x.cash+=amount;else if(effectiveMethod(p)==='Kart')x.card+=amount}
  });
  const items=[...groups].sort((a,b)=>b[0].localeCompare(a[0]));
+ const serviced=groupSoldProducts(manager.payments.filter(p=>paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
+ const gross=serviced.reduce((n,p)=>n+p.gross,0),gift=serviced.reduce((n,p)=>n+p.gift,0),discount=serviced.reduce((n,p)=>n+p.discount,0),giftQty=serviced.reduce((n,p)=>n+p.giftQ,0);
  const total=items.reduce((a,[,x])=>a+x.total,0);
  const cash=items.reduce((a,[,x])=>a+x.cash,0);
  const activeDays=items.filter(([,x])=>x.count>0).length;
@@ -1789,10 +1873,14 @@ function managerRenderReports(){
  const card=items.reduce((a,[,x])=>a+x.card,0);
  const stat=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  manager.exportName='sams_gunluk_rapor';
- manager.exportRows=[['Tarih','Toplam (TL)','Nakit (TL)','Kart (TL)','Kapatılan Masa Sayısı'],...items.map(([d,x])=>[d,x.total,x.cash,x.card,matchingOrders.filter(o=>istDate(new Date(o.updated_at))===d).length])];
+ manager.exportRows=[['Tarih','Brüt Ürün Değeri (TL)','İkram Değeri (TL)','İkram Adedi','İndirim Tutarı (TL)','Net Tahsilat (TL)','Nakit (TL)','Kart (TL)','Kapatılan Masa Sayısı'],
+ ...items.map(([d,x])=>{
+  const daily=groupSoldProducts(manager.payments.filter(p=>istDate(new Date(p.created_at))===d&&paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
+  return [d,daily.reduce((s,p)=>s+p.gross,0),daily.reduce((s,p)=>s+p.gift,0),daily.reduce((s,p)=>s+p.giftQ,0),daily.reduce((s,p)=>s+p.discount,0),x.total,x.cash,x.card,matchingOrders.filter(o=>istDate(new Date(o.updated_at))===d).length];
+ })];
  $('manager-content').innerHTML=tariffFilters()+
  '<h3>Günlük Finansal Raporlar</h3><p class="note">Seçili tarihlerdeki tahsilatların günlük dağılımı. Ürün detayları Satış Analizi bölümündedir.</p>'+
- '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Kapatılan Masa Sayısı',String(matchingOrders.length))+stat('Günlük Ortalama',money(activeDays?total/activeDays:0))+stat('Masa Başı Ortalama',money(tableAverage))+stat('Nakit',money(cash))+stat('Kart',money(card))+'</div>'+
+ '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Brüt Ürün Değeri',money(gross))+stat('İkram Değeri',money(gift))+stat('İkram Adedi',String(giftQty))+stat('İndirim Tutarı',money(discount))+stat('Kapatılan Masa Sayısı',String(matchingOrders.length))+stat('Günlük Ortalama',money(activeDays?total/activeDays:0))+stat('Masa Başı Ortalama',money(tableAverage))+stat('Nakit',money(cash))+stat('Kart',money(card))+'</div>'+
  (items.length?'<div class="manager-days">'+items.map(([day,x])=>'<button type="button" class="alt" data-report-day="'+esc(day)+'">'+esc(dateLabel(day))+' · '+money(x.total)+'</button>').join('')+'</div>':'<p class="note">Bu tarihlerde ödeme kaydı yok.</p>')+
  '<div id="manager-day-detail"></div><p class="note">Masa Başı Ortalama, seçilen tarihlerde kapanan hesapların ilgili tarifedeki tahsilat toplamının o tarifede satış bulunan kapanmış masa sayısına bölünmesiyle hesaplanır. Parça ödemeler dahildir, iptal edilen ödemeler hariçtir. Raporlar kayıtları değiştirmez.</p>';
  bindTariffFilters(managerRenderReports);
@@ -1806,29 +1894,32 @@ function managerDayDetail(day){
  const cash=payments.filter(p=>effectiveMethod(p)==='Nakit').reduce((a,p)=>a+filteredPaymentAmount(p),0);
  const card=payments.filter(p=>effectiveMethod(p)==='Kart').reduce((a,p)=>a+filteredPaymentAmount(p),0);
  const count=payments.filter(p=>filteredPaymentAmount(p)>0).length;
+ const serviced=groupSoldProducts(payments.filter(p=>paymentCorrection(p)?.correction_type!=='void').flatMap(p=>selectedTariffItems(p)));
+ const gross=serviced.reduce((n,p)=>n+p.gross,0),gifts=serviced.reduce((n,p)=>n+p.gift,0),discounts=serviced.reduce((n,p)=>n+p.discount,0),giftUnits=serviced.reduce((n,p)=>n+p.giftQ,0);
  const stat=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  $('manager-day-detail').innerHTML='<div class="divider"></div><h3>'+esc(dateLabel(day))+'</h3>'+
- '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Nakit',money(cash))+stat('Kart',money(card))+stat('Ödeme Sayısı',String(count))+'</div>'+
+ '<div class="manager-stats">'+stat('Toplam Tahsilat',money(total))+stat('Nakit',money(cash))+stat('Kart',money(card))+stat('Ödeme Sayısı',String(count))+stat('Brüt Ürün Değeri',money(gross))+stat('İkram Değeri',money(gifts))+stat('İkram Adedi',String(giftUnits))+stat('İndirim Tutarı',money(discounts))+'</div>'+
  '<p class="note">Bu günün ürün bazlı dağılımını Satış Analizi bölümünden aynı tarihi seçerek inceleyebilirsiniz.</p>';
  document.querySelectorAll('[data-report-day]').forEach(b=>b.classList.toggle('active',b.dataset.reportDay===day));
 }
 function managerRenderAnalysis(){
- const items=groupSoldProducts(manager.payments.filter(p=>correctedAmount(p)>0)
+ const items=groupSoldProducts(manager.payments.filter(p=>paymentCorrection(p)?.correction_type!=='void')
   .flatMap(p=>selectedTariffItems(p))).sort((a,b)=>b.amount-a.amount||a.name.localeCompare(b.name,'tr'));
  const units=items.reduce((a,p)=>a+p.q,0),revenue=items.reduce((a,p)=>a+p.amount,0);
+ const gross=items.reduce((a,p)=>a+p.gross,0),gift=items.reduce((a,p)=>a+p.gift,0),discount=items.reduce((a,p)=>a+p.discount,0),giftQ=items.reduce((a,p)=>a+p.giftQ,0);
  const normal=items.reduce((a,p)=>a+p.variants.filter(v=>v.tariff==='normal').reduce((b,v)=>b+v.amount,0),0);
  const esnaf=items.reduce((a,p)=>a+p.variants.filter(v=>v.tariff==='esnaf').reduce((b,v)=>b+v.amount,0),0);
  const stat=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  manager.exportName='sams_satis_analizi';
- manager.exportRows=[['Ürün','Tarife','Birim Fiyat (TL)','Satılan Adet','Ciro (TL)'],
-  ...items.flatMap(p=>p.variants.map(v=>[p.name,v.tariff==='esnaf'?'Esnaf':'Normal',v.price,v.q,v.amount]))];
+ manager.exportRows=[['Ürün','Tarife','Menü Birim Fiyatı (TL)','Net Birim Fiyatı (TL)','Servis Adedi','İkram Adedi','İkram Değeri (TL)','İndirim (TL)','Net Ciro (TL)'],
+ ...items.flatMap(p=>p.variants.map(v=>[p.name,v.tariff==='esnaf'?'Esnaf':'Normal',v.grossPrice,v.price,v.q,v.kind==='gift'?v.q:0,v.gift,v.discount,v.amount]))];
  $('manager-content').innerHTML=tariffFilters()+
  '<h3>Ürün Satış Analizi</h3><p class="note">En yüksek cirodan en düşüğe ürün performansı. Normal ve Esnaf tarifesi ayrıntıları ürünlerin altında gösterilir.</p>'+
- '<div class="manager-stats">'+stat('Satılan Ürün Adedi',String(units))+stat('Ürün Çeşidi',String(items.length))+stat('Normal Tarife Cirosu',money(normal))+stat('Esnaf Tarife Cirosu',money(esnaf))+'</div>'+
+ '<div class="manager-stats">'+stat('Servis Edilen Ürün',String(units))+stat('İkram Adedi',String(giftQ))+stat('Ürün Çeşidi',String(items.length))+stat('Brüt Ürün Değeri',money(gross))+stat('İkram Değeri',money(gift))+stat('Yüzdelik İndirimler',money(discount))+stat('Net Satış',money(revenue))+stat('Normal Net Ciro',money(normal))+stat('Esnaf Net Ciro',money(esnaf))+'</div>'+
  (items.length?'<h4>En Çok Ciro Getiren Ürünler</h4><div class="manager-analysis-bars">'+items.slice(0,5).map((p,i)=>'<div class="manager-analysis-bar"><div class="manager-analysis-bar-head"><span>'+esc(p.name)+'</span><b>'+money(p.amount)+'</b></div><div class="manager-analysis-track"><div class="manager-analysis-fill" style="width:'+Math.max(0,Math.min(100,p.amount/(items[0].amount||1)*100))+'%"></div></div></div>').join('')+'</div>'+
  '<h4>Tüm Ürünler</h4><table class="manager-table manager-analysis-table"><thead><tr><th>Ürün</th><th>Adet</th><th>Toplam</th></tr></thead><tbody>'+
- items.map(i=>'<tr class="sold-product-row'+(i.variants.length>0?' with-variants':'')+'"><td>'+esc(soldProductLabel(i,manager.tariffFilter))+'</td><td>'+i.q+'</td><td>'+money(i.amount)+'</td></tr>'+
- (i.variants.length>1?'<tr class="sold-detail-row"><td colspan="3">'+renderSoldVariants(i)+'</td></tr>':'')).join('')+
+ items.map(i=>'<tr class="sold-product-row'+(i.variants.length>0?' with-variants':'')+'"><td>'+esc(soldProductLabel(i,manager.tariffFilter))+'</td><td>'+i.q+(i.giftQ?' ('+i.giftQ+' ikram)':'')+'</td><td>'+money(i.amount)+'</td></tr>'+
+ (i.variants.length>0?'<tr class="sold-detail-row"><td colspan="3">'+renderSoldVariants(i)+'</td></tr>':'')).join('')+
  '</tbody></table>':'<p class="note">Bu aralıkta satılan ürün yok.</p>');
  bindTariffFilters(managerRenderAnalysis);
 }
