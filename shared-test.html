@@ -1276,7 +1276,7 @@ $('products').innerHTML=list.map((x,i)=>'<button class="alt product" data-produc
 document.querySelectorAll('[data-product]').forEach(b=>b.onclick=()=>pickProduct(list[Number(b.dataset.product)]));
 $('lines').innerHTML=state.lines.length?'<div class="order-lines">'+state.lines.map((x,i)=>
  '<div class="order-line"><div class="order-line-details">'+
- '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+(x.kind==='gift'?' · İkram':x.kind==='discount'?' · %'+x.rate+' indirim':'')+'</div>'+
+ '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+(x.kind==='gift'?' · İkram':x.kind==='discount'?' · %'+x.rate+' İndirim':'')+'</div>'+
  '<div class="order-line-meta">Birim '+money(x.p)+(x.kind?' · Menü '+money(x.gross):'')+'</div>'+(x.kind&&state.role==='manager'?'<button type="button" class="alt" data-undo-adjust="'+x.id+'" style="margin-top:6px;min-height:32px;padding:5px 9px;font-size:12px">İşlemi Geri Al</button>':'')+'</div>'+
  '<div class="order-line-actions"><strong class="order-line-sum">'+money(x.p*x.q)+'</strong>'+
  '<div class="order-line-stepper" role="group" aria-label="'+esc(x.n)+' adedi">'+
