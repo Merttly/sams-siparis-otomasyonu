@@ -1175,7 +1175,7 @@ function displayTableName(id){
  if(prefix==='içeri'||prefix==='iç')return 'İç'+pieces[2];
  return name;
 }
-async function refreshOrders(){let {data,error}=await db.from('orders').select('id,table_id,status,version,order_items(id,product_name,unit_price,quantity,tariff)').eq('status','open');
+async function refreshOrders(){let {data,error}=await db.from('orders').select('id,table_id,status,version,order_items(id,product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount)').eq('status','open');
 if(error){message('Siparişler okunamadı: '+error.message,true);return}
 const map=Object.fromEntries((data||[]).map(o=>[o.table_id,o]));const activeOrders=(data||[]).filter(o=>state.tables.some(t=>t.id===o.table_id));$('pos-open-count').textContent=String(activeOrders.length);$('pos-open-total').textContent=money(activeOrders.reduce((sum,o)=>sum+(o.order_items||[]).reduce((n,x)=>n+Number(x.unit_price)*x.quantity,0),0));
 const standardTableIcon='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="11.2"/><circle cx="16" cy="16" r="8.7" stroke-width="0.75" opacity=".5"/><path d="M9.5 14.8c2.2-2.5 3.9-.5 5.8-2.2 1.4-1.3 2.4-2 4.7-1.5M11.8 21c2.2-1.3 3.7-.6 5.2-2.5 1.2-1.5 2.6-2 4-1.7" stroke-width=".85" opacity=".34"/></svg>';
@@ -1218,9 +1218,9 @@ document.querySelectorAll('[data-custom-rename]').forEach(b=>b.onclick=()=>renam
 document.querySelectorAll('[data-custom-archive]').forEach(b=>b.onclick=()=>archiveCustomTable(b.dataset.customArchive,b));
 if(state.selected&&!state.dirty) await readSelected();
 }
-async function readSelected(){let {data,error}=await db.from('orders').select('id,table_id,note,status,version,order_items(id,product_name,unit_price,quantity,tariff)').eq('table_id',state.selected).eq('status','open').maybeSingle();
+async function readSelected(){let {data,error}=await db.from('orders').select('id,table_id,note,status,version,order_items(id,product_name,unit_price,quantity,tariff,gross_unit_price,adjustment_kind,adjustment_rate,adjustment_unit_amount)').eq('table_id',state.selected).eq('status','open').maybeSingle();
 if(error){message('Masa okunamadı: '+error.message,true);return}
-state.order=data;state.lines=(data?.order_items||[]).map(x=>({id:x.id,n:x.product_name,p:Number(x.unit_price),q:x.quantity,tariff:x.tariff||'normal'}));
+state.order=data;state.lines=(data?.order_items||[]).map(x=>({id:x.id,n:x.product_name,p:Number(x.unit_price),gross:Number(x.gross_unit_price??x.unit_price),q:x.quantity,tariff:x.tariff||'normal',kind:x.adjustment_kind||null,rate:x.adjustment_rate==null?null:Number(x.adjustment_rate),cut:Number(x.adjustment_unit_amount||0)}));
 state.note=data?.note||'';state.dirty=false;renderEditor();
 }
 async function openTable(id){if(state.dirty&&!confirm('Kaydedilmemiş değişiklikler silinsin mi?'))return;state.selected=id;await readSelected()}
@@ -1236,21 +1236,24 @@ $('products').innerHTML=list.map((x,i)=>'<button class="alt product" data-produc
 document.querySelectorAll('[data-product]').forEach(b=>b.onclick=()=>pickProduct(list[Number(b.dataset.product)]));
 $('lines').innerHTML=state.lines.length?'<div class="order-lines">'+state.lines.map((x,i)=>
  '<div class="order-line"><div class="order-line-details">'+
- '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+'</div>'+
- '<div class="order-line-meta">Birim '+money(x.p)+'</div></div>'+
+ '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+(x.kind==='gift'?' · İkram':x.kind==='discount'?' · %'+x.rate+' indirim':'')+'</div>'+
+ '<div class="order-line-meta">Birim '+money(x.p)+(x.kind?' · Menü '+money(x.gross):'')+'</div>'+(x.kind&&state.role==='manager'?'<button type="button" class="alt" data-undo-adjust="'+x.id+'" style="margin-top:6px;min-height:32px;padding:5px 9px;font-size:12px">İşlemi Geri Al</button>':'')+'</div>'+
  '<div class="order-line-actions"><strong class="order-line-sum">'+money(x.p*x.q)+'</strong>'+
  '<div class="order-line-stepper" role="group" aria-label="'+esc(x.n)+' adedi">'+
- '<button type="button" class="order-line-step" data-minus="'+i+'" aria-label="'+esc(x.n)+' azalt">−</button>'+
+ '<button type="button" class="order-line-step" data-minus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' azalt">−</button>'+
  '<span class="order-line-qty">'+x.q+'</span>'+
- '<button type="button" class="order-line-step" data-plus="'+i+'" aria-label="'+esc(x.n)+' artır">+</button>'+
+ '<button type="button" class="order-line-step" data-plus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' artır">+</button>'+
  '</div></div></div>').join('')+'</div>':'<p class="muted">Masa boş.</p>';
 document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.minus),-1));
 document.querySelectorAll('[data-plus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.plus),1));
+document.querySelectorAll('[data-undo-adjust]').forEach(b=>b.onclick=()=>undoAdjustment(Number(b.dataset.undoAdjust)));
+
 $('note').value=state.note;$('total').textContent=money(state.lines.reduce((s,x)=>s+x.p*x.q,0));
 $('pay-cash').disabled=$('pay-card').disabled=$('split').disabled=$('transfer').disabled=state.loading||!state.lines.length;
-let previewBtn=$('adjust-preview-btn');if(!previewBtn){previewBtn=document.createElement('button');previewBtn.id='adjust-preview-btn';previewBtn.type='button';previewBtn.className='alt';previewBtn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span>İndirim - İkram</span>';$('split').insertAdjacentElement('afterend',previewBtn);previewBtn.onclick=previewAdjustment;}previewBtn.style.display=state.role==='manager'?'':'none';previewBtn.disabled=state.loading||!state.lines.length;
+let previewBtn=$('adjust-preview-btn');if(!previewBtn){previewBtn=document.createElement('button');previewBtn.id='adjust-preview-btn';previewBtn.type='button';previewBtn.className='alt';previewBtn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span>İndirim - İkram</span>';$('split').insertAdjacentElement('afterend',previewBtn);previewBtn.onclick=previewAdjustment;}previewBtn.style.display=state.role==='manager'?'':'none';previewBtn.disabled=state.loading||!state.lines.some(x=>!x.kind);
+let giftBtn=$('gift-close-btn');if(!giftBtn){giftBtn=document.createElement('button');giftBtn.id='gift-close-btn';giftBtn.type='button';giftBtn.className='alt';giftBtn.innerHTML='<span>🎁</span><span>İkramları Tamamla</span>';$('split').insertAdjacentElement('afterend',giftBtn);giftBtn.onclick=()=>pay('İkram');}const giftOnly=state.lines.length>0&&state.lines.every(x=>x.kind==='gift');giftBtn.style.display=giftOnly?'':'none';giftBtn.disabled=state.loading||!giftOnly;if(giftOnly){$('pay-cash').disabled=true;$('pay-card').disabled=true;}
 }
-function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
+function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>!z.kind&&z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
 function showOptions(title, options){
  const overlay=document.createElement('div');overlay.className='option-overlay';
  const sheet=document.createElement('div');sheet.className='option-sheet';
@@ -1282,12 +1285,12 @@ function pickProduct(x){
  }else addProduct(x.n,base);
 }
 function markDirty(){state.note=$('note').value;state.dirty=true;renderEditor()}
-function change(i,d){let x=state.lines[i];x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
+function change(i,d){let x=state.lines[i];if(x.kind){message('İndirimli/ikram ürünü değiştirmek için yönetici önce işlemi geri almalı.',true);return}x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
 async function save(){
  if(!state.selected||state.loading)return false;
  state.loading=true;$('save').disabled=true;
  try{
-  const payload=state.lines.map(x=>({n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
+  const payload=state.lines.map(x=>({id:x.id??null,n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
   const {error}=await db.rpc('cafe_save_order',{p_table:state.selected,p_version:state.order?.version||0,p_items:payload,p_note:$('note').value});
   if(error)throw error;
   state.dirty=false;await readSelected();await refreshOrders();
@@ -1305,8 +1308,8 @@ async function ensureSaved(){
 async function pay(method){
  if(state.loading||!state.selected)return;
  const sum=state.lines.reduce((a,x)=>a+x.p*x.q,0);
- if(sum<=0){message('Masa boş; kapatılacak hesap yok.',true);return}
- if(!confirm(state.selected+' · '+money(sum)+' · '+method+' ile hesap kapatılsın mı?\nKaydedilmemiş ürünler önce kaydedilir.'))return;
+ if(!state.lines.length||sum<=0&&!(method==='İkram'&&state.lines.every(x=>x.kind==='gift'))){message('Bu işlem için uygun ürün veya tahsilat bulunamadı.',true);return}
+ if(!confirm(state.selected+' · '+money(sum)+' · '+(method==='İkram'?'İkram ürünleri tamamlanacak':method+' ile hesap kapatılsın mı?')+'\nKaydedilmemiş ürünler önce kaydedilir.'))return;
  if(!await ensureSaved())return;
  state.loading=true;
  try{
@@ -1391,35 +1394,80 @@ async function transfer(){
  }catch(e){message('Taşıma/birleştirme yapılamadı: '+e.message,true)}
  finally{state.loading=false}
 }
-function previewAdjustment(){
+
+async function undoAdjustment(lineId){
+ if(state.role!=='manager'||state.loading)return;
+ const line=state.lines.find(x=>x.id===lineId&&x.kind);
+ if(!line)return;
+ if(!confirm(line.n+' · '+line.q+' adet · '+(line.kind==='gift'?'İkram':'İndirim')+' geri alınsın mı?'))return;
+ if(!await ensureSaved())return;
+ state.loading=true;
+ try{
+  const {error}=await db.rpc('manager_undo_adjustment',{p_table:state.selected,p_version:state.order.version,p_line_id:lineId});
+  if(error)throw error;
+  await readSelected();await refreshOrders();message('İndirim / ikram geri alındı.');
+ }catch(e){message('Geri alma başarısız: '+e.message,true);await readSelected();}
+ finally{state.loading=false;}
+}
+async function previewAdjustment(){
  if(state.role!=='manager'){message('Yalnızca yönetici kullanabilir.',true);return}
- if(!state.selected||!state.lines.length){message('Önce masaya ürün ekleyin.',true);return}
- const units=state.lines.flatMap((x,i)=>Array.from({length:x.q},(_,j)=>({key:i+'-'+j,n:x.n,p:x.p,tariff:x.tariff})));
+ if(document.getElementById('adjust-preview')||state.loading)return;
+ if(!await ensureSaved())return;
+ if(state.role!=='manager'||!state.selected||!state.order)return;
+ const units=state.lines.filter(x=>!x.kind).flatMap(x=>Array.from({length:x.q},()=>({id:x.id,n:x.n,p:x.p,tariff:x.tariff})));
+ if(!units.length){message('İndirimsiz veya ikram edilmemiş ürün kalmadı.',true);return}
+ if(units.length>200){message('Bu işlemde en çok 200 ürün seçilebilir. Önce hesabı bölün.',true);return}
  const el=document.createElement('div');el.className='panel';el.id='adjust-preview';
- el.style.cssText='position:fixed;inset:12px;z-index:2800;overflow:auto;max-width:650px;margin:auto;background:var(--paper);color:var(--ink);border:2px solid var(--sage);box-shadow:0 0 0 100vmax #0009';
- el.innerHTML='<div class="row"><h2>İndirim - İkram</h2><button class="alt" id="adj-close">Kapat</button></div>'+
- '<p class="note">Bu ekran hesaplama önizlemesidir. Gerçek siparişe, tahsilata ve raporlara henüz kayıt yapmaz.</p>'+
- '<label>İşlem<select id="adj-kind"><option value="all">Tüm hesaba indirim</option><option value="selected">Seçili ürünlere indirim</option><option value="gift">Seçili ürünleri ikram et</option></select></label>'+
- '<label id="adj-rate-label">İndirim oranı (%)<input id="adj-rate" type="number" min="0" max="100" step="0.01" value="10"></label>'+
- '<div id="adj-units">'+units.map((u,i)=>'<label class="row" style="padding:7px 0"><span><input type="checkbox" data-adj-unit="'+i+'" style="width:auto"> '+esc(u.n)+'</span><b>'+money(u.p)+'</b></label>').join('')+'</div>'+
- '<div class="divider"></div><div id="adj-summary"></div>';
+ el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+ el.style.cssText='position:fixed;inset:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));z-index:2800;overflow:auto;max-width:650px;margin:auto;background:var(--paper);color:var(--ink);border:2px solid var(--sage);box-shadow:0 0 0 100vmax #0009';
+ el.innerHTML='<div class="row"><h2>İndirim - İkram</h2><button class="alt" id="adj-close">Vazgeç</button></div>'+
+ '<p class="note">Yalnızca henüz indirim/ikram uygulanmamış ürünler seçilebilir. İşlem yönetici onayıyla kaydedilir.</p>'+
+ '<label>İşlem<select id="adj-kind"><option value="all">Tüm uygun hesaba indirim</option><option value="selected">Seçili ürünlere indirim</option><option value="gift">Seçili ürünleri ikram et</option></select></label>'+
+ '<label id="adj-rate-label">İndirim oranı (%)<input id="adj-rate" type="number" min="0.01" max="100" step="0.01" inputmode="decimal" value="10"></label>'+
+ '<div id="adj-units">'+units.map((u,i)=>'<label class="row" style="padding:7px 0;border-bottom:1px solid var(--line)"><span><input type="checkbox" data-adj-unit="'+i+'" style="width:auto;margin-right:7px"> '+esc(u.n)+(u.tariff==='esnaf'?' · Esnaf':'')+'</span><b>'+money(u.p)+'</b></label>').join('')+'</div>'+
+ '<div class="divider"></div><div id="adj-summary"></div><div class="row"><button type="button" id="adj-apply">İşlemi Kaydet</button></div>';
  document.body.appendChild(el);
- const update=()=>{
-  const kind=el.querySelector('#adj-kind').value,rate=Number(el.querySelector('#adj-rate').value);
+ const close=()=>el.remove();el.querySelector('#adj-close').onclick=close;
+ const chosen=()=>{
+  const all=el.querySelector('#adj-kind').value==='all';
   const checked=new Set([...el.querySelectorAll('[data-adj-unit]:checked')].map(x=>Number(x.dataset.adjUnit)));
+  return units.filter((u,i)=>all||checked.has(i));
+ };
+ const calc=()=>{
+  const kind=el.querySelector('#adj-kind').value,raw=el.querySelector('#adj-rate').value,rate=Number(raw);
+  const valid=kind==='gift'||(raw.trim()!==''&&Number.isFinite(rate)&&rate>0&&rate<=100&&Math.round(rate*100)===rate*100);
   el.querySelector('#adj-rate-label').style.display=kind==='gift'?'none':'';
   el.querySelector('#adj-units').style.display=kind==='all'?'none':'';
-  const valid=Number.isFinite(rate)&&rate>=0&&rate<=100;
-  const gross=Math.round(units.reduce((s,x)=>s+x.p,0)*100);
-  const targets=units.map((u,i)=>kind==='all'||checked.has(i)?i:-1).filter(i=>i>=0);
-  const eligible=Math.round(targets.reduce((s,i)=>s+units[i].p,0)*100);
-  const discount=kind==='gift'?eligible:valid?Math.round(eligible*rate/100):0;
-  el.querySelector('#adj-summary').innerHTML=valid?'<p>Brüt: <b>'+money(gross/100)+'</b></p><p>'+(kind==='gift'?'İkram':'İndirim')+': <b>−'+money(discount/100)+'</b></p><h3>Net: '+money((gross-discount)/100)+'</h3><p class="note">Bu yalnızca önizlemedir. Kaydetme devre dışıdır.</p>':'<p class="note">Oran 0–100 arasında olmalı.</p>';
+  const total=Math.round(state.lines.reduce((s,x)=>s+x.p*x.q,0)*100);
+  const target=chosen();
+  const eligible=target.reduce((s,x)=>s+Math.round(x.p*100),0);
+  const reduction=kind==='gift'?eligible:valid?Math.round(eligible*rate/100):0;
+  const ok=valid&&target.length>0&&reduction>0;
+  el.querySelector('#adj-apply').disabled=!ok;
+  el.querySelector('#adj-summary').innerHTML=valid?'<p>Mevcut hesap: <b>'+money(total/100)+'</b></p><p>Seçili ürün: <b>'+target.length+' adet</b></p><p>'+(kind==='gift'?'İkram':'İndirim')+': <b>−'+money(reduction/100)+'</b></p><h3>Yeni net hesap: '+money((total-reduction)/100)+'</h3>'+(ok?'':'<p class="note">İşlem için ürün seçin.</p>'):'<p class="note">Oran 0,01–100 arasında ve en fazla iki ondalıklı olmalı.</p>';
+  return {ok,kind,rate,reduction,target};
  };
- el.querySelector('#adj-close').onclick=()=>el.remove();
- el.querySelectorAll('input,select').forEach(x=>x.addEventListener('change',update));
- el.querySelector('#adj-rate').addEventListener('input',update);update();
+ el.querySelectorAll('input,select').forEach(x=>x.addEventListener('change',calc));
+ el.querySelector('#adj-rate').addEventListener('input',calc);
+ el.querySelector('#adj-apply').onclick=async()=>{
+  const x=calc();if(!x.ok)return;
+  if(!confirm(x.target.length+' ürün için '+(x.kind==='gift'?'ikram':('%'+x.rate+' indirim'))+' · '+money(x.reduction/100)+' işlem kaydedilsin mi?'))return;
+  const grouped=new Map();
+  x.target.forEach(u=>{grouped.set(u.id,(grouped.get(u.id)||0)+1)});
+  const lines=[...grouped].map(([id,q])=>({id,q}));
+  el.querySelector('#adj-apply').disabled=true;
+  state.loading=true;
+  try{
+   const {error}=await db.rpc('manager_apply_adjustment',{p_table:state.selected,p_version:state.order.version,p_kind:x.kind==='gift'?'gift':'discount',p_rate:x.kind==='gift'?null:x.rate,p_lines:lines});
+   if(error)throw error;
+   close();await readSelected();await refreshOrders();message(x.kind==='gift'?'İkram kaydedildi.':'İndirim kaydedildi.');
+  }catch(e){
+   close();await readSelected();message('İşlem sonucu doğrulanamadı: '+e.message+' · Tekrar denemeden önce masayı kontrol edin.',true);
+  }finally{state.loading=false;}
+ };
+ calc();
 }
+
 async function split(){
  if(document.getElementById('split-modal'))return;
  if(!await ensureSaved())return;
