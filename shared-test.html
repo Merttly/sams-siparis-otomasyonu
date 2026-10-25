@@ -1862,7 +1862,7 @@ function managerRenderLogs(){
  person.onchange=draw;table.onchange=draw;draw();
 }
 async function loadMenu(){
- const {data,error}=await db.from('menu_products').select('id,category,name,normal_price,esnaf_price,kind,options,active').order('id');
+ const {data,error}=await db.from('menu_products').select('id,category,name,normal_price,esnaf_price,kind,options,active,sort_order').order('sort_order').order('id');
  if(error){message('Menü yüklenemedi: '+error.message,true);return false}
  menuCatalog=data||[];return true;
 }
@@ -1894,7 +1894,7 @@ async function managerMenu(){
    '<summary><span class="menu-group-heading">'+esc(name)+'</span><span class="menu-group-count">'+products.length+' ürün'+(inactive?' · '+inactive+' pasif':'')+'</span><span class="menu-chevron" aria-hidden="true">⌄</span></summary>'+
    '<div class="menu-group-body">'+
    (products.length?products.map(p=>
-    '<div class="menu-product-row'+(p.active?'':' inactive')+'"><div class="menu-product-info"><b>'+esc(p.name)+'</b>'+
+    '<div class="menu-product-row'+(p.active?'':' inactive')+'" data-sort-id="'+p.id+'"><button type="button" class="alt menu-drag-handle" data-drag-id="'+p.id+'" aria-label="'+esc(p.name)+' ürününü taşı" style="touch-action:none;cursor:grab;padding:8px;user-select:none;-webkit-user-select:none">☰</button><div class="menu-product-info"><b>'+esc(p.name)+'</b>'+
     (!p.active?' <span class="menu-product-inactive">Pasif</span>':'')+
     '<small>Normal '+money(p.normal_price)+' · Esnaf '+(p.esnaf_price===null?'Normal fiyat':money(p.esnaf_price))+'</small>'+
     '</div><button class="alt menu-product-edit" type="button" data-menu-id="'+p.id+'">Düzenle</button></div>'
@@ -1934,6 +1934,48 @@ async function managerMenu(){
   menuExpandedGroup=names[Number(el.dataset.menuGroup)];
   document.querySelectorAll('[data-menu-group]').forEach(other=>{if(other!==el)other.open=false});
  }));
+ document.querySelectorAll('.menu-group-body').forEach(body=>{
+  let dragged=null,originY=0,changed=false;
+  const rows=()=>[...body.querySelectorAll('[data-sort-id]')];
+  const save=async()=>{
+   const category=body.closest('.menu-group')?.querySelector('.menu-group-heading')?.textContent;
+   const ids=rows().map(el=>Number(el.dataset.sortId));
+   if(!category||!ids.length)return;
+   try{
+    const {error}=await db.rpc('manager_reorder_menu',{p_category:category,p_ids:ids});
+    if(error)throw error;
+    if(!await loadMenu())throw Error('Menü yeniden okunamadı');
+    renderEditor();message('Ürün sırası kaydedildi.');
+   }catch(err){message('Sıralama kaydedilemedi: '+err.message,true);await loadMenu();await managerMenu()}
+  };
+  body.querySelectorAll('[data-drag-id]').forEach(handle=>{
+   handle.onpointerdown=e=>{
+    if(e.button!==0)return;
+    dragged=handle.closest('[data-sort-id]');originY=e.clientY;changed=false;
+    handle.setPointerCapture(e.pointerId);
+    dragged.style.opacity='.65';
+   };
+   handle.onpointermove=e=>{
+    if(!dragged)return;
+    if(Math.abs(e.clientY-originY)<7&&!changed)return;
+    const others=rows().filter(x=>x!==dragged);
+    const target=others.find(x=>e.clientY<x.getBoundingClientRect().top+x.getBoundingClientRect().height/2);
+    if(target)body.insertBefore(dragged,target);
+    else{
+     const last=others[others.length-1];
+     if(last)last.after(dragged);
+    }
+    changed=true;
+   };
+   const finish=()=>{
+    if(!dragged)return;
+    dragged.style.opacity='';dragged=null;
+    if(changed)save();
+   };
+   handle.onpointerup=finish;
+   handle.onpointercancel=()=>{if(dragged)dragged.style.opacity='';dragged=null;managerMenu()};
+  });
+ });
  document.querySelectorAll('[data-menu-id]').forEach(el=>el.onclick=()=>managerEditMenu(menuCatalog.find(p=>p.id===Number(el.dataset.menuId))));
  document.querySelectorAll('[data-menu-add]').forEach(el=>el.onclick=()=>managerEditMenu(null,names[Number(el.dataset.menuAdd)]));
 }
