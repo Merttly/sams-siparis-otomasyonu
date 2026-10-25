@@ -1496,7 +1496,7 @@ async function staffAdmin(){
  if(!target||!confirm(target.display_name+' → '+label+'?'))return;
  b.disabled=true;
  const {error}=await db.rpc('manager_set_staff',{p_user_id:target.user_id,p_action:action});
- if(error){message('Yetki güncellenemedi: '+error.message,true);b.disabled=false;return}
+ if(error){const detail=String(error.message||error);const friendly=/E-posta henüz doğrulanmamış/i.test(detail)?'Bu kullanıcının e-posta adresi henüz doğrulanmamış. Kullanıcı, e-postasına gelen doğrulama bağlantısını açtıktan sonra tekrar deneyin.':detail;const warning=document.createElement('div');warning.setAttribute('role','alert');warning.style.cssText='margin:12px 0;padding:14px 16px;border:2px solid #a52a2a;border-radius:12px;background:#fff0ee;color:#7a1717;font-size:15px;font-weight:650;line-height:1.5;white-space:normal;overflow-wrap:anywhere';warning.textContent='İşlem yapılamadı: '+friendly;const previous=$('summary-body').querySelector('[data-staff-error]');if(previous)previous.remove();warning.dataset.staffError='true';b.closest('.row').insertAdjacentElement('afterend',warning);warning.scrollIntoView({block:'nearest',behavior:'smooth'});b.disabled=false;return}
  message('Kullanıcı yetkisi güncellendi.');await staffAdmin();
  });
 }
