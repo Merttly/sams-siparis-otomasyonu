@@ -1328,6 +1328,8 @@ function markDirty(){state.note=$('note').value;state.dirty=true;renderEditor()}
 function change(i,d){let x=state.lines[i];if(x.kind){message('İndirimli/ikram ürünü değiştirmek için yönetici önce işlemi geri almalı.',true);return}x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
 async function save(){
  if(!state.selected||state.loading)return false;
+ // Avoid creating a database 'open order' record when an untouched table has no items.
+ if(!state.order&&!state.lines.length){message('Bu masada kaydedilecek ürün yok.',true);return false}
  state.loading=true;$('save').disabled=true;
  try{
   const payload=state.lines.map(x=>({id:x.id??null,n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
