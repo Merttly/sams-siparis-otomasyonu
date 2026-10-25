@@ -1025,6 +1025,46 @@ html[data-theme="dark"] #manager-screen #manager-content>h4{color:#eaf2e4}
 html[data-theme="dark"] #manager-screen .manager-analysis-track{background:#3b5341}
 html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a1}
 #manager-screen .manager-days button.active{background:#245b3c;color:white}
+/* Mobile spacing fixes: manager adjustment controls and custom-table footer clearance. */
+#adjust-preview > label{
+  display:block;
+  width:100%;
+  min-width:0;
+  margin:0 0 18px;
+  color:var(--ink);
+  font-size:13px;
+  line-height:1.45;
+  font-weight:700;
+}
+#adjust-preview > label > select,
+#adjust-preview > label > input{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  min-height:46px;
+  margin:8px 0 0;
+  padding:10px 12px;
+  background:var(--paper);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:11px;
+  font-size:16px;
+  line-height:1.35;
+  font-weight:500;
+}
+#adjust-preview #adj-units{margin:7px 0 17px}
+#adjust-preview #adj-units > label{min-width:0;column-gap:12px;row-gap:8px}
+#adjust-preview #adj-units > label > span{min-width:0;flex:1 1 160px;overflow-wrap:anywhere}
+#adjust-preview #adj-units > label > b{flex:0 0 auto;white-space:nowrap}
+#adjust-preview #adj-summary{padding-top:3px}
+@media(max-width:600px){
+  main:has(#workspace:not(.hidden)){
+    padding-bottom:calc(140px + env(safe-area-inset-bottom));
+  }
+  #tables .table-section:last-child{padding-bottom:12px}
+}
 </style></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
