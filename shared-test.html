@@ -1251,7 +1251,7 @@ document.querySelectorAll('[data-undo-adjust]').forEach(b=>b.onclick=()=>undoAdj
 $('note').value=state.note;$('total').textContent=money(state.lines.reduce((s,x)=>s+x.p*x.q,0));
 $('pay-cash').disabled=$('pay-card').disabled=$('split').disabled=$('transfer').disabled=state.loading||!state.lines.length;
 let previewBtn=$('adjust-preview-btn');if(!previewBtn){previewBtn=document.createElement('button');previewBtn.id='adjust-preview-btn';previewBtn.type='button';previewBtn.className='alt';previewBtn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span>İndirim - İkram</span>';$('split').insertAdjacentElement('afterend',previewBtn);previewBtn.onclick=previewAdjustment;}previewBtn.style.display=state.role==='manager'?'':'none';previewBtn.disabled=state.loading||!state.lines.some(x=>!x.kind);
-let giftBtn=$('gift-close-btn');if(!giftBtn){giftBtn=document.createElement('button');giftBtn.id='gift-close-btn';giftBtn.type='button';giftBtn.className='alt';giftBtn.innerHTML='<span>🎁</span><span>İkramları Tamamla</span>';$('split').insertAdjacentElement('afterend',giftBtn);giftBtn.onclick=()=>pay('İkram');}const giftOnly=state.lines.length>0&&state.lines.every(x=>x.kind==='gift');giftBtn.style.display=giftOnly?'':'none';giftBtn.disabled=state.loading||!giftOnly;if(giftOnly){$('pay-cash').disabled=true;$('pay-card').disabled=true;}
+let giftBtn=$('gift-close-btn');if(!giftBtn){giftBtn=document.createElement('button');giftBtn.id='gift-close-btn';giftBtn.type='button';giftBtn.className='alt';giftBtn.innerHTML='<span>🎁</span><span>Ücretsiz Hesabı Tamamla</span>';$('split').insertAdjacentElement('afterend',giftBtn);giftBtn.onclick=()=>pay('Ücretsiz');}const zeroOnly=state.lines.length>0&&state.lines.every(x=>x.kind&&x.p===0);giftBtn.style.display=state.role==='manager'&&zeroOnly?'':'none';giftBtn.disabled=state.loading||!zeroOnly;if(zeroOnly){$('pay-cash').disabled=true;$('pay-card').disabled=true;}
 }
 function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>!z.kind&&z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
 function showOptions(title, options){
@@ -1308,8 +1308,8 @@ async function ensureSaved(){
 async function pay(method){
  if(state.loading||!state.selected)return;
  const sum=state.lines.reduce((a,x)=>a+x.p*x.q,0);
- if(!state.lines.length||sum<=0&&!(method==='İkram'&&state.lines.every(x=>x.kind==='gift'))){message('Bu işlem için uygun ürün veya tahsilat bulunamadı.',true);return}
- if(!confirm(state.selected+' · '+money(sum)+' · '+(method==='İkram'?'İkram ürünleri tamamlanacak':method+' ile hesap kapatılsın mı?')+'\nKaydedilmemiş ürünler önce kaydedilir.'))return;
+ if(!state.lines.length||sum<=0&&!(method==='Ücretsiz'&&state.role==='manager'&&state.lines.every(x=>x.kind&&x.p===0))){message('Bu işlem için uygun ürün veya tahsilat bulunamadı.',true);return}
+ if(!confirm(state.selected+' · '+money(sum)+' · '+(method==='Ücretsiz'?'Sıfır tutarlı ikram/indirim ürünleri tamamlanacak':method+' ile hesap kapatılsın mı?')+'\nKaydedilmemiş ürünler önce kaydedilir.'))return;
  if(!await ensureSaved())return;
  state.loading=true;
  try{
@@ -1495,6 +1495,7 @@ async function split(){
  const s=selected();if(!s.length){message('Ödenecek ürün seçin.',true);return}
  const lines=[...new Map(s.map(x=>[x.id,x])).values()].map(x=>({id:x.id,q:s.filter(y=>y.id===x.id).length}));
  const sum=s.reduce((a,x)=>a+x.p,0);
+ if(sum<=0){message('Sıfır tutarlı ürünü ücretli ürünle birlikte seçebilir veya yönetici ücretsiz hesabı tamamlayabilir.',true);return}
  if(!confirm(method+' · '+money(sum)+' parça ödeme alınsın mı?'))return;
  wrap.querySelector('#split-cash').disabled=wrap.querySelector('#split-card').disabled=true;
  try{const {error}=await db.rpc('cafe_pay',{p_table:state.selected,p_version:state.order.version,p_method:method,p_lines:lines,p_key:crypto.randomUUID()});
