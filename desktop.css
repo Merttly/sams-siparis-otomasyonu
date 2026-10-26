@@ -436,4 +436,7 @@
   #workspace.desktop-staff:not(.hidden){grid-template-columns:minmax(0,1fr) 215px}
   #workspace.desktop-staff #tables .table-section--custom .table-section-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+@media screen and (min-width:1024px){
+  #workspace:has(> #editor:not(.hidden)) > #desktop-staff-quick{display:none!important}
+}
 @media print{#desktop-staff-quick{display:none!important}}
