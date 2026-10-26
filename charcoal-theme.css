@@ -149,8 +149,7 @@ html[data-theme="dark"] #tables .table-section-header{
 }
 html[data-theme="dark"] #tables .table-section-header h3,
 html[data-theme="dark"] #tables .table-section-count{color:#c5e2c3!important}
-html[data-theme="dark"] #tables button[data-table],
-html[data-theme="dark"] #tables button:not(.custom-table-actions button){
+html[data-theme="dark"] #tables button[data-table]{
   background:#33393b!important;
   color:#dcefd9!important;
   border-color:#53615c!important;
