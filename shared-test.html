@@ -1061,7 +1061,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-5"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-6"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1262,21 +1262,86 @@ function renderPopularProducts(){
   pickProduct({n:p.name,p:Number(p.normal_price),menu:p},f.tariff);
  });
 }
+let popularSortSaving=false;
+async function savePopularOrder(ids){
+ if(state.role!=='manager'||popularSortSaving)return;
+ if(ids.length!==menuFavorites.length||ids.every((id,i)=>id===menuFavorites[i].id))return;
+ popularSortSaving=true;
+ const list=$('manager-popular-list');
+ list.classList.add('is-saving');
+ try{
+  const {error}=await db.rpc('manager_reorder_menu_favorites',{p_ids:ids});
+  if(error)throw error;
+  if(!await loadFavorites())throw Error('Yeni sıra okunamadı.');
+  renderManagerFavorites();renderEditor();message('Popüler ürünlerin sırası kaydedildi.');
+ }catch(err){
+  message('Sıralama kaydedilemedi: '+err.message,true);
+  await loadFavorites();renderManagerFavorites();
+ }finally{
+  popularSortSaving=false;
+  if(list.isConnected)list.classList.remove('is-saving');
+ }
+}
 function renderManagerFavorites(){
  const panel=$('manager-popular');
  if(!panel||state.role!=='manager')return;
  const list=$('manager-popular-list');
+ const productSelect=$('manager-popular-product'),previousProduct=productSelect.value;
  const active=menuCatalog.filter(p=>p.active).sort((a,b)=>a.name.localeCompare(b.name,'tr'));
- $('manager-popular-product').innerHTML=active.map(p=>'<option value="'+p.id+'">'+esc(p.name)+' · '+esc(p.category)+'</option>').join('');
+ productSelect.innerHTML=active.map(p=>'<option value="'+p.id+'">'+esc(p.name)+' · '+esc(p.category)+'</option>').join('');
+ if(active.some(p=>String(p.id)===previousProduct))productSelect.value=previousProduct;
  $('manager-popular-add').disabled=!active.length;
- list.innerHTML=menuFavorites.length?menuFavorites.map(f=>{
+ list.innerHTML=menuFavorites.length?menuFavorites.map((f,i)=>{
   const p=menuCatalog.find(x=>x.id===f.product_id);
   const label=p?p.name:'Kaldırılmış ürün';
   const price=p?(f.tariff==='esnaf'&&p.esnaf_price!=null?Number(p.esnaf_price):Number(p.normal_price)):0;
-  return '<div class="manager-popular-row"><span><strong>'+esc(label)+(f.tariff==='esnaf'?' · Esnaf':' · Normal')+'</strong><small>'+(p?money(price)+(p.active?'':' · Pasif'):'Ürün artık yok')+'</small></span><button type="button" class="alt" data-popular-remove="'+f.id+'" aria-label="'+esc(label)+' kısayolunu kaldır">Kaldır</button></div>';
+  return '<div class="manager-popular-row" data-popular-sort-id="'+f.id+'">'+
+   '<button type="button" class="alt manager-popular-grip" data-popular-drag-id="'+f.id+'" aria-label="'+esc(label)+' kısayolunu sürükleyerek sırala" title="Tut ve sürükle">☰</button>'+
+   '<span><strong>'+esc(label)+(f.tariff==='esnaf'?' · Esnaf':' · Normal')+'</strong><small>'+(p?money(price)+(p.active?'':' · Pasif'):'Ürün artık yok')+'</small></span>'+
+   '<div class="manager-popular-shift"><button type="button" class="alt" data-popular-move="'+f.id+'" data-direction="-1" aria-label="'+esc(label)+' yukarı taşı"'+(i===0?' disabled':'')+'>↑</button>'+
+   '<button type="button" class="alt" data-popular-move="'+f.id+'" data-direction="1" aria-label="'+esc(label)+' aşağı taşı"'+(i===menuFavorites.length-1?' disabled':'')+'>↓</button></div>'+
+   '<button type="button" class="alt manager-popular-remove" data-popular-remove="'+f.id+'" aria-label="'+esc(label)+' kısayolunu kaldır">Kaldır</button></div>';
  }).join(''):'<p class="manager-popular-empty">Henüz kısayol yok. Aşağıdan ilk ürünü ekleyin.</p>';
+ const rows=()=>[...list.querySelectorAll('[data-popular-sort-id]')];
+ const saveOrder=()=>savePopularOrder(rows().map(el=>Number(el.dataset.popularSortId)));
+ list.querySelectorAll('[data-popular-move]').forEach(button=>button.onclick=()=>{
+  if(popularSortSaving)return;
+  const row=button.closest('[data-popular-sort-id]'),all=rows();
+  const index=all.indexOf(row),direction=Number(button.dataset.direction);
+  if(direction<0&&index>0)list.insertBefore(row,all[index-1]);
+  else if(direction>0&&index<all.length-1)list.insertBefore(all[index+1],row);
+  else return;
+  saveOrder();
+ });
+ let dragged=null,startY=0;
+ list.querySelectorAll('[data-popular-drag-id]').forEach(handle=>{
+  handle.onpointerdown=event=>{
+   if(popularSortSaving||event.pointerType==='mouse'&&event.button!==0)return;
+   dragged=handle.closest('[data-popular-sort-id]');startY=event.clientY;
+   dragged.classList.add('is-dragging');
+   handle.setPointerCapture(event.pointerId);
+   event.preventDefault();
+  };
+  handle.onpointermove=event=>{
+   if(!dragged||Math.abs(event.clientY-startY)<6)return;
+   const others=rows().filter(x=>x!==dragged);
+   const target=others.find(x=>event.clientY<x.getBoundingClientRect().top+x.getBoundingClientRect().height/2);
+   if(target)list.insertBefore(dragged,target);
+   else list.appendChild(dragged);
+  };
+  handle.onpointerup=()=>{
+   if(!dragged)return;
+   dragged.classList.remove('is-dragging');dragged=null;
+   saveOrder();
+  };
+  handle.onpointercancel=()=>{
+   if(!dragged)return;
+   dragged.classList.remove('is-dragging');dragged=null;
+   renderManagerFavorites();
+  };
+ });
  list.querySelectorAll('[data-popular-remove]').forEach(button=>button.onclick=async()=>{
-  if(state.role!=='manager')return;
+  if(state.role!=='manager'||popularSortSaving)return;
   const id=Number(button.dataset.popularRemove);
   button.disabled=true;
   try{
@@ -2234,6 +2299,7 @@ async function managerMenu(){
  '<div class="menu-admin-actions"><button type="button" id="menu-new">+ Yeni Ürün</button><button class="alt" type="button" id="menu-new-category"'+(loaded?'':' disabled')+'>+ Ana Başlık</button></div>'+
  '<section id="manager-popular" class="manager-popular" aria-label="Popüler Ürünler Yönetimi">'+
   '<div class="manager-popular-heading"><div><h4>Popüler Ürünler</h4><p>Sipariş ekranındaki hızlı ürün kısayollarını yönetin.</p></div><span class="manager-popular-badge">Hızlı Ekleme</span></div>'+
+  '<p class="manager-popular-sort-hint">☰ simgesinden sürükle ya da oklarla sıralamayı değiştir.</p>'+
   '<div id="manager-popular-list" class="manager-popular-list"></div>'+
   '<div class="manager-popular-controls"><label>Ürün<select id="manager-popular-product"></select></label>'+
   '<label>Tarife<select id="manager-popular-tariff"><option value="normal">Normal</option><option value="esnaf">Esnaf</option></select></label>'+
