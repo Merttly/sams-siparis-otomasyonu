@@ -1065,7 +1065,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-6"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-7"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1152,7 +1152,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
 <div class="row"><button id="back-table" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Masalara Dön</span></button><span id="revision" class="muted"></span></div><h2 id="table-title">Masa</h2>
 <p id="dirty-notice" class="note hidden">Kaydedilmemiş değişiklikler var. Hesap/taşıma işleminden önce bu değişiklikler kaydedilecek. Başka cihazdaki güncellemeler birbiri üzerine yazılmaz.</p>
 <section id="editor-popular" class="editor-popular" aria-label="Popüler Ürünler">
- <div class="editor-popular-heading"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.6 6.5 7 .5-5.4 4.6 1.8 6.8L12 17l-6 3.4 1.8-6.8L2.4 9l7-.5L12 2Z"/></svg><div><h3>Popüler Ürünler</h3><p>Sık satılan ürünleri tek dokunuşla siparişe ekle.</p></div></div>
+ <div class="editor-popular-heading"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.6 6.5 7 .5-5.4 4.6 1.8 6.8L12 17l-6 3.4 1.8-6.8L2.4 9l7-.5L12 2Z"/></svg><div><h3>Popüler Ürünler</h3><p>Sık satılan ürünleri tek dokunuşla siparişe ekle.</p></div><button type="button" id="editor-popular-sort-toggle" class="editor-popular-sort-toggle hidden" aria-pressed="false">Sırala</button></div>
  <div id="popular-shortcuts" class="editor-popular-grid"></div>
 </section>
 <div class="desktop-order-menu">
@@ -1250,10 +1250,36 @@ async function loadFavorites(){
  if(error){message('Popüler ürünler yüklenemedi: '+error.message,true);return false}
  menuFavorites=data||[];return true;
 }
+let mobilePopularSorting=false;
 function renderPopularProducts(){
  const container=$('popular-shortcuts');
  if(!container)return;
  const entries=menuFavorites.map(f=>({favorite:f,product:menuCatalog.find(p=>p.id===f.product_id&&p.active)})).filter(x=>x.product);
+ const toggle=$('editor-popular-sort-toggle');
+ if(toggle){
+  show('editor-popular-sort-toggle',state.role==='manager');
+  toggle.textContent=mobilePopularSorting&&state.role==='manager'?'Bitti':'Sırala';
+  toggle.setAttribute('aria-pressed',String(mobilePopularSorting&&state.role==='manager'));
+ }
+ if(mobilePopularSorting&&state.role==='manager'&&entries.length){
+  container.classList.add('is-sorting');
+  container.innerHTML=entries.map(({favorite:f,product:p},i)=>
+   '<div class="editor-popular-sort-row"><span>'+esc(p.name)+(f.tariff==='esnaf'?' · Esnaf':' · Normal')+'</span><div>'+
+   '<button type="button" data-mobile-popular-id="'+f.id+'" data-mobile-popular-dir="-1" aria-label="'+esc(p.name)+' yukarı taşı"'+(i===0?' disabled':'')+'>↑</button>'+
+   '<button type="button" data-mobile-popular-id="'+f.id+'" data-mobile-popular-dir="1" aria-label="'+esc(p.name)+' aşağı taşı"'+(i===entries.length-1?' disabled':'')+'>↓</button></div></div>'
+  ).join('');
+  container.querySelectorAll('[data-mobile-popular-id]').forEach(button=>button.onclick=()=>{
+   if(state.role!=='manager'||popularSortSaving)return;
+   const id=Number(button.dataset.mobilePopularId),dir=Number(button.dataset.mobilePopularDir);
+   const visible=entries.map(x=>x.favorite.id),position=visible.indexOf(id),target=visible[position+dir];
+   if(position<0||target==null)return;
+   const ids=menuFavorites.map(f=>f.id),i=ids.indexOf(id),j=ids.indexOf(target);
+   [ids[i],ids[j]]=[ids[j],ids[i]];
+   savePopularOrder(ids);
+  });
+  return;
+ }
+ container.classList.remove('is-sorting');
  if(!entries.length){container.innerHTML='<p class="editor-popular-empty">Henüz popüler ürün eklenmedi. Yönetici panelinden kısayol oluşturabilirsiniz.</p>';return}
  const cup='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h14v6a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6zM18 10h2a2 2 0 0 1 0 4h-2M3 22h18M9 3v3m5-3v3"/></svg>';
  container.innerHTML=entries.map(({favorite:f,product:p})=>{
@@ -1275,7 +1301,7 @@ async function savePopularOrder(ids){
  if(ids.length!==menuFavorites.length||ids.every((id,i)=>id===menuFavorites[i].id))return;
  popularSortSaving=true;
  const list=$('manager-popular-list');
- list.classList.add('is-saving');
+ if(list)list.classList.add('is-saving');
  try{
   const {error}=await db.rpc('manager_reorder_menu_favorites',{p_ids:ids});
   if(error)throw error;
@@ -1286,7 +1312,7 @@ async function savePopularOrder(ids){
   await loadFavorites();renderManagerFavorites();
  }finally{
   popularSortSaving=false;
-  if(list.isConnected)list.classList.remove('is-saving');
+  if(list?.isConnected)list.classList.remove('is-saving');
  }
 }
 function renderManagerFavorites(){
@@ -2519,6 +2545,7 @@ state.channel=db.channel('cafe-shared-test').on('postgres_changes',{event:'*',sc
 .on('postgres_changes',{event:'*',schema:'public',table:'cafe_tables'},()=>{if(state.user)loadTables()})
 .subscribe();
 }
+$('editor-popular-sort-toggle').onclick=()=>{if(state.role!=='manager')return;mobilePopularSorting=!mobilePopularSorting;renderPopularProducts()};
 $('tariff-normal').onclick=()=>{activeTariff='normal';renderEditor()};$('tariff-esnaf').onclick=()=>{activeTariff='esnaf';renderEditor()};
 $('signin').onclick=()=>login(false);$('signup').onclick=()=>login(true);$('open-signup').onclick=()=>authView(true);$('back-login').onclick=()=>authView(false);
 $('forgot-password').onclick=async()=>{
