@@ -982,3 +982,61 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-popular-contro
   #manager-screen #manager-content .manager-popular-controls label:first-child{grid-column:1/-1}
   #manager-screen #manager-content #manager-popular-add{grid-column:1/-1}
 }
+
+
+/* Sortable popular-product manager shortcuts, including touch and keyboard-friendly controls. */
+#manager-screen #manager-content .manager-popular-sort-hint{
+  margin:0 0 11px;color:#768b79;font-size:11px;line-height:1.5;
+}
+#manager-screen #manager-content .manager-popular-list{
+  grid-template-columns:minmax(0,1fr);max-width:770px;
+}
+#manager-screen #manager-content .manager-popular-row{
+  display:grid;grid-template-columns:34px minmax(0,1fr) 66px 72px;
+  align-items:center;gap:9px;min-height:60px;
+}
+#manager-screen #manager-content .manager-popular-row.is-dragging{
+  background:#e9f5e5;border-color:#86ac8b;box-shadow:0 4px 11px #294b3218;
+}
+#manager-screen #manager-content .manager-popular-grip{
+  display:grid;place-items:center;width:34px;height:36px;min-height:36px;
+  margin:0;padding:0;border:1px solid #d3e2d0;border-radius:8px;
+  background:#eaf3e6;color:#60846a;font-size:18px;line-height:1;
+  touch-action:none;cursor:grab;user-select:none;
+}
+#manager-screen #manager-content .manager-popular-grip:active{cursor:grabbing}
+#manager-screen #manager-content .manager-popular-shift{
+  display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;
+}
+#manager-screen #manager-content .manager-popular-shift button{
+  display:grid;place-items:center;width:30px;height:34px;min-height:34px;
+  margin:0;padding:0;border:1px solid #dce6d8;border-radius:7px;
+  background:#f2f7ef;color:#466c4f;font-size:17px;font-weight:760;
+}
+#manager-screen #manager-content .manager-popular-shift button:disabled{opacity:.3;cursor:not-allowed}
+#manager-screen #manager-content .manager-popular-row button.manager-popular-remove{
+  width:72px;margin:0;padding:8px 9px;text-align:center;
+}
+#manager-screen #manager-content .manager-popular-list.is-saving{
+  opacity:.65;pointer-events:none;
+}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-sort-hint{color:#b0c5b1}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-grip{
+  background:#405947;border-color:#617765;color:#d2e8cf;
+}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-shift button{
+  background:#374b3d;border-color:#617765;color:#e3efdf;
+}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row.is-dragging{
+  background:#3e5843;border-color:#8ca990;
+}
+@media screen and (max-width:440px){
+  #manager-screen #manager-content .manager-popular-row{
+    grid-template-columns:30px minmax(0,1fr) 57px 59px;gap:5px;padding:9px 7px;
+  }
+  #manager-screen #manager-content .manager-popular-grip{width:30px;height:34px}
+  #manager-screen #manager-content .manager-popular-shift{gap:3px}
+  #manager-screen #manager-content .manager-popular-shift button{width:27px;height:32px;min-height:32px}
+  #manager-screen #manager-content .manager-popular-row button.manager-popular-remove{width:59px;padding:7px 5px;font-size:10px}
+  #manager-screen #manager-content .manager-popular-row strong{font-size:11px}
+}
