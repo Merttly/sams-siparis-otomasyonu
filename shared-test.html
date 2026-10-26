@@ -1061,7 +1061,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-4"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-5"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1144,6 +1144,10 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
 <div id="editor" class="panel hidden">
 <div class="row"><button id="back-table" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Masalara Dön</span></button><span id="revision" class="muted"></span></div><h2 id="table-title">Masa</h2>
 <p id="dirty-notice" class="note hidden">Kaydedilmemiş değişiklikler var. Hesap/taşıma işleminden önce bu değişiklikler kaydedilecek. Başka cihazdaki güncellemeler birbiri üzerine yazılmaz.</p>
+<section id="editor-popular" class="editor-popular" aria-label="Popüler Ürünler">
+ <div class="editor-popular-heading"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.6 6.5 7 .5-5.4 4.6 1.8 6.8L12 17l-6 3.4 1.8-6.8L2.4 9l7-.5L12 2Z"/></svg><div><h3>Popüler Ürünler</h3><p>Sık satılan ürünleri tek dokunuşla siparişe ekle.</p></div></div>
+ <div id="popular-shortcuts" class="editor-popular-grid"></div>
+</section>
 <div class="desktop-order-menu">
 <h3>Ürün ekle</h3><div class="row tariff-switch" role="group" aria-label="Fiyat tarifesi"><button id="tariff-normal">Normal Menü</button><button id="tariff-esnaf" class="alt">Esnaf Tarifesi</button></div><div id="categories" class="row" style="justify-content:start;margin-bottom:14px"></div><div id="products" class="grid"></div>
 </div><!-- desktop-order-menu -->
@@ -1233,6 +1237,57 @@ const esnafPrices={'Sünepe':140,'Kasap':180,'Kavkas':180,'Baba':240,'Baba Yanar
 const bowlEsnaf=(name,protein)=>({Bonfileli:name==='Fit Bowl'?330:350,Tiftikli:name==='Fit Bowl'?350:370,Köfteli:240,Tavuklu:220})[protein];
 let menuCatalog=[];
 let menuCategories=[];
+let menuFavorites=[];
+async function loadFavorites(){
+ const {data,error}=await db.from('menu_favorites').select('id,product_id,tariff,sort_order').order('sort_order').order('id');
+ if(error){message('Popüler ürünler yüklenemedi: '+error.message,true);return false}
+ menuFavorites=data||[];return true;
+}
+function renderPopularProducts(){
+ const container=$('popular-shortcuts');
+ if(!container)return;
+ const entries=menuFavorites.map(f=>({favorite:f,product:menuCatalog.find(p=>p.id===f.product_id&&p.active)})).filter(x=>x.product);
+ if(!entries.length){container.innerHTML='<p class="editor-popular-empty">Henüz popüler ürün eklenmedi. Yönetici panelinden kısayol oluşturabilirsiniz.</p>';return}
+ const cup='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h14v6a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6zM18 10h2a2 2 0 0 1 0 4h-2M3 22h18M9 3v3m5-3v3"/></svg>';
+ container.innerHTML=entries.map(({favorite:f,product:p})=>{
+  const price=f.tariff==='esnaf'&&p.esnaf_price!=null?Number(p.esnaf_price):Number(p.normal_price);
+  return '<button type="button" class="editor-popular-item'+(f.tariff==='esnaf'?' is-esnaf':'')+'" data-popular-id="'+f.id+'" aria-label="'+esc(p.name)+(f.tariff==='esnaf'?' Esnaf':'')+', '+money(price)+', siparişe ekle">'+
+   '<span class="editor-popular-icon">'+cup+'</span><span class="editor-popular-copy"><strong>'+esc(p.name)+(f.tariff==='esnaf'?' <em>(Esnaf)</em>':'')+'</strong><small>'+money(price)+'</small></span><span class="editor-popular-plus" aria-hidden="true">+</span></button>';
+ }).join('');
+ container.querySelectorAll('[data-popular-id]').forEach(btn=>btn.onclick=()=>{
+  if(!state.selected||state.loading)return;
+  const f=menuFavorites.find(x=>x.id===Number(btn.dataset.popularId));
+  const p=menuCatalog.find(x=>x.id===f?.product_id&&x.active);
+  if(!f||!p){message('Bu ürün artık aktif değil. Menüyü yenileyin.',true);return}
+  pickProduct({n:p.name,p:Number(p.normal_price),menu:p},f.tariff);
+ });
+}
+function renderManagerFavorites(){
+ const panel=$('manager-popular');
+ if(!panel||state.role!=='manager')return;
+ const list=$('manager-popular-list');
+ const active=menuCatalog.filter(p=>p.active).sort((a,b)=>a.name.localeCompare(b.name,'tr'));
+ $('manager-popular-product').innerHTML=active.map(p=>'<option value="'+p.id+'">'+esc(p.name)+' · '+esc(p.category)+'</option>').join('');
+ $('manager-popular-add').disabled=!active.length;
+ list.innerHTML=menuFavorites.length?menuFavorites.map(f=>{
+  const p=menuCatalog.find(x=>x.id===f.product_id);
+  const label=p?p.name:'Kaldırılmış ürün';
+  const price=p?(f.tariff==='esnaf'&&p.esnaf_price!=null?Number(p.esnaf_price):Number(p.normal_price)):0;
+  return '<div class="manager-popular-row"><span><strong>'+esc(label)+(f.tariff==='esnaf'?' · Esnaf':' · Normal')+'</strong><small>'+(p?money(price)+(p.active?'':' · Pasif'):'Ürün artık yok')+'</small></span><button type="button" class="alt" data-popular-remove="'+f.id+'" aria-label="'+esc(label)+' kısayolunu kaldır">Kaldır</button></div>';
+ }).join(''):'<p class="manager-popular-empty">Henüz kısayol yok. Aşağıdan ilk ürünü ekleyin.</p>';
+ list.querySelectorAll('[data-popular-remove]').forEach(button=>button.onclick=async()=>{
+  if(state.role!=='manager')return;
+  const id=Number(button.dataset.popularRemove);
+  button.disabled=true;
+  try{
+   const {error}=await db.from('menu_favorites').delete().eq('id',id).select('id').single();
+   if(error)throw error;
+   if(!await loadFavorites())throw Error('Kısayollar yeniden okunamadı.');
+   renderManagerFavorites();renderEditor();message('Popüler ürün kısayolu kaldırıldı.');
+  }catch(err){message('Kısayol kaldırılamadı: '+err.message,true);if(button.isConnected)button.disabled=false}
+ });
+}
+
 let menuExpandedGroup=null;
 const state={user:null,role:null,tables:[],selected:null,order:null,lines:[],note:'',dirty:false,channel:null,loading:false};
 function show(id,v){$(id).classList.toggle('hidden',!v)}
@@ -1378,6 +1433,7 @@ state.note=data?.note||'';state.dirty=false;renderEditor();
 async function openTable(id){if(state.dirty&&!confirm('Kaydedilmemiş değişiklikler silinsin mi?'))return;state.selected=id;await readSelected();if(state.role!=='manager'&&!$('editor').classList.contains('hidden')){staffLastTableId=id;renderDesktopStaffQuick(staffOpenOrders)}}
 function renderEditor(){show('editor',!!state.selected);desktopSyncNavigation();if(!state.selected)return;
 $('table-title').textContent=displayTableName(state.selected);$('revision').textContent='Sürüm '+(state.order?.version||0);
+renderPopularProducts();
 show('dirty-notice',state.dirty);
  $('tariff-normal').className=activeTariff==='normal'?'':'alt';$('tariff-esnaf').className=activeTariff==='esnaf'?'':'alt';
 $('categories').innerHTML=[...new Set(menuCatalog.filter(x=>x.active).map(x=>x.category))].map((c,i)=>'<button class="'+(c===category?'':'alt')+'" data-category="'+i+'">'+esc(c)+'</button>').join('');
@@ -1426,15 +1482,15 @@ function showOptions(title, options){
  document.addEventListener('keydown',onEscape);
  document.body.appendChild(overlay);
 }
-function pickProduct(x){
- const base=activeTariff==='esnaf'&&x.menu.esnaf_price!==null?Number(x.menu.esnaf_price):x.p;
+function pickProduct(x,tariff=activeTariff){
+ const base=tariff==='esnaf'&&x.menu.esnaf_price!==null?Number(x.menu.esnaf_price):x.p;
  if(x.menu.kind==='bowl'){
-  showOptions(x.n,(x.menu.options||[]).map(o=>({label:o.name,price:activeTariff==='esnaf'&&o.esnaf!=null?Number(o.esnaf):Number(o.normal),onSelect:()=>addProduct(x.n+' · '+o.name,activeTariff==='esnaf'&&o.esnaf!=null?Number(o.esnaf):Number(o.normal))})));
+  showOptions(x.n,(x.menu.options||[]).map(o=>({label:o.name,price:tariff==='esnaf'&&o.esnaf!=null?Number(o.esnaf):Number(o.normal),onSelect:()=>addProduct(x.n+' · '+o.name,tariff==='esnaf'&&o.esnaf!=null?Number(o.esnaf):Number(o.normal),tariff)})));
  }else if(x.menu.kind==='options'){
-  const choices=[{label:'Normal',price:base,onSelect:()=>addProduct(x.n,base)}];
-  (x.menu.options||[]).forEach(o=>{const extra=activeTariff==='esnaf'&&o.esnaf!=null?Number(o.esnaf):Number(o.normal);choices.push({label:o.name,price:base+extra,onSelect:()=>addProduct(x.n+' · '+o.name,base+extra)})});
+  const choices=[{label:'Normal',price:base,onSelect:()=>addProduct(x.n,base,tariff)}];
+  (x.menu.options||[]).forEach(o=>{const extra=tariff==='esnaf'&&o.esnaf!=null?Number(o.esnaf):Number(o.normal);choices.push({label:o.name,price:base+extra,onSelect:()=>addProduct(x.n+' · '+o.name,base+extra,tariff)})});
   showOptions(x.n,choices);
- }else addProduct(x.n,base);
+ }else addProduct(x.n,base,tariff);
 }
 function markDirty(){state.note=$('note').value;state.dirty=true;renderEditor()}
 function change(i,d){let x=state.lines[i];if(x.kind){message('İndirimli/ikram ürünü değiştirmek için yönetici önce işlemi geri almalı.',true);return}x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
@@ -2156,7 +2212,7 @@ function managerRenderLogs(){
 async function loadMenu(){
  const {data,error}=await db.from('menu_products').select('id,category,name,normal_price,esnaf_price,kind,options,active,sort_order').order('sort_order').order('id');
  if(error){message('Menü yüklenemedi: '+error.message,true);return false}
- menuCatalog=data||[];return true;
+ menuCatalog=data||[];await loadFavorites();return true;
 }
 async function loadMenuCategories(){
  const {data,error}=await db.from('menu_categories').select('id,name,sort_order').order('sort_order',{ascending:true}).order('id',{ascending:true});
@@ -2168,6 +2224,7 @@ async function managerMenu(){
  const host=$('manager-content');
  host.innerHTML='<h3>Menü Yönetimi</h3><p class="note">Ana başlıklar yükleniyor…</p>';
  const loaded=await loadMenuCategories();
+ await loadFavorites();
  if(manager.tab!=='menu'||state.role!=='manager')return;
  const names=[...new Set([...menuCategories.map(c=>c.name),...menuCatalog.map(p=>p.category)])];
  if(!menuExpandedGroup||!names.includes(menuExpandedGroup))menuExpandedGroup=names[0]||null;
@@ -2175,6 +2232,13 @@ async function managerMenu(){
  '<h3 class="menu-admin-title">Menü Yönetimi</h3>'+
  '<p class="note menu-admin-intro">'+menuCatalog.length+' ürün · '+names.length+' ana başlık. Başlıklara dokunarak ürünleri düzenleyebilirsiniz.</p>'+
  '<div class="menu-admin-actions"><button type="button" id="menu-new">+ Yeni Ürün</button><button class="alt" type="button" id="menu-new-category"'+(loaded?'':' disabled')+'>+ Ana Başlık</button></div>'+
+ '<section id="manager-popular" class="manager-popular" aria-label="Popüler Ürünler Yönetimi">'+
+  '<div class="manager-popular-heading"><div><h4>Popüler Ürünler</h4><p>Sipariş ekranındaki hızlı ürün kısayollarını yönetin.</p></div><span class="manager-popular-badge">Hızlı Ekleme</span></div>'+
+  '<div id="manager-popular-list" class="manager-popular-list"></div>'+
+  '<div class="manager-popular-controls"><label>Ürün<select id="manager-popular-product"></select></label>'+
+  '<label>Tarife<select id="manager-popular-tariff"><option value="normal">Normal</option><option value="esnaf">Esnaf</option></select></label>'+
+  '<button type="button" id="manager-popular-add">+ Kısayol Ekle</button></div>'+
+ '</section>'+
  '<form id="menu-category-form" class="menu-add-category hidden">'+
  '<label for="menu-category-name">Yeni ana başlık adı</label><input id="menu-category-name" type="text" maxlength="50" required autocomplete="off" placeholder="Örn. Sandviç">'+
  '<div class="menu-category-actions"><button id="menu-category-submit" type="submit">Başlığı Ekle</button><button id="menu-category-cancel" type="button" class="alt">Vazgeç</button></div>'+
@@ -2195,6 +2259,22 @@ async function managerMenu(){
    '</div></details>';
  }).join('')+'</div>'+
  (loaded?'':'<p class="note">Ana başlıklar okunamadı; yeni başlık ekleme geçici olarak kapalı.</p>');
+ renderManagerFavorites();
+ $('manager-popular-add').onclick=async()=>{
+  if(state.role!=='manager')return;
+  const productId=Number($('manager-popular-product').value),tariff=$('manager-popular-tariff').value;
+  const p=menuCatalog.find(x=>x.id===productId&&x.active);
+  if(!p||!['normal','esnaf'].includes(tariff)){message('Geçerli ürün ve tarife seçin.',true);return}
+  if(menuFavorites.some(f=>f.product_id===productId&&f.tariff===tariff)){message('Bu ürün ve tarife zaten popüler listesinde.',true);return}
+  const button=$('manager-popular-add');button.disabled=true;
+  try{
+   const order=Math.max(0,...menuFavorites.map(f=>Number(f.sort_order)||0))+1;
+   const {error}=await db.from('menu_favorites').insert({product_id:productId,tariff,sort_order:order}).select('id').single();
+   if(error)throw error;
+   if(!await loadFavorites())throw Error('Kısayollar yeniden okunamadı.');
+   renderManagerFavorites();renderEditor();message(p.name+' · '+(tariff==='esnaf'?'Esnaf':'Normal')+' kısayolu eklendi.');
+  }catch(err){message('Kısayol eklenemedi: '+err.message,true);if(button.isConnected)button.disabled=false}
+ };
  $('menu-new').onclick=()=>managerEditMenu(null);
  $('menu-new-category').onclick=()=>{
   show('menu-category-form',true);
