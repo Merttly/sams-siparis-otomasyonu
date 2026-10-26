@@ -728,3 +728,42 @@ html[data-theme="dark"] #manager-screen{--manager-feedback-error:#ff9589}
   outline:3px solid #eab967!important;
   outline-offset:2px;
 }
+
+
+/* 2026-10-26 — Quantity stepper button colors: green plus / tomato minus.
+   Shared by desktop and mobile order lines; all event handlers stay unchanged. */
+#editor #lines button.order-line-step[data-plus],
+html[data-theme="dark"] #editor #lines button.order-line-step[data-plus]{
+  background:#25854c!important;
+  border:1px solid #25854c!important;
+  color:#ffffff!important;
+  box-shadow:none!important;
+}
+#editor #lines button.order-line-step[data-minus],
+html[data-theme="dark"] #editor #lines button.order-line-step[data-minus]{
+  background:#db382d!important;
+  border:1px solid #db382d!important;
+  color:#ffffff!important;
+  box-shadow:none!important;
+}
+#editor #lines button.order-line-step[data-plus]:hover:not(:disabled),
+html[data-theme="dark"] #editor #lines button.order-line-step[data-plus]:hover:not(:disabled){
+  background:#1c7040!important;
+  border-color:#1c7040!important;
+  color:#fff!important;
+}
+#editor #lines button.order-line-step[data-minus]:hover:not(:disabled),
+html[data-theme="dark"] #editor #lines button.order-line-step[data-minus]:hover:not(:disabled){
+  background:#bb3027!important;
+  border-color:#bb3027!important;
+  color:#fff!important;
+}
+#editor #lines button.order-line-step:focus-visible{
+  outline:3px solid #e9b95e!important;
+  outline-offset:2px;
+}
+/* Preserve the current rule for disabled adjusted-order lines. */
+#editor #lines button.order-line-step:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
