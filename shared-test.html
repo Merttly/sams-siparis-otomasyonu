@@ -1065,7 +1065,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-4"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-4"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-1"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1129,27 +1129,20 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
 <nav id="pos-bottom-nav" class="hidden" aria-label="Uygulama menüsü"><button type="button" id="pos-nav-tables" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></svg></span><span class="nav-label">Ana Sayfa</span></button><button type="button" id="pos-nav-orders"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9h12v5.5A4.5 4.5 0 0 1 12 19H9a4.5 4.5 0 0 1-4.5-4.5z"/><path d="M16.5 10h1.7a2.8 2.8 0 0 1 0 5.6h-1.7"/><path d="M3 21h16"/><path d="M7.5 3.5v2.2M12 3.5v2.2"/></svg></span><span class="nav-label">Siparişler</span></button><button type="button" id="pos-nav-report"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 2.5h7.5l4.5 4.5v14a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5z"/><path d="M14 2.5v5h4.5M9 12h7M9 16h7"/></svg></span><span class="nav-label">Raporlar</span></button><button type="button" id="pos-nav-admin" aria-label="Yönetici Paneli"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9m4 0h3M4 12h3m4 0h9M4 17h11m4 0h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg></span><span class="nav-label">Yönetici Paneli</span></button></nav><div id="editor" class="panel hidden">
 <div class="row"><button id="back-table" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Masalara Dön</span></button><span id="revision" class="muted"></span></div><h2 id="table-title">Masa</h2>
 <p id="dirty-notice" class="note hidden">Kaydedilmemiş değişiklikler var. Hesap/taşıma işleminden önce bu değişiklikler kaydedilecek. Başka cihazdaki güncellemeler birbiri üzerine yazılmaz.</p>
+<div class="desktop-order-menu">
 <h3>Ürün ekle</h3><div class="row tariff-switch" role="group" aria-label="Fiyat tarifesi"><button id="tariff-normal">Normal Menü</button><button id="tariff-esnaf" class="alt">Esnaf Tarifesi</button></div><div id="categories" class="row" style="justify-content:start;margin-bottom:14px"></div><div id="products" class="grid"></div>
+</div><!-- desktop-order-menu -->
+<div class="desktop-order-cart">
 <div class="divider"></div><h3>Sipariş</h3><div id="lines"></div>
 <label>Not<textarea rows="2" id="note" placeholder="Sipariş notu"></textarea></label>
 <div class="row"><b id="total">0 TL</b><button id="save"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg><span>Siparişi Kaydet</span></button></div>
 <div class="divider"></div>
 <div class="row"><button id="pay-cash" class="warn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg><span>Nakit Kapat</span></button><button id="pay-card" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>Kart Kapat</span></button><button id="split" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg><span>Parça Hesap Al</span></button><button id="transfer" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h14m-4-4 4 4-4 4M17 17H3m4-4-4 4 4 4"/></svg><span>Masa Taşı / Birleştir</span></button></div>
 <p class="note">Ödeme ve masa taşıma öncesinde siparişi kaydedin. Aynı masada eşzamanlı değişiklik olursa eski sürümle işlem engellenir.</p>
+</div><!-- desktop-order-cart -->
 </div>
 <section id="summary" class="panel hidden"><div class="row"><h2 id="summary-title">Gün Sonu</h2><button class="alt" id="summary-close">Kapat</button></div><div id="summary-body"></div></section>
-<aside id="desktop-sidebar" aria-label="Masaüstü ana menü">
- <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong><small>OTOMASYONU</small></div>
- <div class="desktop-nav">
-  <div class="desktop-nav-label">ÇALIŞMA ALANI</div>
-  <button type="button" class="desktop-active" data-desktop-nav="home"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span>Ana Sayfa</span></button>
-  <button type="button" data-desktop-nav="orders"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6zM17 10h2a2.5 2.5 0 0 1 0 5h-2M3 22h17M8 3v3m5-3v3"/></svg><span>Siparişler</span></button>
-  <button type="button" class="desktop-manager-only" data-desktop-nav="reports"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M13 16V7M18 16V9"/></svg><span>Gün Sonu</span></button>
-  <button type="button" class="desktop-manager-only" data-desktop-nav="logs"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg><span>İşlem Geçmişi</span></button>
-  <button type="button" class="desktop-manager-only" data-desktop-nav="manager"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Yönetici Paneli</span></button>
- </div>
- <div class="desktop-footer"><span>Aktif kullanıcı</span><b id="desktop-username">Kullanıcı</b></div>
-</aside>
+
 </section>
 <section id="manager-screen" class="hidden">
  <div class="panel">
@@ -1180,6 +1173,18 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   </div>
  </div>
 </section>
+<aside id="desktop-sidebar" aria-label="Masaüstü ana menü">
+ <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong><small>OTOMASYONU</small></div>
+ <div class="desktop-nav">
+  <div class="desktop-nav-label">ÇALIŞMA ALANI</div>
+  <button type="button" class="desktop-active" data-desktop-nav="home"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span>Ana Sayfa</span></button>
+  <button type="button" data-desktop-nav="orders"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6zM17 10h2a2.5 2.5 0 0 1 0 5h-2M3 22h17M8 3v3m5-3v3"/></svg><span>Siparişler</span></button>
+  <button type="button" class="desktop-manager-only" data-desktop-nav="reports"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M13 16V7M18 16V9"/></svg><span>Gün Sonu</span></button>
+  <button type="button" class="desktop-manager-only" data-desktop-nav="logs"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg><span>İşlem Geçmişi</span></button>
+  <button type="button" class="desktop-manager-only" data-desktop-nav="manager"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Yönetici Paneli</span></button>
+ </div>
+ <div class="desktop-footer"><span>Aktif kullanıcı</span><b id="desktop-username">Kullanıcı</b></div>
+</aside>
 <footer class="dalai-signature" aria-label="Geliştirici imzası">Created by <span>Dalai Creative</span></footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1290,7 +1295,7 @@ state.order=data;state.lines=(data?.order_items||[]).map(x=>({id:x.id,n:x.produc
 state.note=data?.note||'';state.dirty=false;renderEditor();
 }
 async function openTable(id){if(state.dirty&&!confirm('Kaydedilmemiş değişiklikler silinsin mi?'))return;state.selected=id;await readSelected()}
-function renderEditor(){show('editor',!!state.selected);if(!state.selected)return;
+function renderEditor(){show('editor',!!state.selected);desktopSyncNavigation();if(!state.selected)return;
 $('table-title').textContent=displayTableName(state.selected);$('revision').textContent='Sürüm '+(state.order?.version||0);
 show('dirty-notice',state.dirty);
  $('tariff-normal').className=activeTariff==='normal'?'':'alt';$('tariff-esnaf').className=activeTariff==='esnaf'?'':'alt';
@@ -1769,7 +1774,7 @@ function managerFeedback(text,isError=false){
 }
 function managerTab(tab){
  if(state.role!=='manager')return;
- manager.tab=tab;manager.loadRequestId++;
+ manager.tab=tab;manager.loadRequestId++;$('manager-screen').dataset.desktopTab=tab;desktopSyncNavigation();
  document.querySelectorAll('[data-manager-tab]').forEach(b=>b.classList.toggle('active',b.dataset.managerTab===tab));
  show('manager-date-tools',tab!=='users'&&tab!=='overview'&&tab!=='menu');show('manager-log-filters',tab==='logs');show('manager-exports',tab!=='users'&&tab!=='overview'&&tab!=='menu');
  $('manager-content').innerHTML='';
@@ -1784,7 +1789,7 @@ function managerOpen(tab='overview'){
  managerFeedback('');managerTab(tab);window.scrollTo(0,0);
 }
 function managerBack(){
- show('manager-screen',false);show('workspace',true);if(state.selected)show('editor',true);window.scrollTo(0,0);
+ show('manager-screen',false);show('workspace',true);if(state.selected)show('editor',true);desktopSyncNavigation();window.scrollTo(0,0);
 }
 function managerSetRange(mode){
  const today=istDate(),now=dateAt(today);let from=today;
@@ -2360,12 +2365,31 @@ $('account-recovery-cancel').onclick=async()=>{
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeAccountPanel()});
 $('logout').onclick=async()=>{await db.auth.signOut();verifiedRecovery=false;closeAccountPanel(true);state.selected=null;state.dirty=false;show('editor',false);await checkAuth()};
 function posJump(id){const el=$(id);if(!el||el.classList.contains('hidden'))return;el.click()}
-document.querySelectorAll('[data-desktop-nav]').forEach(b=>b.onclick=()=>{
+function desktopSyncNavigation(){
+ const managerVisible=!$('manager-screen').classList.contains('hidden');
+ const editorVisible=!$('editor').classList.contains('hidden');
+ const active=managerVisible?(manager.tab==='reports'?'reports':manager.tab==='logs'?'logs':'manager'):(editorVisible?'orders':'home');
+ document.querySelectorAll('[data-desktop-nav]').forEach(b=>{
+  const selected=b.dataset.desktopNav===active;
+  b.classList.toggle('desktop-active',selected);
+  if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+ });
+}
+document.querySelectorAll('[data-desktop-nav]').forEach(b=>b.onclick=async()=>{
  const target=b.dataset.desktopNav;
- if(target==='home'){window.scrollTo({top:0,behavior:'smooth'});return}
- if(target==='orders'){$('pos-table-heading').scrollIntoView({behavior:'smooth',block:'start'});return}
+ if(target==='home'||target==='orders'){
+  if(!$('manager-screen').classList.contains('hidden'))managerBack();
+  if(!$('editor').classList.contains('hidden')){
+   await $('back-table').onclick();
+   if(!$('editor').classList.contains('hidden'))return;
+  }
+  desktopSyncNavigation();
+  if(target==='orders')$('pos-table-heading').scrollIntoView({behavior:'smooth',block:'start'});
+  else window.scrollTo({top:0,behavior:'smooth'});
+  return;
+ }
  if(state.role!=='manager')return;
- if(target==='reports')posJump('report');
+ if(target==='reports')managerOpen('reports');
  if(target==='logs')managerOpen('logs');
  if(target==='manager')managerOpen('overview');
 });
@@ -2376,8 +2400,8 @@ $('pos-day-end').onclick=()=>posJump('report');$('pos-history').onclick=()=>posJ
 $('pos-nav-tables').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 $('pos-nav-orders').onclick=()=>{(window.innerWidth>=1024?$('pos-table-heading'):$('tables')).scrollIntoView({behavior:'smooth',block:'start'})};
 $('pos-nav-report').onclick=()=>posJump('report');$('pos-nav-admin').onclick=()=>posJump('manager-dashboard');
-$('refresh').onclick=()=>loadTables();$('save').onclick=async()=>{if(!await save())return;state.selected=null;state.dirty=false;show('editor',false);window.scrollTo(0,0)};
-$('back-table').onclick=async()=>{if(state.dirty&&!confirm('Kaydedilmemiş değişikliklerden vazgeçilsin mi?'))return;state.selected=null;state.dirty=false;show('editor',false);await refreshOrders();window.scrollTo(0,0)};
+$('refresh').onclick=()=>loadTables();$('save').onclick=async()=>{if(!await save())return;state.selected=null;state.dirty=false;show('editor',false);desktopSyncNavigation();window.scrollTo(0,0)};
+$('back-table').onclick=async()=>{if(state.dirty&&!confirm('Kaydedilmemiş değişikliklerden vazgeçilsin mi?'))return;state.selected=null;state.dirty=false;show('editor',false);desktopSyncNavigation();await refreshOrders();window.scrollTo(0,0)};
 $('custom').onclick=addCustom;$('transfer').onclick=transfer;$('split').onclick=split;
 $('report').onclick=report;$('audit').onclick=audit;$('staff-admin').onclick=staffAdmin;
 $('manager-dashboard').onclick=()=>managerOpen('overview');$('manager-back').onclick=managerBack;
