@@ -206,3 +206,55 @@
 @media print{
   #desktop-sidebar,#desktop-quick{display:none!important}
 }
+
+
+/*
+ * Desktop alignment correction, 2026-10-26.
+ * The existing first .panel ends BEFORE #tables, so the grid must belong
+ * to #workspace (their common parent), not that .panel.
+ * Keep original mobile markup and POS functionality unchanged.
+ */
+@media screen and (min-width:1024px){
+  #workspace:not(.hidden){
+    display:grid;
+    position:relative;
+    grid-template-columns:minmax(0,1fr) 246px;
+    grid-template-rows:auto auto auto auto auto auto;
+    align-items:start;
+    column-gap:12px;
+    row-gap:12px;
+  }
+  /* Remove only the anonymous panel box at desktop widths; its children
+     (hero, top actions and Masalar heading) join the workspace grid. */
+  #workspace>.panel:first-of-type{display:contents!important}
+  #workspace #pos-hero{grid-column:1/-1;grid-row:1}
+  #workspace #pos-actions{position:absolute;top:21px;right:0}
+  #workspace #pos-table-heading{
+    grid-column:1;grid-row:2;
+    align-self:center;
+    min-height:54px;
+    padding:8px 0 5px;
+    margin:0!important;
+    gap:10px;
+  }
+  #workspace #pos-table-heading>div:first-child{flex:0 1 auto;min-width:0}
+  #workspace #pos-table-heading #custom{margin-left:auto}
+  #workspace #pos-table-heading #refresh{flex:0 0 auto}
+  #workspace #tables{display:contents}
+  #workspace #tables .table-section--outside{grid-column:1;grid-row:3}
+  #workspace #tables .table-section--inside{grid-column:1;grid-row:4}
+  #workspace #tables .table-section--custom{grid-column:1/-1;grid-row:5}
+  #workspace #tables .table-section--other{grid-column:1/-1;grid-row:6}
+  #workspace.desktop-manager #desktop-quick{
+    grid-column:2;grid-row:2/span 3;
+    align-self:stretch;
+  }
+  #workspace:not(.desktop-manager):not(.hidden){grid-template-columns:minmax(0,1fr)}
+  #workspace:not(.desktop-manager) #tables .table-section--outside,
+  #workspace:not(.desktop-manager) #tables .table-section--inside,
+  #workspace:not(.desktop-manager) #pos-table-heading{grid-column:1/-1}
+}
+@media screen and (min-width:1024px) and (max-width:1190px){
+  #workspace:not(.hidden){grid-template-columns:minmax(0,1fr) 215px;column-gap:10px}
+  #workspace:not(.desktop-manager):not(.hidden){grid-template-columns:minmax(0,1fr)}
+}
