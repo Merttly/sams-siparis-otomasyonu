@@ -253,8 +253,8 @@
   #workspace:not(.desktop-manager) #tables .table-section--outside,
   #workspace:not(.desktop-manager) #tables .table-section--inside,
   #workspace:not(.desktop-manager) #pos-table-heading{grid-column:1/-1}
-  @media(max-width:1190px){
-    #workspace:not(.hidden){grid-template-columns:minmax(0,1fr) 215px;column-gap:10px}
-    #workspace:not(.desktop-manager):not(.hidden){grid-template-columns:minmax(0,1fr)}
-  }
+}
+@media screen and (min-width:1024px) and (max-width:1190px){
+  #workspace:not(.hidden){grid-template-columns:minmax(0,1fr) 215px;column-gap:10px}
+  #workspace:not(.desktop-manager):not(.hidden){grid-template-columns:minmax(0,1fr)}
 }
