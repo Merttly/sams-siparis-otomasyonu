@@ -346,7 +346,7 @@
   }
 }
 
-/* Role-aware desktop quick access: regular staff see live open tables. */
+/* Desktop-only service tools for regular staff. Manager controls and mobile stay unchanged. */
 #desktop-staff-quick{display:none}
 @media screen and (min-width:1024px){
   #workspace.desktop-staff:not(.hidden){grid-template-columns:minmax(0,1fr) 246px}
@@ -363,74 +363,113 @@
     box-shadow:0 4px 15px #243e2b08;
   }
   #desktop-staff-quick h3{margin:0;color:#2b4934;font-size:15px;font-weight:830}
-  #desktop-staff-quick>p{margin:5px 0 16px;color:#839384;font-size:11px;line-height:1.5}
-  #desktop-staff-quick .staff-open-heading{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
-    margin-bottom:10px;color:#425f49;font-size:11px;font-weight:780;
+  #desktop-staff-quick>p{margin:5px 0 17px;color:#839384;font-size:11px;line-height:1.5}
+  #desktop-staff-quick .staff-search-label{
+    display:block;margin-bottom:7px;font-size:11px;font-weight:800;color:#425f49;
   }
-  #desktop-staff-quick .staff-open-count{
-    flex:0 0 auto;padding:4px 8px;border-radius:999px;
-    background:#ebf3e8;color:#50795a;font-size:10px;font-weight:750;
-  }
-  #desktop-staff-quick .staff-open-list{
-    display:grid;gap:7px;max-height:354px;overflow:auto;
-    padding:1px 2px 1px 1px;scrollbar-width:thin;
-  }
-  #desktop-staff-quick .staff-empty{
-    margin:0;padding:20px 10px;text-align:center;border-radius:10px;
-    background:#f5f8f3;color:#819282;font-size:11px;line-height:1.5;
-  }
-  #desktop-staff-quick .staff-open-row{
-    box-sizing:border-box;display:grid;
-    grid-template-columns:29px minmax(0,1fr) auto 9px;
-    align-items:center;gap:7px;width:100%;min-height:60px;
-    margin:0;padding:8px 7px;border:1px solid #dfe9dc;
-    border-radius:10px;background:#f9fbf8;color:#33563d;
-    text-align:left;box-shadow:none;
-  }
-  #desktop-staff-quick .staff-open-row:hover{background:#edf5e9}
-  #desktop-staff-quick .staff-open-row:focus-visible,
-  #desktop-staff-quick .staff-quick-actions button:focus-visible{outline:2px solid #528a60;outline-offset:2px}
-  #desktop-staff-quick .staff-table-symbol{
-    width:29px;height:29px;display:grid;place-items:center;
-    border-radius:9px;background:#e6f0e4;color:#5a8063;
-  }
+  #desktop-staff-quick .staff-search-wrap{position:relative;display:flex;align-items:center;min-width:0}
   #desktop-staff-quick svg{
-    display:block;width:17px;height:17px;fill:none;
+    display:block;width:18px;height:18px;flex-shrink:0;fill:none;
     stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
   }
-  #desktop-staff-quick .staff-table-copy{display:grid;gap:4px;min-width:0}
-  #desktop-staff-quick .staff-table-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:780}
-  #desktop-staff-quick .staff-table-copy small{color:#8c9c8e;font-size:9px;line-height:1.15}
-  #desktop-staff-quick .staff-table-total{font-size:10px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
-  #desktop-staff-quick .staff-table-arrow{font-size:20px;line-height:1;color:#829a88}
+  #desktop-staff-quick .staff-search-wrap>svg{
+    position:absolute;left:11px;z-index:1;width:16px;height:16px;pointer-events:none;color:#698571;
+  }
+  #desktop-staff-quick #staff-table-search{
+    box-sizing:border-box;display:block;width:100%;min-width:0;height:39px;margin:0;padding:9px 9px 9px 35px;
+    border:1px solid #dbe5d8;border-radius:10px;background:#f7faf6;color:#34553e;
+    font-size:11px;font-weight:550;box-shadow:none;
+  }
+  #desktop-staff-quick #staff-table-search::placeholder{color:#839789;opacity:1}
+  #desktop-staff-quick #staff-table-search:focus{outline:2px solid #7dac86;outline-offset:1px}
   #desktop-staff-quick .staff-quick-actions{
     display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
-    margin-top:14px;padding-top:13px;border-top:1px solid #e1e9df;
+    margin:15px 0 12px;
   }
   #desktop-staff-quick .staff-quick-actions button{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:7px;min-height:76px;min-width:0;margin:0;padding:10px 5px;
-    border-radius:10px;border:1px solid #dfe9de;
-    background:#f5f8f3;color:#3c6247;
-    font-size:10px;font-weight:780;line-height:1.2;text-align:center;box-shadow:none;
+    gap:8px;min-height:89px;min-width:0;margin:0;padding:12px 6px;
+    border-radius:11px;border:1px solid #dbe6d8;
+    background:#edf5ec;color:#345a3e;
+    font-size:11px;font-weight:790;line-height:1.3;text-align:center;box-shadow:none;
   }
-  #desktop-staff-quick #desktop-staff-new-order{background:#3d6249;color:#fff;border-color:#3d6249}
+  #desktop-staff-quick .staff-quick-actions button:first-child{background:#3d6249;color:#fff;border-color:#3d6249}
   #desktop-staff-quick .staff-quick-actions button:hover:not(:disabled){filter:brightness(.96)}
-  #desktop-staff-quick .staff-quick-actions button:disabled{opacity:.55;cursor:wait}
-  html[data-theme="dark"] #desktop-staff-quick{background:#28382d;border-color:#455e4c;box-shadow:none}
+  #desktop-staff-quick .staff-quick-actions button:disabled{opacity:.46;cursor:not-allowed}
+  #desktop-staff-quick .staff-last-table{
+    display:flex;align-items:center;gap:9px;width:100%;min-height:65px;min-width:0;
+    margin:0;padding:11px 9px;border:1px solid #dfe8dc;border-radius:11px;
+    background:#f8faf7;color:#385943;text-align:left;box-shadow:none;
+  }
+  #desktop-staff-quick .staff-last-table>svg{width:20px;height:20px;color:#73947b}
+  #desktop-staff-quick .staff-last-table>span:nth-child(2){display:grid;gap:4px;flex:1;min-width:0}
+  #desktop-staff-quick .staff-last-table strong{font-size:11px;font-weight:800}
+  #desktop-staff-quick .staff-last-table small{font-size:10px;color:#869a89;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #desktop-staff-quick .staff-last-arrow{font-size:22px;line-height:1;color:#829a88}
+  #desktop-staff-quick .staff-last-table:disabled{opacity:.78;cursor:default}
+  #desktop-staff-quick .staff-last-table:hover:not(:disabled){background:#edf5ea}
+  #desktop-staff-quick .staff-tool-picker{
+    margin-top:14px;padding-top:13px;border-top:1px solid #e1e9df;
+  }
+  #desktop-staff-quick .staff-tool-picker.hidden{display:none}
+  #desktop-staff-quick .staff-tool-heading{display:flex;justify-content:space-between;align-items:center;gap:5px;margin-bottom:9px}
+  #desktop-staff-quick .staff-tool-heading strong{font-size:10px;font-weight:800;color:#425f49;line-height:1.4}
+  #desktop-staff-quick #staff-tool-cancel{
+    flex:0 0 auto;margin:0;padding:3px 5px;border:0;border-radius:5px;
+    background:transparent;color:#718b77;font-size:10px;font-weight:700;box-shadow:none;
+  }
+  #desktop-staff-quick #staff-tool-cancel:hover{background:#e8f1e6}
+  #desktop-staff-quick .staff-tool-results{display:grid;gap:5px;max-height:262px;overflow:auto;scrollbar-width:thin}
+  #desktop-staff-quick .staff-pick-row{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    min-height:39px;min-width:0;margin:0;padding:8px 10px;
+    border:1px solid #dfe9dc;border-radius:8px;background:#f8faf7;
+    color:#365941;text-align:left;font-size:11px;font-weight:750;box-shadow:none;
+  }
+  #desktop-staff-quick .staff-pick-row:hover{background:#edf5e9}
+  #desktop-staff-quick .staff-pick-row span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #desktop-staff-quick .staff-pick-row small{flex-shrink:0;color:#75927a;font-size:10px}
+  #desktop-staff-quick .staff-empty{
+    margin:0;padding:13px 10px;text-align:center;border-radius:8px;
+    background:#f5f8f3;color:#819282;font-size:11px;line-height:1.5;
+  }
+  #desktop-staff-quick .staff-pick-row:focus-visible,
+  #desktop-staff-quick .staff-quick-actions button:focus-visible,
+  #desktop-staff-quick .staff-last-table:focus-visible{outline:2px solid #528a60;outline-offset:2px}
+
+  /* Match the base selector's two IDs so dark mode can actually override the white panel. */
+  html[data-theme="dark"] #workspace.desktop-staff #desktop-staff-quick{
+    background:#28382d;border-color:#455e4c;box-shadow:none;color:#e4f1df;
+  }
   html[data-theme="dark"] #desktop-staff-quick h3{color:#e4f1df}
   html[data-theme="dark"] #desktop-staff-quick>p,
-  html[data-theme="dark"] #desktop-staff-quick .staff-table-copy small{color:#b1c3b1}
-  html[data-theme="dark"] #desktop-staff-quick .staff-open-heading{color:#e1eee0}
-  html[data-theme="dark"] #desktop-staff-quick .staff-open-count{background:#405a45;color:#dbebd6}
-  html[data-theme="dark"] #desktop-staff-quick .staff-empty,
-  html[data-theme="dark"] #desktop-staff-quick .staff-open-row{background:#304637;border-color:#536b57;color:#e6f1e2}
-  html[data-theme="dark"] #desktop-staff-quick .staff-table-symbol{background:#405c46;color:#e7f3e5}
-  html[data-theme="dark"] #desktop-staff-quick .staff-table-arrow{color:#b4cbb8}
-  html[data-theme="dark"] #desktop-staff-quick .staff-quick-actions{border-color:#496351}
-  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-refresh{background:#304637;border-color:#536b57;color:#e6f1e2}
-  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-new-order{background:#8eaa88;border-color:#8eaa88;color:#142c1b}
+  html[data-theme="dark"] #desktop-staff-quick .staff-last-table small{color:#b1c3b1}
+  html[data-theme="dark"] #desktop-staff-quick .staff-search-label,
+  html[data-theme="dark"] #desktop-staff-quick .staff-tool-heading strong{color:#e1eee0}
+  html[data-theme="dark"] #desktop-staff-quick #staff-table-search{
+    background:#304637;color:#eaf5e5;border-color:#536b57;
+  }
+  html[data-theme="dark"] #desktop-staff-quick #staff-table-search::placeholder{color:#aec3b0}
+  html[data-theme="dark"] #desktop-staff-quick .staff-search-wrap>svg{color:#c0d8bf}
+  html[data-theme="dark"] #desktop-staff-quick .staff-quick-actions button{
+    background:#304637;color:#e6f1e2;border-color:#536b57;
+  }
+  html[data-theme="dark"] #desktop-staff-quick .staff-quick-actions button:first-child{
+    background:#8eaa88;border-color:#8eaa88;color:#142c1b;
+  }
+  html[data-theme="dark"] #desktop-staff-quick .staff-last-table,
+  html[data-theme="dark"] #desktop-staff-quick .staff-pick-row{
+    background:#304637;border-color:#536b57;color:#e6f1e2;
+  }
+  html[data-theme="dark"] #desktop-staff-quick .staff-last-table>svg,
+  html[data-theme="dark"] #desktop-staff-quick .staff-pick-row small{color:#b3d0b6}
+  html[data-theme="dark"] #desktop-staff-quick .staff-last-arrow{color:#b4cbb8}
+  html[data-theme="dark"] #desktop-staff-quick .staff-tool-picker{border-color:#496351}
+  html[data-theme="dark"] #desktop-staff-quick #staff-tool-cancel{color:#b4cbb8}
+  html[data-theme="dark"] #desktop-staff-quick #staff-tool-cancel:hover,
+  html[data-theme="dark"] #desktop-staff-quick .staff-pick-row:hover,
+  html[data-theme="dark"] #desktop-staff-quick .staff-last-table:hover:not(:disabled){background:#405c46}
+  html[data-theme="dark"] #desktop-staff-quick .staff-empty{background:#304637;color:#b1c3b1}
 }
 @media screen and (min-width:1024px) and (max-width:1190px){
   #workspace.desktop-staff:not(.hidden){grid-template-columns:minmax(0,1fr) 215px}
