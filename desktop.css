@@ -116,7 +116,14 @@
   #tables .table-section--custom{grid-column:1/-1;grid-row:5}
   #tables .table-section--other{grid-column:1/-1;grid-row:6}
   #tables .table-section-header{
-    padding:0;margin:0 0 13px;border:0!important;background:transparent!important;min-height:19px;
+    box-sizing:border-box;
+    width:calc(100% + 12px);
+    min-height:32px;
+    margin:-4px -6px 13px;
+    padding:7px 12px;
+    border:0!important;
+    border-radius:9px;
+    background:#eef3ec!important;
     color:#49684e;
   }
   #tables .table-section-header h3{font-size:11px;letter-spacing:.09em;font-weight:840}
