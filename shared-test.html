@@ -2443,7 +2443,7 @@ function desktopSyncNavigation(){
  const mobileTargets={home:'pos-nav-tables',orders:'pos-nav-orders',reports:'pos-nav-report',logs:'pos-nav-history',manager:'pos-nav-admin'};
  const drawerVisible=!$('mobile-manager-shortcuts').classList.contains('hidden');
  for(const id of Object.values(mobileTargets)){
-  const b=$(id),selected=id===mobileTargets[active]||(id==='pos-nav-admin'&&drawerVisible);
+  const b=$(id),selected=drawerVisible?id==='pos-nav-admin':id===mobileTargets[active];
   b.classList.toggle('active',selected);
   if(selected&&!drawerVisible)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
  }
