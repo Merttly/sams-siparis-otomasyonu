@@ -68,6 +68,10 @@
     stroke-linecap:round;
     stroke-linejoin:round;
   }
+  /* The manager glyph sat slightly above the shared icon baseline. */
+  #pos-bottom-nav #pos-nav-admin .nav-icon svg{
+    transform:translateY(2px);
+  }
   #pos-bottom-nav button .nav-label,
   #pos-bottom-nav #pos-nav-admin .nav-label{
     display:grid;place-items:center;
