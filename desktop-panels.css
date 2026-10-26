@@ -881,3 +881,104 @@ html[data-theme="dark"] #editor #lines button.order-line-step[data-minus]:hover:
     outline-offset:2px;
   }
 }
+
+
+/* Popular-product shortcuts: desktop order editor; manager can configure from any screen size. */
+#editor .editor-popular{display:none}
+@media screen and (min-width:1024px){
+  #editor #table-title{padding-left:8px}
+  #workspace #editor .editor-popular{
+    display:block;grid-column:1/-1;min-width:0;margin:4px 0 5px;
+    padding:18px 20px 20px;border:1px solid #dfe8dc;border-radius:15px;
+    background:#fff;box-shadow:0 5px 20px #203c2a0a;
+  }
+  #editor .editor-popular-heading{display:flex;align-items:center;gap:11px;margin:0 0 15px}
+  #editor .editor-popular-heading svg{
+    width:34px;height:34px;flex:0 0 auto;padding:8px;
+    fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+    border-radius:10px;background:#ebf3e7;color:#537d5c;
+  }
+  #editor .editor-popular-heading h3{margin:0;color:#2b4a34;font-size:16px;font-weight:800}
+  #editor .editor-popular-heading p{margin:4px 0 0;color:#859588;font-size:11px}
+  #editor .editor-popular-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  #editor .editor-popular-item{
+    display:flex;align-items:center;gap:9px;min-width:0;min-height:72px;
+    margin:0;padding:12px;border:1px solid #deeadb;border-radius:11px;
+    background:#f4f9f1;color:#335940;text-align:left;box-shadow:none;
+  }
+  #editor .editor-popular-item.is-esnaf{background:#fbfaf2;border-color:#e8e4d3;color:#5d5b3b}
+  #editor .editor-popular-item:hover{filter:brightness(.97);transform:translateY(-1px)}
+  #editor .editor-popular-item:focus-visible{outline:2px solid #558f62;outline-offset:2px}
+  #editor .editor-popular-icon{
+    flex:0 0 auto;display:grid;place-items:center;width:31px;height:31px;border-radius:9px;
+    background:#e5f0df;color:#557e5d;
+  }
+  #editor .editor-popular-item.is-esnaf .editor-popular-icon{background:#f1eeda;color:#827c4c}
+  #editor .editor-popular-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #editor .editor-popular-copy{display:grid;gap:5px;min-width:0;flex:1}
+  #editor .editor-popular-copy strong{font-size:12px;line-height:1.25;overflow-wrap:anywhere}
+  #editor .editor-popular-copy em{font-style:normal;font-weight:750}
+  #editor .editor-popular-copy small{font-size:11px;font-weight:750;color:#76927a}
+  #editor .editor-popular-item.is-esnaf .editor-popular-copy small{color:#91855b}
+  #editor .editor-popular-plus{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:7px;background:#d8ead1;color:#315e3b;font-size:19px;font-weight:650;line-height:1}
+  #editor .editor-popular-empty{grid-column:1/-1;margin:0;padding:10px;color:#7d9584;font-size:12px}
+  html[data-theme="dark"] #workspace #editor .editor-popular{
+    background:#292e30;color:#d7ead3;border-color:#4a5852;box-shadow:0 8px 21px #00000024;
+  }
+  html[data-theme="dark"] #editor .editor-popular-heading h3{color:#def0da}
+  html[data-theme="dark"] #editor .editor-popular-heading p{color:#b2c2b3}
+  html[data-theme="dark"] #editor .editor-popular-heading svg{background:#405647;color:#d0e8cf}
+  html[data-theme="dark"] #editor .editor-popular-item{background:#324637;border-color:#546b57;color:#e4f3e0}
+  html[data-theme="dark"] #editor .editor-popular-item.is-esnaf{background:#464638;border-color:#696a52;color:#f0edd6}
+  html[data-theme="dark"] #editor .editor-popular-icon{background:#426047;color:#d9efd6}
+  html[data-theme="dark"] #editor .editor-popular-item.is-esnaf .editor-popular-icon{background:#656247;color:#f0edcf}
+  html[data-theme="dark"] #editor .editor-popular-copy small{color:#b9d4b5}
+  html[data-theme="dark"] #editor .editor-popular-item.is-esnaf .editor-popular-copy small{color:#e2dcae}
+  html[data-theme="dark"] #editor .editor-popular-plus{background:#54765b;color:#e3f3de}
+}
+@media screen and (min-width:1024px) and (max-width:1270px){
+  #editor .editor-popular-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+#manager-screen #manager-content .manager-popular{
+  box-sizing:border-box;margin:8px 0 22px;padding:18px;
+  border:1px solid #dfe9dd;border-radius:14px;background:#f8fbf6;
+}
+#manager-screen #manager-content .manager-popular-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}
+#manager-screen #manager-content .manager-popular-heading h4{margin:0;font-size:16px;font-weight:800;color:#33563e}
+#manager-screen #manager-content .manager-popular-heading p{margin:5px 0 0;font-size:11px;line-height:1.5;color:#86998a}
+#manager-screen #manager-content .manager-popular-badge{flex:0 0 auto;padding:6px 9px;border-radius:999px;background:#e4f1df;color:#53775a;font-size:10px;font-weight:750}
+#manager-screen #manager-content .manager-popular-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#manager-screen #manager-content .manager-popular-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;min-height:58px;
+  padding:11px 12px;border:1px solid #e1e9de;border-radius:10px;background:#fff;
+}
+#manager-screen #manager-content .manager-popular-row>span{display:grid;gap:5px;min-width:0}
+#manager-screen #manager-content .manager-popular-row strong{font-size:12px;color:#3b5e44;overflow-wrap:anywhere}
+#manager-screen #manager-content .manager-popular-row small{font-size:11px;color:#809584}
+#manager-screen #manager-content .manager-popular-row button{flex:0 0 auto;margin:0;padding:8px 11px;min-height:34px;font-size:11px;border-radius:8px}
+#manager-screen #manager-content .manager-popular-empty{grid-column:1/-1;padding:12px;font-size:11px;color:#809584}
+#manager-screen #manager-content .manager-popular-controls{display:grid;grid-template-columns:minmax(180px,2fr) minmax(110px,1fr) auto;align-items:end;gap:10px;margin-top:14px}
+#manager-screen #manager-content .manager-popular-controls label{display:grid;gap:6px;min-width:0;margin:0;font-size:11px;font-weight:750;color:#5e7b65}
+#manager-screen #manager-content .manager-popular-controls select{
+  box-sizing:border-box;display:block;min-width:0;width:100%;min-height:41px;margin:0;padding:9px;
+  border:1px solid #d9e5d6;border-radius:9px;background:#fff;color:#35583e;font-size:12px;
+}
+#manager-screen #manager-content #manager-popular-add{min-height:41px;margin:0;padding:9px 14px;font-size:11px;border-radius:9px;white-space:nowrap}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular{background:#303738;border-color:#50605a}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-heading h4,
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row strong{color:#e0efdc}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-heading p,
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row small{color:#b3c4b4}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-badge{background:#426048;color:#e0efdc}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row{background:#303e36;border-color:#50665a}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-controls label{color:#b7d0ba}
+html[data-theme="dark"] #manager-screen #manager-content .manager-popular-controls select{background:#242e2a;color:#e0f1db;border-color:#586e60}
+@media screen and (max-width:750px){
+  #manager-screen #manager-content .manager-popular{padding:14px}
+  #manager-screen #manager-content .manager-popular-heading{align-items:flex-start}
+  #manager-screen #manager-content .manager-popular-badge{display:none}
+  #manager-screen #manager-content .manager-popular-list{grid-template-columns:1fr}
+  #manager-screen #manager-content .manager-popular-controls{grid-template-columns:1fr 1fr}
+  #manager-screen #manager-content .manager-popular-controls label:first-child{grid-column:1/-1}
+  #manager-screen #manager-content #manager-popular-add{grid-column:1/-1}
+}
