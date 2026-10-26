@@ -51,7 +51,7 @@
   }
   #desktop-sidebar .desktop-footer b{display:block;color:#edf5e9;font-size:12px;font-weight:750;margin-top:3px}
   #workspace:not(.desktop-manager) .desktop-manager-only{display:none!important}
-  #workspace>.panel:first-of-type{
+  #workspace>div.panel:first-child{
     display:grid;grid-template-columns:minmax(0,1fr) 246px;
     grid-template-rows:auto auto auto auto auto auto;
     gap:12px;position:relative;align-items:start;
@@ -164,14 +164,14 @@
   }
   #desktop-quick .desktop-shortcuts .desktop-all svg{width:16px;height:16px}
   #desktop-quick .desktop-shortcuts .shortcut-divider{height:1px;background:#e1e9df;margin:5px 0 1px}
-  #workspace:not(.desktop-manager)>.panel:first-of-type{grid-template-columns:minmax(0,1fr)}
+  #workspace:not(.desktop-manager)>div.panel:first-child{grid-template-columns:minmax(0,1fr)}
   #workspace:not(.desktop-manager) #pos-table-heading,#workspace:not(.desktop-manager) #tables .table-section--outside,
   #workspace:not(.desktop-manager) #tables .table-section--inside{grid-column:1/-1}
   #workspace:not(.desktop-manager) #tables .table-section-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  #workspace>.panel:first-of-type>.divider,#workspace>.panel:first-of-type>#legacy-actions{display:none!important}
+  #workspace>div.panel:first-child>.divider,#workspace>div.panel:first-child>#legacy-actions{display:none!important}
   /* Keep the existing mobile layout and any POS editor internals unchanged. */
   html[data-theme="dark"] #desktop-sidebar{background:#1d2820}
-  html[data-theme="dark"] #workspace>.panel:first-of-type{background:transparent!important}
+  html[data-theme="dark"] #workspace>div.panel:first-child{background:transparent!important}
   html[data-theme="dark"] #pos-hero h2{color:#eaf5e8!important}
   html[data-theme="dark"] #pos-hero .pos-live{background:#314f39;color:#d4ecd0;border-color:#567761}
   html[data-theme="dark"] #pos-hero .pos-kicker,html[data-theme="dark"] #pos-hero p{color:#b2c6b4}
@@ -198,7 +198,7 @@
     background:#314435!important;color:#eef4e9!important;border-color:#536a58;
   }
   @media(max-width:1190px){
-    #workspace>.panel:first-of-type{grid-template-columns:minmax(0,1fr) 215px;gap:10px}
+    #workspace>div.panel:first-child{grid-template-columns:minmax(0,1fr) 215px;gap:10px}
     #desktop-quick .desktop-shortcuts button{gap:7px;padding:8px}
     #tables .table-section--custom .table-section-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   }
@@ -226,7 +226,7 @@
   }
   /* Remove only the anonymous panel box at desktop widths; its children
      (hero, top actions and Masalar heading) join the workspace grid. */
-  #workspace>.panel:first-of-type{display:contents!important}
+  #workspace>div.panel:first-child{display:contents!important}
   #workspace #pos-hero{grid-column:1/-1;grid-row:1}
   #workspace #pos-actions{position:absolute;top:21px;right:0}
   #workspace #pos-table-heading{
@@ -257,4 +257,14 @@
 @media screen and (min-width:1024px) and (max-width:1190px){
   #workspace:not(.hidden){grid-template-columns:minmax(0,1fr) 215px;column-gap:10px}
   #workspace:not(.desktop-manager):not(.hidden){grid-template-columns:minmax(0,1fr)}
+}
+
+/* Dashboard polish: keep the real summary modal hidden until explicitly opened.
+ * The old :first-of-type selector also matched the first SECTION (#summary),
+ * overriding .hidden with display:contents!important. Scope strictly to the
+ * first DIV (desktop dashboard panel) and protect the summary explicitly.
+ */
+@media screen and (min-width:1024px){
+  #workspace #summary.hidden{display:none!important}
+  #workspace #pos-hero .pos-kicker{display:none}
 }
