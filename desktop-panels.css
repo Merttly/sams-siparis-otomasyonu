@@ -1120,3 +1120,7 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row.is
   #editor .editor-popular-item{min-height:64px;padding:9px 8px}
   #editor .editor-popular-copy strong{font-size:11px}
 }
+
+@media screen and (min-width:1024px){
+  #editor .editor-popular-sort-toggle{display:none!important}
+}
