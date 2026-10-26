@@ -1,0 +1,626 @@
+/*
+ * Sam's Sipariş — wide-screen layouts for active orders, all manager tabs,
+ * reports, menu management, users and operations.
+ * Desktop-only; the existing mobile DOM flow and application logic remain.
+ * Designed to follow desktop.css + charcoal-theme.css (2026-10-26).
+ */
+#editor .desktop-order-menu,
+#editor .desktop-order-cart{display:contents}
+@media screen and (min-width:1024px){
+  /* Keep sidebar and top account controls consistently visible on every
+     authenticated desktop screen. Never expose sidebar on login / pending. */
+  #desktop-sidebar{display:none!important}
+  body:has(#workspace:not(.hidden),#manager-screen:not(.hidden)) #desktop-sidebar{
+    display:flex!important;
+  }
+  body:has(#manager-screen:not(.hidden)) main{
+    box-sizing:border-box;
+    max-width:none!important;
+    width:auto!important;
+    margin:0 18px 0 195px!important;
+    padding:76px 0 42px!important;
+    overflow:visible!important;
+  }
+  body:has(#manager-screen:not(.hidden)) header{
+    position:fixed!important;
+    z-index:190;
+    top:12px;
+    right:22px;
+    left:auto;
+    width:auto;
+    min-height:0!important;
+    margin:0;
+    padding:0!important;
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+  body:has(#manager-screen:not(.hidden)) header>div:first-child{display:none!important}
+  body:has(#manager-screen:not(.hidden)) header .header-actions{gap:9px}
+  body:has(#manager-screen:not(.hidden)) header .header-actions #account-btn,
+  body:has(#manager-screen:not(.hidden)) header #theme-toggle,
+  body:has(#manager-screen:not(.hidden)) header #logout{
+    min-height:38px!important;
+    height:38px!important;
+    border-radius:10px!important;
+    padding:8px 11px!important;
+    background:#fff!important;
+    border:1px solid #dfe7dc!important;
+    color:#416248!important;
+  }
+  body:has(#manager-screen:not(.hidden)) header #theme-toggle{width:38px!important;padding:0!important}
+  body:has(#manager-screen:not(.hidden)) header .header-actions #account-btn{
+    max-width:210px;min-width:0;
+  }
+  /* Desktop sidebar always shows the current section; keep keyboard highlight. */
+  #desktop-sidebar .desktop-nav button:focus-visible{
+    outline:2px solid #b7d6ae;
+    outline-offset:2px;
+  }
+  /* Active table: replace the legacy full-screen phone sheet with an in-page
+     two-column workspace, without touching the existing order/payment handlers. */
+  #workspace:has(> #editor:not(.hidden)){
+    display:block!important;
+    min-width:0;
+  }
+  #workspace:has(> #editor:not(.hidden)) > div.panel:first-child,
+  #workspace:has(> #editor:not(.hidden)) > #tables,
+  #workspace:has(> #editor:not(.hidden)) > #desktop-quick,
+  #workspace:has(> #editor:not(.hidden)) > #legacy-divider,
+  #workspace:has(> #editor:not(.hidden)) > #legacy-actions{
+    display:none!important;
+  }
+  body:has(#editor:not(.hidden)){overflow:auto!important}
+  #workspace #editor:not(.hidden){
+    display:grid!important;
+    position:relative!important;
+    inset:auto!important;
+    z-index:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    height:auto!important;
+    min-height:calc(100dvh - 140px);
+    overflow:visible!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    color:#294535;
+    box-shadow:none!important;
+    grid-template-columns:minmax(0,1fr) minmax(328px,36%);
+    gap:13px 16px;
+    align-items:start;
+  }
+  #workspace #editor>.row:first-child{
+    position:static!important;
+    grid-column:1/-1;
+    top:auto!important;
+    z-index:auto!important;
+    min-height:44px;
+    margin:0;
+    padding:0!important;
+    background:transparent!important;
+    border:0!important;
+    display:flex!important;
+    align-items:center;
+    justify-content:space-between!important;
+  }
+  #editor #back-table{
+    min-height:39px!important;
+    padding:9px 13px!important;
+    font-size:12px!important;
+    border-radius:9px;
+  }
+  #editor #table-title{
+    grid-column:1/-1;
+    font-size:clamp(23px,2.3vw,29px)!important;
+    line-height:1.2;
+    margin:0 0 3px!important;
+  }
+  #editor #dirty-notice{
+    grid-column:1/-1;
+    max-width:none;
+    margin:0!important;
+    padding:10px 13px;
+    border:1px solid #e3d5ab;
+    border-radius:10px;
+    background:#fbf6e8;
+  }
+  #editor .desktop-order-menu,
+  #editor .desktop-order-cart{
+    display:block!important;
+    min-width:0;
+    background:#fff;
+    border:1px solid #dfe8dc;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 5px 20px #203c2a0a;
+  }
+  #editor .desktop-order-menu{grid-column:1;grid-row:auto}
+  #editor .desktop-order-cart{
+    grid-column:2;
+    grid-row:auto;
+    position:sticky;
+    top:72px;
+    max-height:calc(100dvh - 95px);
+    overflow-y:auto;
+    scrollbar-width:thin;
+    overscroll-behavior:contain;
+  }
+  #editor .desktop-order-menu h3,
+  #editor .desktop-order-cart>h3{
+    margin:0 0 15px!important;
+    font-size:16px!important;
+    font-weight:780;
+    color:#2b4a34;
+  }
+  #editor .desktop-order-menu .tariff-switch{
+    width:100%;
+    max-width:420px;
+    margin:0 0 14px;
+  }
+  #editor .desktop-order-menu .tariff-switch button{
+    min-height:41px;
+    font-size:12px;
+  }
+  #editor #categories{
+    display:flex;
+    flex-wrap:wrap!important;
+    overflow:visible!important;
+    gap:7px;
+    margin-bottom:14px!important;
+    padding:0!important;
+  }
+  #editor #categories button{
+    min-height:36px;
+    padding:8px 12px;
+    font-size:11px;
+    border-radius:9px;
+  }
+  #editor #products{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(143px,1fr));
+    align-items:stretch;
+    gap:10px;
+    width:100%;
+  }
+  #editor #products button.product{
+    min-height:91px;
+    height:100%;
+    padding:13px;
+    align-items:stretch;
+    justify-content:space-between;
+    gap:10px;
+    border-radius:11px;
+    text-align:left;
+  }
+  #editor #products .product-name{font-size:12px;line-height:1.4}
+  #editor #products .product-price{font-size:12px}
+  #editor .desktop-order-cart>.divider:first-child{display:none}
+  #editor .desktop-order-cart>.divider{margin:15px 0}
+  #editor .desktop-order-cart #lines{min-height:85px}
+  #editor .desktop-order-cart .order-line{
+    padding:10px 0;
+    gap:10px;
+  }
+  #editor .desktop-order-cart label{
+    display:block;
+    font-size:12px;
+    font-weight:650;
+    margin:14px 0 0;
+  }
+  #editor .desktop-order-cart #note{
+    display:block;
+    margin:7px 0 5px;
+    width:100%;
+    min-height:68px;
+    resize:vertical;
+    font-size:12px;
+  }
+  #editor .desktop-order-cart>.row:has(#total){
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:12px 0 4px;
+  }
+  #editor #total{font-size:23px!important;white-space:nowrap}
+  #editor #save{
+    min-height:43px;
+    font-size:11px;
+    padding:9px 11px;
+    border-radius:9px;
+    white-space:normal;
+  }
+  #editor .desktop-order-cart>.row:has(#pay-cash){
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px;
+    align-items:stretch;
+  }
+  #editor .desktop-order-cart>.row:has(#pay-cash) button{
+    min-width:0;width:100%;
+    min-height:49px;
+    padding:9px 6px;
+    font-size:11px;
+    line-height:1.3;
+    white-space:normal;
+    border-radius:9px;
+  }
+  #editor .desktop-order-cart>.note{
+    font-size:11px;
+    line-height:1.6;
+    margin:13px 0 0;
+  }
+  /* All manager sections use the same generous desktop working width. */
+  #manager-screen:not(.hidden){
+    min-width:0;
+    width:100%;
+    overflow:visible!important;
+  }
+  #manager-screen>.panel{
+    box-sizing:border-box;
+    min-width:0;
+    width:100%;
+    max-width:none;
+    margin:0 0 18px;
+    padding:clamp(19px,2.1vw,29px)!important;
+    overflow:visible!important;
+    border-radius:16px;
+  }
+  #manager-screen>.panel>.row:first-child{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    min-height:47px;
+  }
+  #manager-screen #manager-back{
+    min-height:40px;
+    padding:9px 13px;
+    font-size:12px;
+    border-radius:9px;
+  }
+  #manager-screen>.panel>.row:first-child h2{
+    font-size:clamp(22px,2.1vw,28px);
+    text-align:left;
+    margin:0;
+  }
+  #manager-screen .manager-subtitle{
+    font-size:12px;
+    line-height:1.5;
+    margin:4px 0 19px;
+  }
+  #manager-screen .manager-tabs{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:9px;
+    margin:15px 0 19px;
+    align-items:stretch;
+  }
+  #manager-screen .manager-tabs button{
+    min-width:0;
+    width:100%;
+    min-height:49px;
+    padding:10px 8px;
+    font-size:12px;
+    font-weight:720;
+    text-align:center;
+    border-radius:10px;
+    line-height:1.35;
+    overflow-wrap:anywhere;
+  }
+  #manager-screen #manager-date-tools:not(.hidden){
+    display:grid;
+    grid-template-columns:minmax(280px,.85fr) minmax(360px,1.15fr);
+    gap:16px;
+    align-items:end;
+    margin:9px 0 15px;
+    padding:15px 17px;
+    border:1px solid #e0e9dc;
+    border-radius:13px;
+    background:#f8faf5;
+  }
+  #manager-screen #manager-date-tools .manager-date-row{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    align-items:end;
+  }
+  #manager-screen #manager-date-tools .manager-date-row label{
+    display:block;
+    min-width:0;
+    font-size:12px;
+  }
+  #manager-screen #manager-date-tools .manager-date-row input{
+    width:100%;min-width:0;
+    min-height:40px;
+    margin:6px 0 0;
+    padding:8px 10px;
+    font-size:13px;
+  }
+  #manager-screen #manager-date-tools>.row{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:7px;
+    min-width:0;
+  }
+  #manager-screen #manager-date-tools>.row button{
+    width:100%;
+    min-height:41px;
+    min-width:0;
+    padding:7px 5px;
+    font-size:11px;
+    white-space:normal;
+    border-radius:9px;
+  }
+  #manager-screen #manager-log-filters:not(.hidden){
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
+    padding:14px 17px;
+    margin:0 0 12px;
+    border:1px solid #e1e9dc;
+    border-radius:12px;
+    background:#f8faf5;
+  }
+  #manager-screen #manager-log-filters label{
+    display:block;
+    font-size:12px;
+  }
+  #manager-screen #manager-log-filters select{
+    display:block;
+    min-height:41px;
+    margin:6px 0 0;
+    width:100%;
+  }
+  #manager-screen #manager-feedback{
+    margin:12px 0 13px;
+    min-height:0;
+    font-size:12px;
+  }
+  #manager-screen #manager-content{
+    display:block;
+    width:100%;
+    min-width:0;
+    overflow:visible!important;
+  }
+  #manager-screen #manager-content>h3{font-size:20px;margin:18px 0 10px}
+  #manager-screen #manager-content>.note{font-size:12px;line-height:1.7}
+  #manager-screen .manager-stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:11px;
+    align-items:stretch;
+    margin:17px 0 21px;
+  }
+  #manager-screen .manager-stat{
+    padding:16px 17px;
+    min-width:0;
+    border-radius:13px;
+  }
+  #manager-screen .manager-stat span{font-size:12px;line-height:1.45}
+  #manager-screen .manager-stat b{
+    font-size:clamp(18px,1.8vw,25px);
+    line-height:1.2;
+    margin-top:9px;
+    overflow-wrap:anywhere;
+  }
+  /* Preserve intentional paired comparison in 14-card financial summary. */
+  #manager-screen[data-desktop-tab="reports"] .manager-stats,
+  #manager-screen[data-desktop-tab="reports"] #manager-day-detail .manager-stats{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  #manager-screen .manager-days{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:15px 0 19px;
+  }
+  #manager-screen .manager-days button{
+    min-width:145px;
+    min-height:40px;
+    padding:9px 13px;
+    font-size:11px;
+    border-radius:9px;
+  }
+  #manager-screen #manager-day-detail{
+    min-width:0;
+    margin-top:12px;
+  }
+  #manager-screen .manager-analysis-bars{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+    margin:17px 0 23px;
+  }
+  #manager-screen .manager-analysis-bar{
+    min-width:0;
+    margin:0;
+    padding:14px 15px;
+    border:1px solid #e0e9dd;
+    background:#f8faf5;
+    border-radius:12px;
+  }
+  #manager-screen .manager-analysis-bar-head{gap:9px}
+  #manager-screen .manager-table{
+    width:100%;
+    font-size:13px;
+    table-layout:auto;
+    border-collapse:collapse;
+  }
+  #manager-screen .manager-table td,
+  #manager-screen .manager-table th{
+    padding:11px 13px;
+    line-height:1.55;
+  }
+  #manager-screen .manager-analysis-table th:first-child,
+  #manager-screen .manager-analysis-table td:first-child{
+    width:64%;
+  }
+  /* Separate items into actual desktop cards without changing their handlers. */
+  #manager-screen[data-desktop-tab="users"] #manager-content,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content,
+  #manager-screen[data-desktop-tab="logs"] #manager-content{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    column-gap:12px;
+    row-gap:12px;
+    align-items:start;
+  }
+  #manager-screen[data-desktop-tab="users"] #manager-content>h3,
+  #manager-screen[data-desktop-tab="users"] #manager-content>.note,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content>h3,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content>.note,
+  #manager-screen[data-desktop-tab="logs"] #manager-content>h3,
+  #manager-screen[data-desktop-tab="logs"] #manager-content>.note{
+    grid-column:1/-1;
+    margin:0;
+  }
+  #manager-screen[data-desktop-tab="users"] #manager-content>.manager-record,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content>.manager-record,
+  #manager-screen[data-desktop-tab="logs"] #manager-content>.manager-record{
+    min-width:0;
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:16px;
+    border-radius:12px;
+  }
+  #manager-screen .manager-record-title{
+    font-size:13px;
+    line-height:1.45;
+  }
+  #manager-screen .manager-record-info{
+    font-size:11px;
+    line-height:1.5;
+  }
+  #manager-screen .manager-record .row button{
+    min-height:39px;
+    padding:8px 10px;
+    font-size:11px;
+    min-width:0;
+  }
+  /* Menu categories become a two-column catalogue; menu handlers and drag
+     controls are the original ones, just with more room for long names. */
+  #manager-screen #manager-content .menu-admin-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    max-width:500px;
+    gap:10px;
+    margin:13px 0 18px;
+  }
+  #manager-screen #manager-content .menu-groups{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:start;
+    gap:13px;
+  }
+  #manager-screen #manager-content .menu-group{min-width:0}
+  #manager-screen #manager-content .menu-group summary{
+    min-height:57px;
+    padding:14px 16px;
+  }
+  #manager-screen #manager-content .menu-group-body{
+    padding:11px 13px 14px;
+  }
+  #manager-screen #manager-content .menu-add-category{
+    padding:17px;
+    max-width:620px;
+  }
+  #manager-screen #manager-content .menu-product-row{
+    gap:10px;
+    padding:11px 2px;
+  }
+  #manager-screen #manager-content .menu-product-info{min-width:0}
+  #manager-screen #manager-content .menu-product-edit{
+    min-height:36px;
+    padding:8px 10px;
+    font-size:11px;
+  }
+  #manager-screen .manager-exports:not(.hidden){
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    gap:10px;
+    margin:24px 0 3px;
+  }
+  #manager-screen .manager-exports button{
+    width:auto;
+    min-width:150px;
+    min-height:42px;
+    padding:10px 14px;
+    border-radius:9px;
+    font-size:12px;
+  }
+  /* Desktop modals: centered, readable, accessible focus, no mobile effects */
+  .option-overlay{align-items:center!important}
+  .option-sheet{
+    border-radius:17px!important;
+    max-width:570px;
+    width:min(570px,calc(100vw - 250px));
+    max-height:84dvh;
+  }
+  .account-card{max-width:620px}
+  #summary:not(.hidden){
+    left:max(210px,calc((100vw - 950px)/2));
+    right:max(28px,calc((100vw - 950px)/2));
+    top:5vh;
+    bottom:5vh;
+    width:auto;
+    max-width:1100px;
+    overflow:auto;
+    padding:24px 30px;
+    border-radius:17px;
+  }
+  #summary-body .manager-stats{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  /* Specific anthracite treatment for newly expanded manager layouts */
+  html[data-theme="dark"] #manager-screen #manager-date-tools:not(.hidden),
+  html[data-theme="dark"] #manager-screen #manager-log-filters:not(.hidden),
+  html[data-theme="dark"] #manager-screen .manager-analysis-bar{
+    background:#303638;
+    border-color:#53615b;
+  }
+  html[data-theme="dark"] #manager-screen .manager-analysis-bar-head{color:#d9ecd6}
+  html[data-theme="dark"] #editor .desktop-order-menu,
+  html[data-theme="dark"] #editor .desktop-order-cart{
+    background:#292e30;
+    border-color:#4a5852;
+    color:#d7ead3;
+    box-shadow:0 8px 21px #00000024;
+  }
+  html[data-theme="dark"] #editor .desktop-order-menu h3,
+  html[data-theme="dark"] #editor .desktop-order-cart>h3{color:#def0da}
+  html[data-theme="dark"] #editor #dirty-notice{
+    background:#49443a;border-color:#85795a;color:#f3e8c4;
+  }
+  html[data-theme="dark"] body:has(#manager-screen:not(.hidden)) header .header-actions #account-btn,
+  html[data-theme="dark"] body:has(#manager-screen:not(.hidden)) header #theme-toggle,
+  html[data-theme="dark"] body:has(#manager-screen:not(.hidden)) header #logout{
+    background:#33393a!important;
+    color:#d2ead1!important;
+    border-color:#52645a!important;
+  }
+  @media(max-width:1190px){
+    #workspace #editor:not(.hidden){grid-template-columns:minmax(0,1fr) minmax(315px,39%);gap:11px}
+    #editor .desktop-order-menu,
+    #editor .desktop-order-cart{padding:16px}
+    #editor #products{grid-template-columns:repeat(auto-fill,minmax(124px,1fr))}
+    #manager-screen #manager-date-tools:not(.hidden){grid-template-columns:minmax(255px,1fr) minmax(340px,1.25fr)}
+    #manager-screen .manager-tabs{gap:7px}
+    #manager-screen .manager-tabs button{font-size:11px}
+  }
+}
+@media screen and (min-width:1024px) and (max-width:1120px){
+  #manager-screen #manager-date-tools:not(.hidden){
+    display:block;
+  }
+  #manager-screen #manager-date-tools>.row{
+    margin-top:12px;
+  }
+}
