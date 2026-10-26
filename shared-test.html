@@ -2819,4 +2819,115 @@ checkAuth();setInterval(()=>{if(state.user)refreshOrders()},6000);
  sync();
 })();
 </script>
+<script>
+/* Test deployment only. Isolated mock UI: no database, auth, network, or payment calls. */
+(() => {
+  'use strict';
+  const onTestHost = location.hostname === 'sams-siparis-otomasyonu-test.vercel.app'
+    || location.hostname.startsWith('sams-siparis-otomasyonu-test-');
+  if (!onTestHost) return;
+
+  const shortcuts = document.querySelector('#desktop-manager-quick .desktop-shortcuts');
+  if (!shortcuts) return;
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'desktop-all';
+  trigger.id = 'qa-staff-preview-trigger';
+  trigger.style.cssText = 'margin-top:8px;justify-content:center;gap:8px;border:1px dashed #b76b66;';
+  trigger.innerHTML = '<span aria-hidden="true">◉</span><span>Çalışan Önizlemesi <small style="display:block;font-size:10px;font-weight:500">Yalnızca test · ödeme yapılmaz</small></span>';
+  shortcuts.appendChild(trigger);
+
+  const sampleTables = [
+    { id: 'Dış 1', total: 154 },
+    { id: 'İç 2', total: 86 }
+  ];
+  const money = value => Number(value).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+  const css = document.createElement('style');
+  css.textContent = `
+    #qa-preview-overlay{position:fixed;inset:0;z-index:20000;background:rgba(15,17,16,.78);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+    #qa-preview-overlay *{box-sizing:border-box}
+    #qa-preview-overlay .qa-shell{width:min(540px,100%);max-height:94vh;overflow:auto;background:#f7f5f0;color:#272722;border:1px solid #a49d90;border-radius:18px;box-shadow:0 26px 80px #0008;padding:22px}
+    #qa-preview-overlay .qa-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    #qa-preview-overlay h2{margin:0;font-size:23px;line-height:1.3;color:#272722}
+    #qa-preview-overlay .qa-badge{display:inline-block;margin-bottom:10px;border-radius:20px;background:#ffede8;color:#96342f;font-size:11px;font-weight:850;letter-spacing:.08em;padding:6px 10px}
+    #qa-preview-overlay .qa-note{margin:9px 0 20px;color:#6c6a66;font-size:13px;line-height:1.5}
+    #qa-preview-overlay button{font:inherit;cursor:pointer}
+    #qa-preview-overlay .qa-exit{background:transparent;border:1px solid #b8b3a8;border-radius:10px;color:#43423f;font-size:13px;padding:8px 11px}
+    #qa-preview-overlay .qa-section{border:1px solid #d9d5cc;background:#fff;border-radius:15px;padding:17px}
+    #qa-preview-overlay .qa-section h3{margin:0 0 6px;color:#292b28;font-size:21px}
+    #qa-preview-overlay .qa-section p{margin:0 0 16px;color:#74736f;font-size:13px}
+    #qa-preview-overlay .qa-input-label{display:block;font-size:12px;font-weight:800;margin:0 0 8px}
+    #qa-preview-overlay .qa-input{width:100%;border:1px solid #d8d6d0;background:#f8f8f6;border-radius:10px;color:#888;padding:13px 15px;font-size:14px;margin:0 0 14px}
+    #qa-preview-overlay .qa-main{width:100%;display:flex;justify-content:center;align-items:center;gap:9px;background:#b63e3b;border:1px solid #b63e3b;border-radius:11px;color:white;font-size:15px;font-weight:800;padding:15px 12px}
+    #qa-preview-overlay .qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    #qa-preview-overlay .qa-grid button{min-height:64px;border:1px solid #d4d0c6;background:#efede8;border-radius:11px;font-size:12px;font-weight:700;color:#4d4b45}
+    #qa-preview-overlay .qa-disabled{margin-top:12px;border:1px solid #e4e0d8;border-radius:11px;padding:15px;color:#8d8982;font-size:13px}
+    #qa-preview-overlay .qa-picker{border-top:1px solid #e2ded5;margin-top:18px;padding-top:15px}
+    #qa-preview-overlay .qa-picker h4{font-size:15px;margin:0 0 10px;color:#383633}
+    #qa-preview-overlay .qa-picker button{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;background:#fbfaf8;border:1px solid #d8d4ca;border-radius:10px;padding:13px 12px;margin:8px 0;color:#34322e;font-size:14px}
+    #qa-preview-overlay .qa-picker button:hover{border-color:#b63e3b}
+    #qa-preview-overlay .qa-feedback{border:1px solid #e2d1ac;background:#fff9e7;border-radius:11px;padding:12px;color:#665029;font-size:12px;line-height:1.45;margin-top:15px}
+    @media(max-width:460px){#qa-preview-overlay .qa-shell{padding:13px}#qa-preview-overlay h2{font-size:20px}}
+  `;
+  document.head.appendChild(css);
+
+  const showPreview = () => {
+    // Keep this completely independent of the real application's state and events.
+    const overlay = document.createElement('div');
+    overlay.id = 'qa-preview-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Çalışan paneli test önizlemesi');
+    overlay.innerHTML = `
+      <div class="qa-shell">
+        <div class="qa-top"><div><span class="qa-badge">TEST ÖNİZLEMESİ · SAHTE VERİ</span><h2>Çalışan Paneli</h2></div><button type="button" class="qa-exit">Kapat ✕</button></div>
+        <p class="qa-note">Buradaki masa ve tutarlar örnektir. Gerçek hesap veya ödeme kayıtları değişmez.</p>
+        <div class="qa-section">
+          <h3>Servis Araçları</h3><p>Masa bul, hesap ve taşıma işlemlerine ulaş.</p>
+          <label class="qa-input-label">Masa Bul</label><div class="qa-input" aria-hidden="true">⌕ &nbsp; Masa adı veya numarası</div>
+          <button type="button" class="qa-main" id="qa-preview-close-table">▣ &nbsp; Masa Kapat</button>
+          <div class="qa-grid"><button type="button" disabled>▤ &nbsp; Parça Hesap Al</button><button type="button" disabled>⇄ &nbsp; Masa Taşı / Birleştir</button></div>
+          <div class="qa-disabled">◷ &nbsp; Son Çalıştığım Masa · Örnek alan</div>
+          <div class="qa-picker" id="qa-preview-picker" hidden></div>
+        </div>
+        <div class="qa-feedback" id="qa-preview-feedback">Masa Kapat'a basarak örnek masa ve nakit/kart seçimini görebilirsin. Hiçbir gerçek ödeme yapılmaz.</div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const picker = overlay.querySelector('#qa-preview-picker');
+    const feedback = overlay.querySelector('#qa-preview-feedback');
+    const close = () => { document.removeEventListener('keydown', escape); overlay.remove(); };
+    const escape = event => { if (event.key === 'Escape') close(); };
+    document.addEventListener('keydown', escape);
+    overlay.querySelector('.qa-exit').onclick = close;
+    overlay.onclick = event => { if (event.target === overlay) close(); };
+    overlay.querySelector('#qa-preview-close-table').onclick = () => {
+      picker.hidden = false;
+      picker.innerHTML = '<h4>Kapatılacak masayı seç</h4>';
+      sampleTables.forEach(table => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = `${table.id} · ${money(table.total)}`;
+        button.onclick = () => {
+          picker.innerHTML = `<h4>${table.id} · ${money(table.total)}</h4>`;
+          ['Nakit', 'Kart'].forEach(method => {
+            const methodButton = document.createElement('button');
+            methodButton.type = 'button';
+            methodButton.textContent = `${method} ile Kapat · ${money(table.total)}`;
+            methodButton.onclick = () => {
+              picker.hidden = true;
+              feedback.textContent = `Önizleme tamamlandı: ${table.id} için ${method} seçildi. Gerçek ödeme yapılmadı, masa değişmedi.`;
+            };
+            picker.appendChild(methodButton);
+          });
+        };
+        picker.appendChild(button);
+      });
+      feedback.textContent = 'Bu listedeki masalar gerçek değil, yalnızca görünümü deniyoruz.';
+    };
+  };
+  trigger.addEventListener('click', showPreview);
+})();
+
+</script>
 </body></html>
