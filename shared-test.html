@@ -1695,10 +1695,24 @@ function auditSummary(x,previous){
  }else if(type==='table_created'){label='Özel masa açıldı';body=table+' oluşturuldu';
  }else if(type==='table_moved'){label='Masa taşındı';body=table+' → '+String(d.target||'Hedef masa');
  }else if(type==='table_merged'){label='Masalar birleştirildi';body=table+' → '+String(d.target||'Hedef masa');
+ }else if(type==='menu_updated'){
+  label='Menü ürünü güncellendi';
+  body=String(d.name||'Menü ürünü')+(typeof d.active==='boolean'?' · Durum: '+(d.active?'Aktif':'Pasif'):'');
+ }else if(type==='menu_reordered'){
+  label='Menü sıralaması değiştirildi';
+  body=(d.category?String(d.category)+' kategorisindeki ürünlerin':'Menü ürünlerinin')+' sıralaması güncellendi';
+ }else if(type==='discount_applied'){
+  label='İndirim uygulandı';
+  const units=Math.max(0,Number(d.units)||0),rate=Number(d.rate);
+  body=(units?units+' ürüne ':'')+(d.rate!=null&&Number.isFinite(rate)?'%'+rate+' ':'')+'indirim uygulandı';
+ }else if(type==='gift_applied'){
+  label='İkram uygulandı';
+  const units=Math.max(0,Number(d.units)||0);
+  body=(units?units+' ürün':'Ürün')+' ikram edildi';
  }else if(type.startsWith('staff_')){
   const actions={staff_approve:'Kullanıcı onaylandı',staff_promote:'Yönetici yetkisi verildi',staff_demote:'Yönetici yetkisi kaldırıldı',staff_deactivate:'Kullanıcı devre dışı bırakıldı',staff_reactivate:'Kullanıcı yeniden etkinleştirildi'};
   label=actions[type]||'Kullanıcı yetkisi değişti';body='Kullanıcı hesabında işlem yapıldı';
- }else{label='İşlem kaydedildi';body=type}
+ }else{label='Diğer işlem';body='İşlem kaydedildi; açıklaması henüz tanımlanmamış.'}
  return {label,body,total};
 }
 function auditTableLabels(events){
