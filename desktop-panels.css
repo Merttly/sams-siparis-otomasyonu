@@ -767,3 +767,117 @@ html[data-theme="dark"] #editor #lines button.order-line-step[data-minus]:hover:
   opacity:.45;
   cursor:not-allowed;
 }
+
+
+/* 2026-10-26 — Desktop report dates: one baseline and usable native calendars.
+   Previous global phone date-input rules stripped desktop native appearance,
+   centered date text and clipped the calendar affordance.
+   Desktop only. Do not change mobile date controls or report data logic. */
+@media screen and (min-width:1024px){
+  #manager-screen #manager-date-tools:not(.hidden){
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.18fr)!important;
+    align-items:end!important;
+    column-gap:16px!important;
+    row-gap:12px!important;
+    position:relative;
+    min-width:0;
+  }
+  #manager-screen #manager-date-tools>.manager-date-row{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+    align-items:end!important;
+    min-width:0;
+    margin:0!important;
+  }
+  #manager-screen #manager-date-tools>.manager-date-row>label{
+    display:flex!important;
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-end;
+    min-width:0;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    overflow:visible!important;
+    font-size:12px;
+    line-height:1.35;
+    font-weight:660;
+  }
+  #manager-screen #manager-date-tools>.manager-date-row input[type="date"]{
+    -webkit-appearance:auto!important;
+    appearance:auto!important;
+    display:block!important;
+    position:relative;
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+    min-height:46px!important;
+    margin:8px 0 0!important;
+    padding:8px 11px!important;
+    overflow:visible!important;
+    text-align:left!important;
+    font-size:13px!important;
+    font-variant-numeric:tabular-nums;
+    cursor:pointer!important;
+    pointer-events:auto!important;
+    color-scheme:light;
+    background:#fffefa!important;
+    color:#284334!important;
+    border:1px solid #bfcec0!important;
+    border-radius:10px!important;
+  }
+  #manager-screen #manager-date-tools>.manager-date-row input[type="date"]::-webkit-date-and-time-value,
+  #manager-screen #manager-date-tools>.manager-date-row input[type="date"]::-webkit-datetime-edit{
+    width:auto!important;
+    max-width:100%!important;
+    text-align:left!important;
+  }
+  #manager-screen #manager-date-tools>.manager-date-row input[type="date"]::-webkit-calendar-picker-indicator{
+    display:block!important;
+    opacity:1!important;
+    width:18px;
+    height:18px;
+    margin-left:5px;
+    cursor:pointer!important;
+    pointer-events:auto!important;
+  }
+  #manager-screen #manager-date-tools>.row{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    align-items:end!important;
+    align-self:end!important;
+    gap:8px!important;
+    min-width:0;
+    height:46px;
+    margin:0!important;
+  }
+  #manager-screen #manager-date-tools>.row button{
+    box-sizing:border-box!important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    height:46px!important;
+    margin:0!important;
+    padding:8px 6px!important;
+    line-height:1.2;
+    white-space:normal;
+    text-align:center;
+  }
+  html[data-theme="dark"] #manager-screen #manager-date-tools>.manager-date-row input[type="date"]{
+    color-scheme:dark;
+    background:#24292b!important;
+    color:#e2f2df!important;
+    border-color:#607168!important;
+  }
+  html[data-theme="dark"] #manager-screen #manager-date-tools>.manager-date-row input[type="date"]:focus-visible{
+    outline:2px solid #b9ddb3!important;
+    outline-offset:2px;
+  }
+}
