@@ -1061,7 +1061,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-8"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-4"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-4"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1119,14 +1119,26 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
  <button type="button" class="desktop-all" data-desktop-manager="overview"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Yönetici Paneli</span></button>
  </div>
 </aside>
-<aside id="desktop-staff-quick" aria-label="Kullanıcı hızlı erişim">
- <h3>Hızlı Erişim</h3>
- <p>Masalara ve siparişlere hızlı ulaşım</p>
- <div class="staff-open-heading"><span>Açık Masalar</span><span id="staff-open-count" class="staff-open-count">0 açık</span></div>
- <div id="staff-open-list" class="staff-open-list"><p class="staff-empty">Açık masa bulunmuyor.</p></div>
+<aside id="desktop-staff-quick" aria-label="Kullanıcı servis araçları">
+ <h3>Servis Araçları</h3>
+ <p>Masa bul, hesap ve taşıma işlemlerine ulaş.</p>
+ <label class="staff-search-label" for="staff-table-search">Masa Bul</label>
+ <div class="staff-search-wrap">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg>
+  <input id="staff-table-search" type="search" placeholder="Masa adı veya numarası" autocomplete="off" aria-controls="staff-tool-results">
+ </div>
  <div class="staff-quick-actions">
-  <button type="button" id="desktop-staff-new-order"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v16l-3-2-4 2-4-2-3 2V5a2 2 0 0 1 2-2Z"/><path d="M9 9h6M12 12v5M9.5 14.5h5"/></svg><span>Yeni Sipariş</span></button>
-  <button type="button" id="desktop-staff-refresh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6"/><path d="M20 4v7h-7"/></svg><span>Masaları Yenile</span></button>
+  <button type="button" id="desktop-staff-split"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h3M8 16h3m5-4v5m-2.5-2.5h5"/></svg><span>Parça Hesap Al</span></button>
+  <button type="button" id="desktop-staff-transfer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14m-4-4 4 4-4 4M19 17H5m4-4-4 4 4 4"/></svg><span>Masa Taşı / Birleştir</span></button>
+ </div>
+ <button type="button" id="desktop-staff-last" class="staff-last-table" disabled>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.4"/></svg>
+  <span><strong>Son Çalıştığım Masa</strong><small id="staff-last-label">Henüz masa açılmadı</small></span>
+  <span class="staff-last-arrow" aria-hidden="true">›</span>
+ </button>
+ <div id="staff-tool-picker" class="staff-tool-picker hidden" aria-live="polite">
+  <div class="staff-tool-heading"><strong id="staff-tool-heading">Masa seç</strong><button type="button" id="staff-tool-cancel" aria-label="Seçimi kapat">Kapat</button></div>
+  <div id="staff-tool-results" class="staff-tool-results"></div>
  </div>
 </aside><div class="divider hidden" id="legacy-divider"></div><div class="row hidden" id="legacy-actions"><button id="report" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg><span>Gün Sonu</span></button><button id="audit" class="alt hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18M3 9h18M3 14h12M3 19h8"/></svg><span>İşlem Geçmişi</span></button><button id="staff-admin" class="alt hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Kullanıcı Yönetimi</span></button><button id="manager-dashboard" class="alt hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg><span>Yönetici Paneli</span></button></div></div>
 <div id="editor" class="panel hidden">
@@ -1275,22 +1287,45 @@ function displayTableName(id){
  if(prefix==='içeri'||prefix==='iç')return 'İç'+pieces[2];
  return name;
 }
+let staffToolMode='search';
+let staffOpenOrders=[];
+let staffLastTableId=null;
+function renderStaffToolPicker(){
+ if(state.role==='manager')return;
+ const field=$('staff-table-search'),picker=$('staff-tool-picker'),results=$('staff-tool-results');
+ const mode=staffToolMode,query=field.value.trim().toLocaleLowerCase('tr-TR');
+ const choosing=mode==='split'||mode==='transfer';
+ const visible=choosing||query.length>0;
+ show('staff-tool-picker',visible);
+ if(!visible)return;
+ $('staff-tool-heading').textContent=mode==='split'?'Parça hesap için masa seç':mode==='transfer'?'Taşınacak masayı seç':'Masa sonuçları';
+ const openIds=new Set(staffOpenOrders.map(o=>o.table_id));
+ const eligible=staffOpenOrders.filter(o=>(o.order_items||[]).some(i=>Number(i.quantity)>0)).map(o=>o.table_id);
+ const matches=choosing?state.tables.filter(t=>eligible.includes(t.id)):
+  state.tables.filter(t=>String(t.id).toLocaleLowerCase('tr-TR').includes(query)||displayTableName(t.id).toLocaleLowerCase('tr-TR').includes(query));
+ results.innerHTML=matches.length?matches.map(t=>
+  '<button type="button" class="staff-pick-row" data-staff-target="'+esc(t.id)+'">'+
+  '<span>'+esc(displayTableName(t.id))+'</span><small>'+(openIds.has(t.id)?'Açık':'Boş')+'</small></button>'
+ ).join(''):'<p class="staff-empty">'+(choosing?'İşlem yapılabilecek açık masa yok.':'Aradığın masa bulunamadı.')+'</p>';
+ results.querySelectorAll('[data-staff-target]').forEach(b=>b.onclick=async()=>{
+  const id=b.dataset.staffTarget,action=staffToolMode;
+  staffToolMode='search';field.value='';renderStaffToolPicker();
+  await openTable(id);
+  if(state.selected!==id||$('editor').classList.contains('hidden'))return;
+  if(action==='split')await split();
+  if(action==='transfer')await transfer();
+ });
+}
 function renderDesktopStaffQuick(orders){
  if(state.role==='manager')return;
- const list=$('staff-open-list'),count=$('staff-open-count');
- const orderIndex=new Map(state.tables.map((t,i)=>[t.id,i]));
- const open=[...(orders||[])].sort((a,b)=>(orderIndex.get(a.table_id)??Infinity)-(orderIndex.get(b.table_id)??Infinity));
- count.textContent=open.length+' açık';
- if(!open.length){list.innerHTML='<p class="staff-empty">Şu anda açık masa yok.</p>';return}
- const cup='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6zM17 10h2a2.5 2.5 0 0 1 0 5h-2M3 22h17M8 3v3m5-3v3"/></svg>';
- list.innerHTML=open.map(o=>{
-  const label=displayTableName(o.table_id);
-  const total=(o.order_items||[]).reduce((sum,i)=>sum+Number(i.unit_price)*Number(i.quantity),0);
-  return '<button type="button" class="staff-open-row" data-staff-table="'+esc(o.table_id)+'" aria-label="'+esc(label+' masası, '+money(total))+'. Aç">'+
-   '<span class="staff-table-symbol">'+cup+'</span><span class="staff-table-copy"><strong>'+esc(label)+'</strong><small>Açık sipariş</small></span>'+
-   '<b class="staff-table-total">'+money(total)+'</b><span class="staff-table-arrow" aria-hidden="true">›</span></button>';
- }).join('');
- list.querySelectorAll('[data-staff-table]').forEach(b=>b.onclick=()=>openTable(b.dataset.staffTable));
+ staffOpenOrders=orders||[];
+ const available=staffOpenOrders.some(o=>(o.order_items||[]).some(i=>Number(i.quantity)>0));
+ $('desktop-staff-split').disabled=!available;
+ $('desktop-staff-transfer').disabled=!available||state.tables.length<2;
+ const last=staffLastTableId&&state.tables.find(t=>t.id===staffLastTableId);
+ $('desktop-staff-last').disabled=!last;
+ $('staff-last-label').textContent=last?displayTableName(last.id):'Henüz masa açılmadı';
+ renderStaffToolPicker();
 }
 async function refreshOrders(){let {data,error}=await db.from('orders').select('id,table_id,status,version,order_items(id,product_name,unit_price,quantity,tariff)').eq('status','open');
 if(error){message('Siparişler okunamadı: '+error.message,true);return}
@@ -1340,7 +1375,7 @@ if(error){message('Masa okunamadı: '+error.message,true);return}
 state.order=data;state.lines=(data?.order_items||[]).map(x=>({id:x.id,n:x.product_name,p:Number(x.unit_price),gross:Number(x.gross_unit_price??x.unit_price),q:x.quantity,tariff:x.tariff||'normal',kind:x.adjustment_kind||null,rate:x.adjustment_rate==null?null:Number(x.adjustment_rate),cut:Number(x.adjustment_unit_amount||0)}));
 state.note=data?.note||'';state.dirty=false;renderEditor();
 }
-async function openTable(id){if(state.dirty&&!confirm('Kaydedilmemiş değişiklikler silinsin mi?'))return;state.selected=id;await readSelected()}
+async function openTable(id){if(state.dirty&&!confirm('Kaydedilmemiş değişiklikler silinsin mi?'))return;state.selected=id;await readSelected();if(state.role!=='manager'&&!$('editor').classList.contains('hidden')){staffLastTableId=id;renderDesktopStaffQuick(staffOpenOrders)}}
 function renderEditor(){show('editor',!!state.selected);desktopSyncNavigation();if(!state.selected)return;
 $('table-title').textContent=displayTableName(state.selected);$('revision').textContent='Sürüm '+(state.order?.version||0);
 show('dirty-notice',state.dirty);
@@ -2422,7 +2457,7 @@ $('account-recovery-cancel').onclick=async()=>{
  await db.auth.signOut();verifiedRecovery=false;closeAccountPanel(true);await checkAuth();
 };
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeAccountPanel()});
-$('logout').onclick=async()=>{await db.auth.signOut();verifiedRecovery=false;closeAccountPanel(true);state.selected=null;state.dirty=false;show('editor',false);await checkAuth()};
+$('logout').onclick=async()=>{await db.auth.signOut();verifiedRecovery=false;closeAccountPanel(true);state.selected=null;state.dirty=false;staffLastTableId=null;staffToolMode='search';staffOpenOrders=[];$('staff-table-search').value='';show('editor',false);await checkAuth()};
 function posJump(id){const el=$(id);if(!el||el.classList.contains('hidden'))return;el.click()}
 function mobileCloseManagerShortcuts(){
  const menu=$('mobile-manager-shortcuts');
@@ -2486,18 +2521,28 @@ document.querySelectorAll('[data-desktop-nav]').forEach(b=>b.onclick=async()=>{
  if(target==='manager')managerOpen('overview');
 });
 document.querySelectorAll('[data-desktop-manager]').forEach(b=>b.onclick=()=>managerOpen(b.dataset.desktopManager));
-$('desktop-staff-new-order').onclick=()=>{
- if(state.role==='manager')return;
- const empty=document.querySelector('#tables button[data-table]:not(.table-open)');
- if(!empty){message('Boş masa yok. Yeni sipariş için açık masalardan birini seçin.');return}
- empty.focus({preventScroll:true});
- empty.scrollIntoView({behavior:'smooth',block:'center'});
- message('Yeni sipariş için boş bir masa seçin.');
+$('staff-table-search').addEventListener('input',()=>{staffToolMode='search';renderStaffToolPicker()});
+$('staff-table-search').addEventListener('keydown',async event=>{
+ if(event.key!=='Enter')return;
+ const first=$('staff-tool-results').querySelector('[data-staff-target]');
+ if(!first)return;
+ event.preventDefault();await first.onclick();
+});
+$('staff-tool-cancel').onclick=()=>{
+ staffToolMode='search';$('staff-table-search').value='';renderStaffToolPicker();
 };
-$('desktop-staff-refresh').onclick=async()=>{
+$('desktop-staff-split').onclick=()=>{
  if(state.role==='manager')return;
- const button=$('desktop-staff-refresh');button.disabled=true;
- try{await loadTables()}finally{button.disabled=false}
+ staffToolMode='split';renderStaffToolPicker();
+};
+$('desktop-staff-transfer').onclick=()=>{
+ if(state.role==='manager')return;
+ staffToolMode='transfer';renderStaffToolPicker();
+};
+$('desktop-staff-last').onclick=async()=>{
+ if(state.role==='manager'||!staffLastTableId)return;
+ if(!state.tables.some(t=>t.id===staffLastTableId))return;
+ await openTable(staffLastTableId);
 };
 $('pos-new-order').onclick=()=>{(window.innerWidth>=1024?$('pos-table-heading'):$('tables')).scrollIntoView({behavior:'smooth',block:'start'})};
 $('pos-day-end').onclick=()=>posJump('report');$('pos-history').onclick=()=>posJump('audit');$('pos-admin').onclick=()=>posJump('manager-dashboard');
