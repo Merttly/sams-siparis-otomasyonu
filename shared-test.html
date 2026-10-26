@@ -1065,7 +1065,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-8"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-10"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-8"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1134,7 +1134,10 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg>
   <input id="staff-table-search" type="search" placeholder="Masa adı veya numarası" autocomplete="off" aria-controls="staff-tool-results">
  </div>
- <div class="staff-quick-actions">
+  <div class="staff-close-action">
+  <button type="button" id="desktop-staff-close"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h5m-3 5 2 2 4-4"/></svg><span>Masa Kapat</span></button>
+ </div>
+<div class="staff-quick-actions">
   <button type="button" id="desktop-staff-split"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h3M8 16h3m5-4v5m-2.5-2.5h5"/></svg><span>Parça Hesap Al</span></button>
   <button type="button" id="desktop-staff-transfer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14m-4-4 4 4-4 4M19 17H5m4-4-4 4 4 4"/></svg><span>Masa Taşı / Birleştir</span></button>
  </div>
@@ -1447,11 +1450,11 @@ function renderStaffToolPicker(){
  if(state.role==='manager')return;
  const field=$('staff-table-search'),picker=$('staff-tool-picker'),results=$('staff-tool-results');
  const mode=staffToolMode,query=field.value.trim().toLocaleLowerCase('tr-TR');
- const choosing=mode==='split'||mode==='transfer';
+ const choosing=mode==='split'||mode==='transfer'||mode==='close';
  const visible=choosing||query.length>0;
  show('staff-tool-picker',visible);
  if(!visible)return;
- $('staff-tool-heading').textContent=mode==='split'?'Parça hesap için masa seç':mode==='transfer'?'Taşınacak masayı seç':'Masa sonuçları';
+ $('staff-tool-heading').textContent=mode==='split'?'Parça hesap için masa seç':mode==='transfer'?'Taşınacak masayı seç':mode==='close'?'Kapatılacak masayı seç':'Masa sonuçları';
  const openIds=new Set(staffOpenOrders.map(o=>o.table_id));
  const eligible=staffOpenOrders.filter(o=>(o.order_items||[]).some(i=>Number(i.quantity)>0)).map(o=>o.table_id);
  const matches=choosing?state.tables.filter(t=>eligible.includes(t.id)):
@@ -1467,13 +1470,25 @@ function renderStaffToolPicker(){
   if(state.selected!==id||$('editor').classList.contains('hidden'))return;
   if(action==='split')await split();
   if(action==='transfer')await transfer();
+  if(action==='close')openStaffClosePaymentChoices();
  });
 }
+function openStaffClosePaymentChoices(){
+ if(state.role==='manager'||!state.selected||!state.lines.length){message('Kapatılacak açık masa bulunamadı.',true);return}
+ const total=state.lines.reduce((sum,line)=>sum+Number(line.p)*Number(line.q),0);
+ if(!Number.isFinite(total)||total<=0){message('Bu masada tahsil edilecek tutar bulunmuyor.',true);return}
+ showOptions(displayTableName(state.selected)+' · '+money(total),[
+  {label:'Nakit ile Kapat',price:total,onSelect:()=>pay('Nakit')},
+  {label:'Kart ile Kapat',price:total,onSelect:()=>pay('Kart')}
+ ]);
+}
+
 function renderDesktopStaffQuick(orders){
  if(state.role==='manager')return;
  staffOpenOrders=orders||[];
  const available=staffOpenOrders.some(o=>(o.order_items||[]).some(i=>Number(i.quantity)>0));
  $('desktop-staff-split').disabled=!available;
+ $('desktop-staff-close').disabled=!available;
  $('desktop-staff-transfer').disabled=!available||state.tables.length<2;
  const last=staffLastTableId&&state.tables.find(t=>t.id===staffLastTableId);
  $('desktop-staff-last').disabled=!last;
@@ -2713,6 +2728,7 @@ $('staff-table-search').addEventListener('keydown',async event=>{
 $('staff-tool-cancel').onclick=()=>{
  staffToolMode='search';$('staff-table-search').value='';renderStaffToolPicker();
 };
+$('desktop-staff-close').onclick=()=>{if(state.role==='manager')return;staffToolMode='close';renderStaffToolPicker()};
 $('desktop-staff-split').onclick=()=>{
  if(state.role==='manager')return;
  staffToolMode='split';renderStaffToolPicker();
