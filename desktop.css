@@ -440,3 +440,13 @@
   #workspace:has(> #editor:not(.hidden)) > #desktop-staff-quick{display:none!important}
 }
 @media print{#desktop-staff-quick{display:none!important}}
+
+/* Light desktop: make the background table numbers legible without competing with order text. */
+@media screen and (min-width:1024px){
+  html:not([data-theme="dark"]) #tables button[data-table] .table-watermark{
+    right:7px;bottom:-14px;
+    font-size:clamp(80px,8vw,96px);
+    color:#41644b;opacity:.20;
+  }
+  html:not([data-theme="dark"]) #tables button.table-open .table-watermark{opacity:.23}
+}
