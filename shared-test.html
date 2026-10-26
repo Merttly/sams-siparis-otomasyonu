@@ -2827,7 +2827,7 @@ checkAuth();setInterval(()=>{if(state.user)refreshOrders()},6000);
     || location.hostname.startsWith('sams-siparis-otomasyonu-test-');
   if (!onTestHost) return;
 
-  const shortcuts = document.querySelector('#desktop-manager-quick .desktop-shortcuts');
+  const shortcuts = document.querySelector('#desktop-quick .desktop-shortcuts');
   if (!shortcuts) return;
 
   const trigger = document.createElement('button');
