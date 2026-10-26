@@ -268,3 +268,73 @@
   #workspace #summary.hidden{display:none!important}
   #workspace #pos-hero .pos-kicker{display:none}
 }
+
+
+/* 2026-10-26: High-contrast manager quick shortcuts in desktop dark mode.
+   Scoped exclusively to the desktop home shortcut panel. */
+@media screen and (min-width:1024px){
+  html[data-theme="dark"] #workspace.desktop-manager #desktop-quick{
+    background:#25392d;
+    border-color:#526d57;
+    color:#f1f8ee;
+    box-shadow:0 7px 24px #0d1b1360;
+  }
+  html[data-theme="dark"] #desktop-quick h3{
+    color:#f1f8ee;
+    font-size:16px;
+    font-weight:800;
+  }
+  html[data-theme="dark"] #desktop-quick>p{
+    color:#c7ddca;
+    font-size:12px;
+    line-height:1.5;
+  }
+  html[data-theme="dark"] #desktop-quick .desktop-shortcuts button:not(.desktop-all){
+    background:#334c3b;
+    border:1px solid #607b65;
+    color:#f5faf3;
+    font-size:12px;
+    font-weight:750;
+    min-height:59px;
+  }
+  html[data-theme="dark"] #desktop-quick .desktop-shortcuts button:not(.desktop-all):hover{
+    background:#405c49;
+    border-color:#8aaa8a;
+  }
+  html[data-theme="dark"] #desktop-quick .desktop-shortcuts button:not(.desktop-all):focus-visible{
+    outline:2px solid #c3e4ba;
+    outline-offset:2px;
+  }
+  html[data-theme="dark"] #desktop-quick .shortcut-copy{
+    color:#f5faf3;
+    font-weight:750;
+    font-size:12px;
+    line-height:1.4;
+  }
+  html[data-theme="dark"] #desktop-quick .shortcut-copy small{
+    color:#cee1cf;
+    font-size:10px;
+    line-height:1.45;
+    font-weight:500;
+  }
+  html[data-theme="dark"] #desktop-quick .shortcut-icon{
+    color:#eff9ec;
+    background:#47634d;
+  }
+  html[data-theme="dark"] #desktop-quick .shortcut-divider{
+    background:#536e58;
+  }
+  html[data-theme="dark"] #desktop-quick .desktop-shortcuts button.desktop-all{
+    background:#b7d1a8;
+    color:#172f20;
+    border-color:#c4ddba;
+    font-size:12px;
+  }
+  html[data-theme="dark"] #desktop-quick .desktop-shortcuts button.desktop-all:hover{
+    background:#c6e0b7;
+  }
+  html[data-theme="dark"] #desktop-quick .desktop-shortcuts button.desktop-all:focus-visible{
+    outline:2px solid #d4eacb;
+    outline-offset:2px;
+  }
+}
