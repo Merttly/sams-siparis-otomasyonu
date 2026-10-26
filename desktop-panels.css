@@ -624,3 +624,107 @@
     margin-top:12px;
   }
 }
+
+
+/* 2026-10-26 — Shared mobile + desktop action colors.
+   Visual styles only: original click handlers, disabled states,
+   payment calculations and role permissions are untouched. */
+:root{
+  --pos-tomato:#db382d;
+  --pos-tomato-hover:#c62f26;
+  --pos-parliament:#2356ae;
+  --pos-parliament-hover:#19478f;
+  --pos-orange:#f28c28;
+  --pos-orange-hover:#da7817;
+}
+/* Dirty order notice: retain the existing background, increase text contrast. */
+#editor #dirty-notice{
+  color:#60451b!important;
+  font-weight:700!important;
+  line-height:1.55;
+}
+html[data-theme="dark"] #editor #dirty-notice{
+  color:#ffe5b5!important;
+  font-weight:700!important;
+}
+/* Tomato red: cash settlement and true destructive action buttons. */
+#editor #pay-cash,
+button.warn,
+#tables .custom-table-actions button[data-custom-archive]{
+  background:var(--pos-tomato)!important;
+  border:1px solid var(--pos-tomato)!important;
+  color:#ffffff!important;
+}
+#editor #pay-cash:hover:not(:disabled),
+button.warn:hover:not(:disabled),
+#tables .custom-table-actions button[data-custom-archive]:hover:not(:disabled){
+  background:var(--pos-tomato-hover)!important;
+  border-color:var(--pos-tomato-hover)!important;
+  color:#ffffff!important;
+}
+html[data-theme="dark"] #editor #pay-cash,
+html[data-theme="dark"] button.warn,
+html[data-theme="dark"] #tables .custom-table-actions button[data-custom-archive]{
+  background:var(--pos-tomato)!important;
+  color:#ffffff!important;
+  border-color:var(--pos-tomato)!important;
+}
+/* Parliament blue: card settlement (the existing "Kart Kapat" button). */
+#editor #pay-card,
+html[data-theme="dark"] #editor #pay-card{
+  background:var(--pos-parliament)!important;
+  border:1px solid var(--pos-parliament)!important;
+  color:#ffffff!important;
+}
+#editor #pay-card:hover:not(:disabled),
+html[data-theme="dark"] #editor #pay-card:hover:not(:disabled){
+  background:var(--pos-parliament-hover)!important;
+  border-color:var(--pos-parliament-hover)!important;
+}
+/* Orange: adjustments and completion of an all-gift/zero-balance order.
+   These elements are created by the existing order-editor JavaScript. */
+#editor #adjust-preview-btn,
+#editor #gift-close-btn,
+#adj-apply,
+html[data-theme="dark"] #editor #adjust-preview-btn,
+html[data-theme="dark"] #editor #gift-close-btn,
+html[data-theme="dark"] #adj-apply{
+  background:var(--pos-orange)!important;
+  border:1px solid var(--pos-orange)!important;
+  color:#252016!important;
+}
+#editor #adjust-preview-btn:hover:not(:disabled),
+#editor #gift-close-btn:hover:not(:disabled),
+#adj-apply:hover:not(:disabled),
+html[data-theme="dark"] #editor #adjust-preview-btn:hover:not(:disabled),
+html[data-theme="dark"] #editor #gift-close-btn:hover:not(:disabled),
+html[data-theme="dark"] #adj-apply:hover:not(:disabled){
+  background:var(--pos-orange-hover)!important;
+  border-color:var(--pos-orange-hover)!important;
+  color:#252016!important;
+}
+/* Clearer red alerts and error text in both appearances. */
+#msg.status.error,
+.status.error{
+  background:#fff0ec!important;
+  border:1px solid #e8948d!important;
+  color:#ac2823!important;
+}
+html[data-theme="dark"] #msg.status.error,
+html[data-theme="dark"] .status.error{
+  background:#472c2d!important;
+  border:1px solid #b35149!important;
+  color:#ffb7ae!important;
+}
+#manager-screen{--manager-feedback-error:#c42e26}
+html[data-theme="dark"] #manager-screen{--manager-feedback-error:#ff9589}
+/* Keep focus outlines visible independently of button backgrounds. */
+#editor #pay-cash:focus-visible,
+#editor #pay-card:focus-visible,
+#editor #adjust-preview-btn:focus-visible,
+#editor #gift-close-btn:focus-visible,
+#adj-apply:focus-visible,
+#tables .custom-table-actions button[data-custom-archive]:focus-visible{
+  outline:3px solid #eab967!important;
+  outline-offset:2px;
+}
