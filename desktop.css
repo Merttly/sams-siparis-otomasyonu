@@ -489,3 +489,24 @@
   }
   html:not([data-theme="dark"]) #tables button.table-open .table-watermark{opacity:.23}
 }
+
+
+/* One-step full-table checkout shortcut for regular staff (desktop only). */
+@media screen and (min-width:1024px){
+  #desktop-staff-quick .staff-close-action{margin-top:15px}
+  #desktop-staff-quick #desktop-staff-close{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;min-height:58px;margin:0;padding:13px 11px;
+    border:1px solid #b63e3b;border-radius:11px;background:#b63e3b;
+    color:#fff;font-size:12px;font-weight:850;line-height:1.2;box-shadow:none;
+  }
+  #desktop-staff-quick #desktop-staff-close svg{width:21px;height:21px}
+  #desktop-staff-quick #desktop-staff-close:hover:not(:disabled){background:#9e3532;border-color:#9e3532}
+  #desktop-staff-quick #desktop-staff-close:focus-visible{outline:2px solid #df847c;outline-offset:3px}
+  #desktop-staff-quick #desktop-staff-close:disabled{opacity:.47;cursor:not-allowed}
+  #desktop-staff-quick .staff-close-action+.staff-quick-actions{margin-top:9px}
+  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-close{
+    background:#de645d;border-color:#de645d;color:#231915;
+  }
+  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-close:hover:not(:disabled){background:#ea746b;border-color:#ea746b}
+}
