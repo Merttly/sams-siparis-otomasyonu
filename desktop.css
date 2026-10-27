@@ -393,7 +393,12 @@
     border:1px solid #343b3f;border-radius:11px;background:#343b3f;color:#fff;
     font-size:12px;font-weight:800;line-height:1.3;box-shadow:none;
   }
-  #desktop-staff-quick #desktop-staff-close svg{width:21px;height:21px}
+  /* 2026-10-27: Mustard staff transfer and matching green check icon. */
+  #desktop-staff-quick #desktop-staff-close svg{
+    box-sizing:border-box;width:21px;height:21px;flex:0 0 21px;
+    padding:2px;border-radius:50%;
+    color:#3d6249;background:#e8f2e7;
+  }
   #desktop-staff-quick #desktop-staff-close:hover:not(:disabled){
     background:#475157;border-color:#475157;
   }
@@ -412,6 +417,9 @@
     font-size:11px;font-weight:790;line-height:1.3;text-align:center;box-shadow:none;
   }
   #desktop-staff-quick .staff-quick-actions button:first-child{background:#3d6249;color:#fff;border-color:#3d6249}
+  #desktop-staff-quick .staff-quick-actions #desktop-staff-transfer{
+    background:#d5ab4c;border-color:#c49a39;color:#302a1c;
+  }
   #desktop-staff-quick .staff-quick-actions button:hover:not(:disabled){filter:brightness(.96)}
   #desktop-staff-quick .staff-quick-actions button:disabled{opacity:.46;cursor:not-allowed}
   #desktop-staff-quick .staff-last-table{
@@ -480,6 +488,12 @@
   }
   html[data-theme="dark"] #desktop-staff-quick .staff-quick-actions button:first-child{
     background:#8eaa88;border-color:#8eaa88;color:#142c1b;
+  }
+  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-close svg{
+    color:#8eaa88;background:#2a3a30;
+  }
+  html[data-theme="dark"] #desktop-staff-quick .staff-quick-actions #desktop-staff-transfer{
+    background:#c59b45;border-color:#d5ad62;color:#211e16;
   }
   html[data-theme="dark"] #desktop-staff-quick .staff-last-table,
   html[data-theme="dark"] #desktop-staff-quick .staff-pick-row{
