@@ -419,6 +419,15 @@ html[data-theme="dark"] .account-feedback{color:#c6dfc2}
   html[data-theme="dark"] body:has(#workspace:not(.hidden)) header #logout{
     background:#33393a!important;color:#d2ead1!important;border-color:#52645a!important;
   }
+  /* Desktop dark mode: keep table numbers as readable as in light mode. */
+  html[data-theme="dark"] #tables button[data-table] .table-watermark{
+    right:7px;bottom:-14px;
+    font-size:clamp(80px,8vw,96px)!important;
+    opacity:.22!important;
+  }
+  html[data-theme="dark"] #tables button.table-open[data-table] .table-watermark{
+    opacity:.26!important;
+  }
 }
 @media print{
   /* The current print view should stay ink-friendly regardless of theme. */
