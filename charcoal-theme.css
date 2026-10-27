@@ -182,19 +182,17 @@ html[data-theme="dark"] #tables .custom-table-actions button{
 html[data-theme="dark"] #tables .custom-table-actions button[data-custom-archive]{
   background:#453335!important;color:#f6d9d4!important;border-color:#78565a!important;
 }
-/* Mustard edit action on desktop dark-theme custom tables.
+/* Mustard edit action on both mobile and desktop dark-theme custom tables.
    Override the general dark-table action rule without touching Remove. */
-@media screen and (min-width:1024px){
-  html[data-theme="dark"] #tables .custom-table-actions button[data-custom-rename]{
-    background:#c59b45!important;
-    color:#211e16!important;
-    border-color:#d5ad62!important;
-  }
-  html[data-theme="dark"] #tables .custom-table-actions button[data-custom-rename]:hover:not(:disabled){
-    background:#d5ab4c!important;
-    color:#211e16!important;
-    border-color:#e0b967!important;
-  }
+html[data-theme="dark"] #tables .custom-table-actions button[data-custom-rename]{
+  background:#c59b45!important;
+  color:#211e16!important;
+  border-color:#d5ad62!important;
+}
+html[data-theme="dark"] #tables .custom-table-actions button[data-custom-rename]:hover:not(:disabled){
+  background:#d5ab4c!important;
+  color:#211e16!important;
+  border-color:#e0b967!important;
 }
 /* Mobile bottom bar */
 html[data-theme="dark"] #pos-bottom-nav{
