@@ -280,19 +280,22 @@
   }
 }
 
-/* 2026-10-27 — Green active home, desktop outline SVG on mobile only. */
+/* 2026-10-27 — Borderless active Home, optically aligned to other nav icons. */
 @media screen and (max-width:1023px){
-  #pos-bottom-nav #pos-nav-tables .nav-icon svg{stroke-width:1.8}
+  #pos-bottom-nav #pos-nav-tables .nav-icon svg{
+    stroke-width:1.8;
+    transform:translateY(1px)!important;
+  }
   #pos-bottom-nav #pos-nav-tables.active{
-    background:#2f6546!important;
-    color:#fff!important;
+    background:transparent!important;
+    color:#255b39!important;
   }
   #pos-bottom-nav #pos-nav-tables.active .nav-icon svg{
     fill:none;
-    stroke:#fff;
+    stroke:currentColor;
   }
   html[data-theme="dark"] #pos-bottom-nav #pos-nav-tables.active{
-    background:#386c4d!important;
-    color:#fff!important;
+    background:transparent!important;
+    color:#b5d8b1!important;
   }
 }
