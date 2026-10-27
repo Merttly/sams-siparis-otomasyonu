@@ -1098,7 +1098,7 @@ html[data-theme="dark"] #manager-content .menu-order-step{
  #manager-content .menu-order-step{min-width:28px;width:28px}
 }
 
-</style><link rel="stylesheet" href="./desktop.css?v=20261027-13"><link rel="stylesheet" href="./charcoal-theme.css?v=20261028-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261028-3"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261027-3"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261027-13"><link rel="stylesheet" href="./charcoal-theme.css?v=20261028-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261028-4"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261027-3"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -2584,15 +2584,15 @@ function managerEditMenu(item,presetCategory){
  '<label style="flex:1;min-width:130px">Esnaf fiyatı (TL)<input id="menu-esnaf" type="number" min="0" step=".01" inputmode="decimal" placeholder="Normal fiyat kullanılsın" value="'+(x.esnaf_price??'')+'"></label></div>'+
  '<label>Ürün tipi<select id="menu-kind"><option value="plain">Seçeneksiz ürün</option><option value="options">Ekstralar / alt seçenekler</option><option value="bowl">Bowl seçenekleri</option></select></label>'+
  '<div id="menu-options-area"><h4>Seçenekler ve ekstralar</h4><p class="note">Her seçeneğin adını ve fiyatını ayrı ayrı girin. Esnaf fiyatı boş bırakılırsa normal fiyat kullanılır.</p><div id="menu-option-list"></div><button class="alt" id="menu-add-option" type="button">+ Seçenek Ekle</button></div>'+
- '<label><input id="menu-active" type="checkbox" style="width:auto" '+(x.active?'checked':'')+'> Satışta aktif</label>'+
- '<button id="menu-save">Değişiklikleri Kaydet</button><p class="note" id="menu-status"></p>';
+ '<div class="menu-editor-actions"><label class="menu-active-toggle"><input id="menu-active" type="checkbox" style="width:auto" '+(x.active?'checked':'')+'> <span>Satışta aktif</span></label>'+
+ '<button id="menu-save" type="button">Değişiklikleri Kaydet</button></div><p class="note" id="menu-status"></p>';
  $('menu-kind').value=x.kind;
  const optionRows=(x.options||[]).map(o=>({name:String(o.name??''),normal:o.normal,esnaf:o.esnaf??null}));
  function renderOptionRows(){
   $('menu-option-list').innerHTML=optionRows.map((o,i)=>
    '<div class="manager-record" data-menu-option="'+i+'"><div class="row"><b>Seçenek '+(i+1)+'</b><button class="alt" type="button" data-remove-option="'+i+'">Kaldır</button></div>'+
    '<label>Seçenek adı<input data-option-name="'+i+'" maxlength="120" placeholder="Örn. Tavuklu" value="'+esc(o.name)+'"></label>'+
-   '<div class="row"><label style="flex:1;min-width:120px">Normal fiyat (TL)<input data-option-normal="'+i+'" type="number" min="0" step=".01" inputmode="decimal" placeholder="0" value="'+esc(String(o.normal??''))+'"></label>'+
+   '<div class="row menu-option-prices"><label style="flex:1;min-width:120px">Normal fiyat (TL)<input data-option-normal="'+i+'" type="number" min="0" step=".01" inputmode="decimal" placeholder="0" value="'+esc(String(o.normal??''))+'"></label>'+
    '<label style="flex:1;min-width:120px">Esnaf fiyatı (TL)<input data-option-esnaf="'+i+'" type="number" min="0" step=".01" inputmode="decimal" placeholder="Normal fiyat" value="'+esc(String(o.esnaf??''))+'"></label></div></div>').join('');
   document.querySelectorAll('[data-remove-option]').forEach(btn=>btn.onclick=()=>{syncOptionRows();optionRows.splice(Number(btn.dataset.removeOption),1);renderOptionRows()});
  }
