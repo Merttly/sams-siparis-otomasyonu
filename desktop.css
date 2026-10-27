@@ -382,9 +382,27 @@
   }
   #desktop-staff-quick #staff-table-search::placeholder{color:#839789;opacity:1}
   #desktop-staff-quick #staff-table-search:focus{outline:2px solid #7dac86;outline-offset:1px}
+  /* One full-width close action, aligned exactly with the two tools below. */
+  #desktop-staff-quick .staff-close-action{
+    box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);
+    width:100%;min-width:0;margin:15px 0 0;
+  }
+  #desktop-staff-quick #desktop-staff-close{
+    box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+    gap:9px;width:100%;min-width:0;min-height:57px;margin:0;padding:12px 10px;
+    border:1px solid #d73e4b;border-radius:11px;background:#d73e4b;color:#fff;
+    font-size:12px;font-weight:800;line-height:1.3;box-shadow:none;
+  }
+  #desktop-staff-quick #desktop-staff-close svg{width:21px;height:21px}
+  #desktop-staff-quick #desktop-staff-close:hover:not(:disabled){
+    background:#bf3040;border-color:#bf3040;
+  }
+  #desktop-staff-quick #desktop-staff-close:focus-visible{
+    outline:2px solid #ef8992;outline-offset:2px;
+  }
   #desktop-staff-quick .staff-quick-actions{
     display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
-    margin:15px 0 12px;
+    margin:8px 0 12px;
   }
   #desktop-staff-quick .staff-quick-actions button{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -451,6 +469,12 @@
   }
   html[data-theme="dark"] #desktop-staff-quick #staff-table-search::placeholder{color:#aec3b0}
   html[data-theme="dark"] #desktop-staff-quick .staff-search-wrap>svg{color:#c0d8bf}
+  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-close{
+    background:#df4450;border-color:#df4450;color:#fff;
+  }
+  html[data-theme="dark"] #desktop-staff-quick #desktop-staff-close:hover:not(:disabled){
+    background:#f05460;border-color:#f05460;
+  }
   html[data-theme="dark"] #desktop-staff-quick .staff-quick-actions button{
     background:#304637;color:#e6f1e2;border-color:#536b57;
   }
