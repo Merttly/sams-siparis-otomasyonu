@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sam's | Sipariş Yönetimi</title><meta name="theme-color" content="#242722"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Sam’s Sipariş"><meta name="application-name" content="Sam’s Sipariş"><meta name="mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./sams-icon-192.png?v=2"><link rel="apple-touch-icon" sizes="180x180" href="./sams-icon-180.png?v=2">
+<title>Sam's | Sipariş Yönetimi</title><meta name="theme-color" content="#242722"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Sam’s Sipariş"><meta name="application-name" content="Sam’s Sipariş"><meta name="mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./sams-icon-192.png?v=3"><link rel="apple-touch-icon" sizes="180x180" href="./sams-icon-180.png?v=3">
 <script>
 (function(){
   try { if (localStorage.getItem('sams-pos-theme') === 'dark') document.documentElement.dataset.theme='dark'; }
@@ -141,7 +141,7 @@ button svg{flex-shrink:0}
 @media print{header{position:static}button svg{display:none}}
 
 /* Compact mobile refinements */
-header h1{font-size:19px;letter-spacing:-.025em}header .header-sub{font-weight:450;color:#c1c6b8}header small{font-size:10px;letter-spacing:.11em}header #logout{font-size:13px;padding:9px 14px;min-height:38px}
+header h1{font-size:19px;letter-spacing:-.025em}header .header-sub{font-weight:400;color:#c1c6b8}header small{font-size:10px;letter-spacing:.11em}header #logout{font-size:13px;padding:9px 14px;min-height:38px}
 #tables{gap:9px}#tables button{min-height:94px;padding:13px 8px;border-radius:16px;font-size:15px;line-height:1.3}#tables button small{display:block;margin-top:7px;font-size:12px}
 #workspace>.panel>.row:first-child h2{font-size:23px;margin:0}#refresh{font-size:13px;padding:9px 12px;min-height:38px}
 #workspace>.panel>.divider+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#workspace>.panel>.divider+.row button{min-width:0;padding:12px 8px;font-size:12px;min-height:49px}
@@ -156,7 +156,7 @@ body{background:#232922}header{border:0;background:#232922;box-shadow:none}main{
 body{background:#f5f6ee;color:#203b30;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 header{background:#f5f6ee!important;color:#203b30;border:0!important;padding:17px max(20px,calc((100vw - 760px)/2 + 20px)) 12px!important;min-height:72px}
 header h1{font-size:22px;letter-spacing:-.9px;font-weight:820;color:#16392e;line-height:1.1}
-header .header-sub{font-weight:450;color:#416356}header small{display:block;font-size:9px;letter-spacing:.23em;color:#8b998c;margin-top:5px;font-weight:750}
+header .header-sub{font-weight:400;color:#416356}header small{display:block;font-size:9px;letter-spacing:.23em;color:#8b998c;margin-top:5px;font-weight:750}
 header #logout{font-size:12px;border:1px solid #dce2d8;color:#365a49;background:#eef2e8;border-radius:12px;min-height:34px;padding:7px 12px}
 main{max-width:760px;padding:4px 18px 104px;color:#203b30}
 #msg.good{background:#e6efdf;color:#44664b;border:1px solid #d8e4d4}
@@ -1099,7 +1099,7 @@ html[data-theme="dark"] #manager-content .menu-order-step{
 }
 
 </style><link rel="stylesheet" href="./desktop.css?v=20261026-10"><link rel="stylesheet" href="./charcoal-theme.css?v=20261027-2"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-8"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
-<header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
+<header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
    <div class="account-top"><div><span class="account-eyebrow">SAM’S SİPARİŞ</span><h2 id="account-title">Kullanıcı Paneli</h2></div><button type="button" id="account-close" class="alt" aria-label="Kapat">✕</button></div>
@@ -1251,7 +1251,7 @@ html[data-theme="dark"] #manager-content .menu-order-step{
 <button type="button" id="pos-nav-admin" aria-haspopup="dialog" aria-controls="mobile-manager-shortcuts" aria-expanded="false"><span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9m4 0h3M4 12h3m4 0h9M4 17h11m4 0h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg></span><span class="nav-label">Yönetici</span></button>
 </nav>
 <aside id="desktop-sidebar" aria-label="Masaüstü ana menü">
- <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong><small>OTOMASYONU</small></div>
+ <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong></div>
  <div class="desktop-nav">
   <div class="desktop-nav-label">ÇALIŞMA ALANI</div>
   <button type="button" class="desktop-active" data-desktop-nav="home"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span>Ana Sayfa</span></button>

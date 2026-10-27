@@ -33,7 +33,7 @@
   }
   #desktop-sidebar .desktop-brand{padding:0 9px;color:#f2f4eb;line-height:1.08}
   #desktop-sidebar .desktop-brand strong{font-size:21px;font-weight:850;white-space:nowrap;letter-spacing:-1px}
-  #desktop-sidebar .desktop-brand strong span{font-weight:450;color:#c8d5c8}
+  #desktop-sidebar .desktop-brand strong span{font-weight:400;color:#c8d5c8}
   #desktop-sidebar .desktop-brand small{display:block;margin-top:8px;font-size:8px;font-weight:800;letter-spacing:.24em;color:#a1b3a2}
   #desktop-sidebar .desktop-nav-label{padding:0 10px;color:#8c9d8e;font-size:9px;font-weight:800;letter-spacing:.16em;margin-bottom:8px}
   #desktop-sidebar .desktop-nav{display:flex;flex-direction:column;gap:5px}
