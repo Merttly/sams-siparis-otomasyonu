@@ -1187,3 +1187,34 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row.is
   #editor .editor-popular-item{align-items:center}
   #editor .editor-popular-plus{align-self:center;justify-self:center}
 }
+
+/* 2026-10-28 — Align archive filter chevrons away from select edges (desktop only).
+   Replace native arrows so employee and table dropdowns share a clear inset. */
+@media screen and (min-width:1024px){
+  #manager-screen #manager-log-filters > label{
+    position:relative;
+    min-width:0;
+  }
+  #manager-screen #manager-log-filters > label > select{
+    -webkit-appearance:none;
+    appearance:none;
+    box-sizing:border-box;
+    padding-right:46px;
+  }
+  #manager-screen #manager-log-filters > label::after{
+    content:"";
+    position:absolute;
+    right:21px;
+    bottom:17px;
+    width:8px;
+    height:8px;
+    box-sizing:border-box;
+    border-right:2px solid #657a6c;
+    border-bottom:2px solid #657a6c;
+    transform:rotate(45deg);
+    pointer-events:none;
+  }
+  html[data-theme="dark"] #manager-screen #manager-log-filters > label::after{
+    border-color:#b8cfbb;
+  }
+}
