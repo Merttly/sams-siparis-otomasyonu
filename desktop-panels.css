@@ -1124,3 +1124,44 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row.is
 @media screen and (min-width:1024px){
   #editor .editor-popular-sort-toggle{display:none!important}
 }
+
+/* 2026-10-27 — Consistent section headings and vertical rhythm for three
+   management views (mobile + desktop). Content and payment logic unchanged. */
+#manager-screen[data-desktop-tab="overview"] #manager-feedback.date-range,
+#manager-screen[data-desktop-tab="logs"] #manager-feedback.date-range,
+#manager-screen[data-desktop-tab="corrections"] #manager-feedback.date-range{
+  margin-bottom:0;
+}
+#manager-screen[data-desktop-tab="overview"] #manager-content,
+#manager-screen[data-desktop-tab="logs"] #manager-content,
+#manager-screen[data-desktop-tab="corrections"] #manager-content{
+  margin-top:22px;
+}
+#manager-screen #manager-content>h3.manager-section-title{
+  margin:0 0 16px;
+  font-size:clamp(20px,2.2vw,24px);
+  font-weight:800;
+  line-height:1.25;
+  letter-spacing:-.02em;
+}
+#manager-screen[data-desktop-tab="overview"] #manager-content>.manager-stats{
+  margin-top:0;
+}
+#manager-screen[data-desktop-tab="logs"] #manager-content>.manager-record:first-of-type,
+#manager-screen[data-desktop-tab="corrections"] #manager-content>.manager-record:first-of-type{
+  margin-top:0;
+}
+#manager-screen[data-desktop-tab="corrections"] #manager-content>h3.manager-section-title + .note{
+  margin:0 0 16px;
+}
+@media screen and (min-width:1024px){
+  #manager-screen[data-desktop-tab="logs"] #manager-content,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content{
+    row-gap:16px;
+  }
+  #manager-screen[data-desktop-tab="logs"] #manager-content>h3.manager-section-title,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content>h3.manager-section-title,
+  #manager-screen[data-desktop-tab="corrections"] #manager-content>h3.manager-section-title + .note{
+    margin:0;
+  }
+}

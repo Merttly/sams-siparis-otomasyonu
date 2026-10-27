@@ -1098,7 +1098,7 @@ html[data-theme="dark"] #manager-content .menu-order-step{
  #manager-content .menu-order-step{min-width:28px;width:28px}
 }
 
-</style><link rel="stylesheet" href="./desktop.css?v=20261027-12"><link rel="stylesheet" href="./charcoal-theme.css?v=20261027-2"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-8"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261027-1"></head><body>
+</style><link rel="stylesheet" href="./desktop.css?v=20261027-12"><link rel="stylesheet" href="./charcoal-theme.css?v=20261027-2"><link rel="stylesheet" href="./desktop-panels.css?v=20261027-1"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261027-1"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -2182,7 +2182,7 @@ function managerRenderOverview(){
  const metric=(label,value)=>'<div class="manager-stat"><span>'+label+'</span><b>'+value+'</b></div>';
  manager.exportName='sams_genel_bakis';
  manager.exportRows=[['Gösterge','Değer'],['Açık Masa Sayısı',openOrders.length],['Açık Hesap Toplamı (TL)',openAmount],['Bugünkü Tahsilat (TL)',todayTotal],['Önceki 30 Gün Günlük Ortalama (TL)',dailyAverage],['Değişim (%)',variation===null?'Veri yok':variation.toFixed(1)]];
- $('manager-content').innerHTML='<h3>Anlık işletme özeti</h3>'+
+ $('manager-content').innerHTML='<h3 class="manager-section-title">Anlık İşletme Özeti</h3>'+
  '<div class="manager-stats">'+metric('Açık Masa Sayısı',String(openOrders.length))+metric('Açık Hesap Tutarı',money(openAmount))+metric('Bugün Alınan Toplam Ödeme',money(todayTotal))+
  metric('Son 30 Güne Göre Değişim',variation===null?'Veri yok':(variation>0?'+':'')+variation.toFixed(1)+'%')+'</div>'+
  '<p class="note">Değişim = bugünkü tahsilatın önceki 30 tam günün günlük ortalamasına göre farkı. Bugün henüz tamamlanmadığı için oran gün içinde değişebilir. Önceki 30 gün ortalaması: '+money(dailyAverage)+'. Açık hesaplar tahsilata dahil değildir.</p>'+
@@ -2220,7 +2220,7 @@ function managerRenderPerformance(){
 function managerRenderCorrections(){
  const people=new Map(manager.users.map(x=>[x.user_id,x.display_name]));
  manager.exportName='sams_odeme_duzeltmeleri';manager.exportRows=[['Ödeme No','Tarih','Tutar','İşlem','Gerekçe'],...manager.payments.map(p=>[p.id,p.created_at,p.amount,paymentCorrection(p)?.correction_type||'Normal',paymentCorrection(p)?.reason||''])];
- $('manager-content').innerHTML='<h3>Ödeme düzeltmeleri</h3><p class="note">Bu düzeltmeler yalnızca raporlama kayıtlarını etkiler. Fiziksel POS veya kasada para iadesi gerçekleştirmez; silinen ürünleri masaya geri yüklemez.</p>'+
+ $('manager-content').innerHTML='<h3 class="manager-section-title">Ödeme Düzeltmeleri</h3><p class="note">Bu düzeltmeler yalnızca raporlama kayıtlarını etkiler. Fiziksel POS veya kasada para iadesi gerçekleştirmez; silinen ürünleri masaya geri yüklemez.</p>'+
  [...manager.payments].reverse().map(p=>{const c=paymentCorrection(p);return '<div class="manager-record"><div class="manager-record-title">Ödeme #'+p.id+' · '+money(p.amount)+'</div><div class="manager-record-info">'+esc(p.payment_method)+' · '+esc(new Date(p.created_at).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'}))+'</div>'+
  (c?'<p class="note">Düzeltilmiş: '+(c.correction_type==='void'?'İptal edildi':esc(c.replacement_method))+' · '+esc(c.reason)+'</p>':'<div class="row"><button class="alt" data-correct="'+p.id+'" data-type="method">Ödeme türünü düzelt</button><button class="warn" data-correct="'+p.id+'" data-type="void">Kaydı iptal et</button></div>')+'</div>'}).join('');
  document.querySelectorAll('[data-correct]').forEach(b=>b.onclick=async()=>{
@@ -2369,7 +2369,7 @@ function managerRenderLogs(){
   manager.exportRows=[['Tarih/Saat','Masa','İşlem','Açıklama','Çalışan'],...selected.map(x=>{
    const v=descriptions.get(x.id);return[new Date(x.created_at).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'}),historicalLabels.get(x.id)||x.table_id||'Sistem',v.label,v.body,people.get(x.actor_id)||'Bilinmeyen çalışan'];
   })];
-  $('manager-content').innerHTML='<h3>İşlem arşivi · '+selected.length+' kayıt</h3>'+
+  $('manager-content').innerHTML='<h3 class="manager-section-title">İşlem Arşivi · '+selected.length+' kayıt</h3>'+
   [...selected].reverse().map(x=>{const v=descriptions.get(x.id),time=new Date(x.created_at).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'});
    return '<div class="manager-record"><div class="row"><span class="manager-record-title">'+esc(historicalLabels.get(x.id)||x.table_id||'Sistem')+'</span><span class="log-type">'+esc(v.label)+'</span></div><div class="log-detail">'+esc(v.body)+'</div><div class="manager-record-info">'+esc(time)+' · '+esc(people.get(x.actor_id)||'Bilinmeyen çalışan')+'</div></div>';
   }).join('')||'<p class="note">Bu filtrelerde işlem kaydı yok.</p>';
