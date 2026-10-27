@@ -1165,3 +1165,25 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row.is
     margin:0;
   }
 }
+
+/* 2026-10-28 — Center popular-product pluses geometrically inside their tiles.
+   Use SVG strokes rather than font glyph metrics; works on mobile and PC. */
+#editor .editor-popular-plus{
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  padding:0;
+}
+#editor .editor-popular-plus svg{
+  display:block;
+  width:17px;height:17px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:3.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+@media screen and (max-width:1023px){
+  #editor .editor-popular-item{align-items:center}
+  #editor .editor-popular-plus{align-self:center;justify-self:center}
+}
