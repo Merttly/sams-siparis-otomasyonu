@@ -1061,7 +1061,44 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   }
   #tables .table-section:last-child{padding-bottom:12px}
 }
-</style><link rel="stylesheet" href="./desktop.css?v=20261026-9"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-8"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
+
+/* Next release: distinctive, legible mustard edit action on all screens. */
+#tables .custom-table-actions button[data-custom-rename]{
+ background:#f4de96;color:#634707;border-color:#d6b85a;
+}
+html[data-theme="dark"] #tables .custom-table-actions button[data-custom-rename]{
+ background:#83631d;color:#fff0c5;border-color:#ae8a37;
+}
+/* Accessible category and item reordering controls. */
+#manager-content .menu-group-count{margin-left:0}
+#manager-content .menu-group-controls{
+ display:inline-flex;align-items:center;gap:4px;margin-left:auto;flex:0 0 auto;
+}
+#manager-content .menu-group-controls button,
+#manager-content .menu-order-step{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-width:29px;width:29px;height:30px;min-height:30px;
+ padding:2px 3px;border-radius:8px;font-weight:800;font-size:15px;line-height:1;
+ background:#e1eadb;color:#34543e;border:1px solid #ccdec9;
+}
+#manager-content .menu-group-controls button:disabled,
+#manager-content .menu-order-step:disabled{opacity:.35;cursor:default}
+#manager-content .menu-order-buttons{display:inline-flex;gap:3px;flex:0 0 auto}
+#manager-content .menu-category-grip{cursor:grab;touch-action:none}
+#manager-content .menu-drag-handle{touch-action:none;cursor:grab}
+#manager-content .menu-group.is-reordering,#manager-content .menu-product-row.is-reordering{opacity:.7}
+html[data-theme="dark"] #manager-content .menu-group-controls button,
+html[data-theme="dark"] #manager-content .menu-order-step{
+ background:#45604a;color:#e9f6e7;border-color:#6b876f;
+}
+@media(max-width:440px){
+ #manager-content .menu-group summary{flex-wrap:wrap}
+ #manager-content .menu-group-controls{gap:3px}
+ #manager-content .menu-product-row{gap:6px}
+ #manager-content .menu-order-step{min-width:28px;width:28px}
+}
+
+</style><link rel="stylesheet" href="./desktop.css?v=20261026-10"><link rel="stylesheet" href="./charcoal-theme.css?v=20261026-1"><link rel="stylesheet" href="./desktop-panels.css?v=20261026-8"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261026-2"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1><small>OTOMASYONU</small></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
   <div class="account-card">
@@ -1127,7 +1164,10 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg>
   <input id="staff-table-search" type="search" placeholder="Masa adı veya numarası" autocomplete="off" aria-controls="staff-tool-results">
  </div>
- <div class="staff-quick-actions">
+  <div class="staff-close-action">
+  <button type="button" id="desktop-staff-close"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h5m-3 5 2 2 4-4"/></svg><span>Masa Kapat</span></button>
+ </div>
+<div class="staff-quick-actions">
   <button type="button" id="desktop-staff-split"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h3M8 16h3m5-4v5m-2.5-2.5h5"/></svg><span>Parça Hesap Al</span></button>
   <button type="button" id="desktop-staff-transfer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14m-4-4 4 4-4 4M19 17H5m4-4-4 4 4 4"/></svg><span>Masa Taşı / Birleştir</span></button>
  </div>
@@ -1208,7 +1248,7 @@ html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a
 <button type="button" id="pos-nav-orders"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9h12v5.5A4.5 4.5 0 0 1 12 19H9a4.5 4.5 0 0 1-4.5-4.5z"/><path d="M16.5 10h1.7a2.8 2.8 0 0 1 0 5.6h-1.7"/><path d="M3 21h16"/><path d="M7.5 3.5v2.2M12 3.5v2.2"/></svg></span><span class="nav-label">Siparişler</span></button>
 <button type="button" id="pos-nav-report"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg></span><span class="nav-label">Gün Sonu</span></button>
 <button type="button" id="pos-nav-history"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg></span><span class="nav-label">Geçmiş</span></button>
-<button type="button" id="pos-nav-admin" aria-haspopup="dialog" aria-controls="mobile-manager-shortcuts" aria-expanded="false"><span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Yönetici</span></button>
+<button type="button" id="pos-nav-admin" aria-haspopup="dialog" aria-controls="mobile-manager-shortcuts" aria-expanded="false"><span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9m4 0h3M4 12h3m4 0h9M4 17h11m4 0h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg></span><span class="nav-label">Yönetici</span></button>
 </nav>
 <aside id="desktop-sidebar" aria-label="Masaüstü ana menü">
  <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong><small>OTOMASYONU</small></div>
@@ -1440,11 +1480,11 @@ function renderStaffToolPicker(){
  if(state.role==='manager')return;
  const field=$('staff-table-search'),picker=$('staff-tool-picker'),results=$('staff-tool-results');
  const mode=staffToolMode,query=field.value.trim().toLocaleLowerCase('tr-TR');
- const choosing=mode==='split'||mode==='transfer';
+ const choosing=mode==='split'||mode==='transfer'||mode==='close';
  const visible=choosing||query.length>0;
  show('staff-tool-picker',visible);
  if(!visible)return;
- $('staff-tool-heading').textContent=mode==='split'?'Parça hesap için masa seç':mode==='transfer'?'Taşınacak masayı seç':'Masa sonuçları';
+ $('staff-tool-heading').textContent=mode==='split'?'Parça hesap için masa seç':mode==='transfer'?'Taşınacak masayı seç':mode==='close'?'Kapatılacak masayı seç':'Masa sonuçları';
  const openIds=new Set(staffOpenOrders.map(o=>o.table_id));
  const eligible=staffOpenOrders.filter(o=>(o.order_items||[]).some(i=>Number(i.quantity)>0)).map(o=>o.table_id);
  const matches=choosing?state.tables.filter(t=>eligible.includes(t.id)):
@@ -1460,13 +1500,25 @@ function renderStaffToolPicker(){
   if(state.selected!==id||$('editor').classList.contains('hidden'))return;
   if(action==='split')await split();
   if(action==='transfer')await transfer();
+  if(action==='close')openStaffClosePaymentChoices();
  });
 }
+function openStaffClosePaymentChoices(){
+ if(state.role==='manager'||!state.selected||!state.lines.length){message('Kapatılacak açık masa bulunamadı.',true);return}
+ const total=state.lines.reduce((sum,line)=>sum+Number(line.p)*Number(line.q),0);
+ if(!Number.isFinite(total)||total<=0){message('Bu masada tahsil edilecek tutar bulunmuyor.',true);return}
+ showOptions(displayTableName(state.selected)+' · '+money(total),[
+  {label:'Nakit ile Kapat',price:total,onSelect:()=>pay('Nakit')},
+  {label:'Kart ile Kapat',price:total,onSelect:()=>pay('Kart')}
+ ]);
+}
+
 function renderDesktopStaffQuick(orders){
  if(state.role==='manager')return;
  staffOpenOrders=orders||[];
  const available=staffOpenOrders.some(o=>(o.order_items||[]).some(i=>Number(i.quantity)>0));
  $('desktop-staff-split').disabled=!available;
+ $('desktop-staff-close').disabled=!available;
  $('desktop-staff-transfer').disabled=!available||state.tables.length<2;
  const last=staffLastTableId&&state.tables.find(t=>t.id===staffLastTableId);
  $('desktop-staff-last').disabled=!last;
@@ -1675,12 +1727,36 @@ async function archiveCustomTable(id,button){
 
 async function transfer(){
  if(state.loading||!state.selected||!state.lines.length){message('Taşınacak ürün yok.',true);return}
- const target=prompt('Hedef masa adını yazın:\n'+state.tables.filter(t=>t.id!==state.selected).map(t=>displayTableName(t.id)).join(' · '));
- if(target===null)return;
- const candidate=target.trim();
- const selected=state.tables.find(t=>t.id!==state.selected&&(t.id===candidate||displayTableName(t.id)===candidate));
- const dest=selected?.id;
- if(!dest){message('Geçerli ve farklı bir hedef masa seçin.',true);return}
+ const targets=state.tables.filter(t=>t.id!==state.selected);
+ if(!targets.length){message('Taşınabilecek başka masa yok.',true);return}
+ const overlay=document.createElement('div');overlay.className='option-overlay';
+ const sheet=document.createElement('div');sheet.className='option-sheet transfer-target-sheet';
+ sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');
+ sheet.setAttribute('aria-label','Masa taşıma veya birleştirme hedefi');
+ const title=document.createElement('h3');title.textContent='Hedef Masayı Seç';
+ const note=document.createElement('p');note.className='note';
+ note.textContent=displayTableName(state.selected)+' masasının siparişleri taşınacak. Hedef doluysa hesaplar birleştirilir.';
+ sheet.append(title,note);
+ const choices=document.createElement('div');choices.className='option-choices';
+ const close=()=>{document.removeEventListener('keydown',onEscape);overlay.remove()};
+ const onEscape=e=>{if(e.key==='Escape')close()};
+ targets.forEach(t=>{
+  const button=document.createElement('button');button.type='button';
+  button.textContent=displayTableName(t.id);
+  button.setAttribute('aria-label',displayTableName(t.id)+' masasına taşı veya birleştir');
+  button.onclick=()=>{close();transferTo(t.id)};
+  choices.appendChild(button);
+ });
+ const cancel=document.createElement('button');cancel.type='button';
+ cancel.className='cancel';cancel.textContent='Vazgeç';cancel.onclick=close;
+ choices.appendChild(cancel);sheet.appendChild(choices);overlay.appendChild(sheet);
+ overlay.onclick=e=>{if(e.target===overlay)close()};
+ document.addEventListener('keydown',onEscape);
+ document.body.appendChild(overlay);
+}
+async function transferTo(dest){
+ if(state.loading||!state.selected||!state.lines.length)return;
+ if(!state.tables.some(t=>t.id===dest&&t.id!==state.selected)){message('Geçerli ve farklı bir hedef masa seçin.',true);return}
  if(!confirm(displayTableName(state.selected)+' → '+displayTableName(dest)+'\nMasa taşınacak veya hedef doluysa birleştirilecek. Kaydedilmemiş ürünler önce kaydedilir. Devam?'))return;
  if(!await ensureSaved())return;
  const {data,error}=await db.from('orders').select('id,version').eq('table_id',dest).eq('status','open').maybeSingle();
@@ -2303,7 +2379,11 @@ function managerRenderLogs(){
 async function loadMenu(){
  const {data,error}=await db.from('menu_products').select('id,category,name,normal_price,esnaf_price,kind,options,active,sort_order').order('sort_order').order('id');
  if(error){message('Menü yüklenemedi: '+error.message,true);return false}
- menuCatalog=data||[];await loadFavorites();return true;
+ const categoryResult=await db.from('menu_categories').select('id,name,sort_order').order('sort_order',{ascending:true}).order('id',{ascending:true});
+ if(!categoryResult.error)menuCategories=categoryResult.data||[];
+ const ranks=new Map(menuCategories.map((item,index)=>[item.name,index]));
+ menuCatalog=(data||[]).sort((a,b)=>(ranks.get(a.category)??9999)-(ranks.get(b.category)??9999)||Number(a.sort_order)-Number(b.sort_order)||Number(a.id)-Number(b.id));
+ await loadFavorites();return true;
 }
 async function loadMenuCategories(){
  const {data,error}=await db.from('menu_categories').select('id,name,sort_order').order('sort_order',{ascending:true}).order('id',{ascending:true});
@@ -2321,7 +2401,7 @@ async function managerMenu(){
  if(!menuExpandedGroup||!names.includes(menuExpandedGroup))menuExpandedGroup=names[0]||null;
  host.innerHTML=
  '<h3 class="menu-admin-title">Menü Yönetimi</h3>'+
- '<p class="note menu-admin-intro">'+menuCatalog.length+' ürün · '+names.length+' ana başlık. Başlıklara dokunarak ürünleri düzenleyebilirsiniz.</p>'+
+ '<p class="note menu-admin-intro">'+menuCatalog.length+' ürün · '+names.length+' ana başlık. Başlıkları ve ürünleri ☰ ile sürükleyip oklarla sıralayabilirsiniz. Başlığa dokunarak ürünleri düzenleyin.</p>'+
  '<div class="menu-admin-actions"><button type="button" id="menu-new">+ Yeni Ürün</button><button class="alt" type="button" id="menu-new-category"'+(loaded?'':' disabled')+'>+ Ana Başlık</button></div>'+
  '<section id="manager-popular" class="manager-popular" aria-label="Popüler Ürünler Yönetimi">'+
   '<div class="manager-popular-heading"><div><h4>Popüler Ürünler</h4><p>Sipariş ekranındaki hızlı ürün kısayollarını yönetin.</p></div><span class="manager-popular-badge">Hızlı Ekleme</span></div>'+
@@ -2338,14 +2418,19 @@ async function managerMenu(){
  '<div class="menu-groups">'+names.map((name,i)=>{
   const products=menuCatalog.filter(p=>p.category===name);
   const inactive=products.filter(p=>!p.active).length;
-  return '<details class="menu-group" data-menu-group="'+i+'"'+(menuExpandedGroup===name?' open':'')+'>'+
-   '<summary><span class="menu-group-heading">'+esc(name)+'</span><span class="menu-group-count">'+products.length+' ürün'+(inactive?' · '+inactive+' pasif':'')+'</span><span class="menu-chevron" aria-hidden="true">⌄</span></summary>'+
+  return '<details class="menu-group" data-menu-group="'+i+'" data-category-id="'+(menuCategories.find(c=>c.name===name)?.id||'')+'"'+(menuExpandedGroup===name?' open':'')+'>'+
+   '<summary><span class="menu-group-heading">'+esc(name)+'</span><span class="menu-group-count">'+products.length+' ürün'+(inactive?' · '+inactive+' pasif':'')+'</span>'+
+   '<span class="menu-group-controls"><button type="button" class="menu-category-grip" data-category-drag="'+i+'" title="Başlığı sürükle" aria-label="'+esc(name)+' başlığını sürükle"'+(loaded?'':' disabled')+'>☰</button>'+
+   '<button type="button" data-menu-category-move="-1" title="Yukarı taşı" aria-label="'+esc(name)+' başlığını yukarı taşı"'+(!loaded||i===0?' disabled':'')+'>↑</button>'+
+   '<button type="button" data-menu-category-move="1" title="Aşağı taşı" aria-label="'+esc(name)+' başlığını aşağı taşı"'+(!loaded||i===names.length-1?' disabled':'')+'>↓</button></span>'+
+   '<span class="menu-chevron" aria-hidden="true">⌄</span></summary>'+
    '<div class="menu-group-body">'+
-   (products.length?products.map(p=>
-    '<div class="menu-product-row'+(p.active?'':' inactive')+'" data-sort-id="'+p.id+'"><button type="button" class="alt menu-drag-handle" data-drag-id="'+p.id+'" aria-label="'+esc(p.name)+' ürününü taşı" style="touch-action:none;cursor:grab;padding:8px;user-select:none;-webkit-user-select:none">☰</button><div class="menu-product-info"><b>'+esc(p.name)+'</b>'+
+   (products.length?products.map((p,i)=>
+    '<div class="menu-product-row'+(p.active?'':' inactive')+'" data-sort-id="'+p.id+'"><button type="button" class="alt menu-drag-handle" data-drag-id="'+p.id+'" aria-label="'+esc(p.name)+' ürününü taşı" style="touch-action:none;cursor:grab;padding:8px">☰</button><div class="menu-product-info"><b>'+esc(p.name)+'</b>'+
     (!p.active?' <span class="menu-product-inactive">Pasif</span>':'')+
     '<small>Normal '+money(p.normal_price)+' · Esnaf '+(p.esnaf_price===null?'Normal fiyat':money(p.esnaf_price))+'</small>'+
-    '</div><button class="alt menu-product-edit" type="button" data-menu-id="'+p.id+'">Düzenle</button></div>'
+    '</div><span class="menu-order-buttons"><button type="button" class="menu-order-step" data-menu-order="-1" title="Yukarı taşı" aria-label="'+esc(p.name)+' ürününü yukarı taşı"'+(i===0?' disabled':'')+'>↑</button><button type="button" class="menu-order-step" data-menu-order="1" title="Aşağı taşı" aria-label="'+esc(p.name)+' ürününü aşağı taşı"'+(i===products.length-1?' disabled':'')+'>↓</button></span>'+
+    '<button class="alt menu-product-edit" type="button" data-menu-id="'+p.id+'">Düzenle</button></div>'
    ).join(''):'<p class="menu-category-empty">Bu başlıkta henüz ürün yok.</p>')+
    '<button type="button" class="alt menu-category-product" data-menu-add="'+i+'">+ Bu Başlığa Ürün Ekle</button>'+
    '</div></details>';
@@ -2398,46 +2483,91 @@ async function managerMenu(){
   menuExpandedGroup=names[Number(el.dataset.menuGroup)];
   document.querySelectorAll('[data-menu-group]').forEach(other=>{if(other!==el)other.open=false});
  }));
- document.querySelectorAll('.menu-group-body').forEach(body=>{
-  let dragged=null,originY=0,changed=false;
-  const rows=()=>[...body.querySelectorAll('[data-sort-id]')];
+
+ function enableMenuReordering(container,rowSelector,handleSelector,arrowSelector,persist){
+  let busy=false;
+  const rows=()=>[...container.children].filter(el=>el.matches(rowSelector));
+  const updateArrows=()=>rows().forEach((row,index)=>{
+   row.querySelectorAll(arrowSelector).forEach(button=>{
+    button.disabled=busy||(Number(button.dataset.menuOrder||button.dataset.menuCategoryMove)<0?index===0:index===rows().length-1);
+   });
+  });
   const save=async()=>{
-   const category=body.closest('.menu-group')?.querySelector('.menu-group-heading')?.textContent;
-   const ids=rows().map(el=>Number(el.dataset.sortId));
-   if(!category||!ids.length)return;
-   try{
-    const {error}=await db.rpc('manager_reorder_menu',{p_category:category,p_ids:ids});
-    if(error)throw error;
-    if(!await loadMenu())throw Error('Menü yeniden okunamadı');
-    renderEditor();message('Ürün sırası kaydedildi.');
-   }catch(err){message('Sıralama kaydedilemedi: '+err.message,true);await loadMenu();await managerMenu()}
+   if(busy)return;
+   busy=true;updateArrows();
+   try{await persist(rows());}
+   catch(err){
+    message('Sıralama kaydedilemedi: '+(err.message||String(err)),true);
+    await loadMenu();await managerMenu();
+   }finally{busy=false;if(container.isConnected)updateArrows()}
   };
-  body.querySelectorAll('[data-drag-id]').forEach(handle=>{
-   handle.onpointerdown=e=>{
-    if(e.button!==0)return;
-    dragged=handle.closest('[data-sort-id]');originY=e.clientY;changed=false;
-    handle.setPointerCapture(e.pointerId);
-    dragged.style.opacity='.65';
+  container.querySelectorAll(arrowSelector).forEach(button=>button.onclick=event=>{
+   event.preventDefault();event.stopPropagation();
+   if(busy)return;
+   const row=button.closest(rowSelector),order=rows(),from=order.indexOf(row);
+   const to=from+Number(button.dataset.menuOrder||button.dataset.menuCategoryMove);
+   if(from<0||to<0||to>=order.length)return;
+   if(to<from)container.insertBefore(row,order[to]);else order[to].after(row);
+   updateArrows();save();
+  });
+  container.querySelectorAll(handleSelector).forEach(handle=>{
+   handle.onclick=e=>{e.preventDefault();e.stopPropagation()};
+   handle.onpointerdown=event=>{
+   if(event.button!==0||busy)return;
+   const row=handle.closest(rowSelector);
+   if(!row)return;
+   event.preventDefault();event.stopPropagation();
+   const original=rows().indexOf(row);
+   row.classList.add('is-reordering');
+   const onMove=e=>{
+    e.preventDefault();
+    const others=rows().filter(item=>item!==row);
+    const target=others.find(item=>e.clientY<item.getBoundingClientRect().top+item.getBoundingClientRect().height/2);
+    if(target)container.insertBefore(row,target);
+    else if(others.length)others[others.length-1].after(row);
+    updateArrows();
    };
-   handle.onpointermove=e=>{
-    if(!dragged)return;
-    if(Math.abs(e.clientY-originY)<7&&!changed)return;
-    const others=rows().filter(x=>x!==dragged);
-    const target=others.find(x=>e.clientY<x.getBoundingClientRect().top+x.getBoundingClientRect().height/2);
-    if(target)body.insertBefore(dragged,target);
-    else{
-     const last=others[others.length-1];
-     if(last)last.after(dragged);
-    }
-    changed=true;
+   const cleanup=()=>{
+    window.removeEventListener('pointermove',onMove);
+    window.removeEventListener('pointerup',onUp);
+    window.removeEventListener('pointercancel',onCancel);
+    window.removeEventListener('blur',onCancel);
+    row.classList.remove('is-reordering');
    };
-   const finish=()=>{
-    if(!dragged)return;
-    dragged.style.opacity='';dragged=null;
-    if(changed)save();
+   const onUp=()=>{cleanup();if(rows().indexOf(row)!==original)save()};
+   const onCancel=()=>{cleanup();if(rows().indexOf(row)!==original)managerMenu()};
+   window.addEventListener('pointermove',onMove,{passive:false});
+   window.addEventListener('pointerup',onUp);
+   window.addEventListener('pointercancel',onCancel);
+   window.addEventListener('blur',onCancel);
    };
-   handle.onpointerup=finish;
-   handle.onpointercancel=()=>{if(dragged)dragged.style.opacity='';dragged=null;managerMenu()};
+  });
+  updateArrows();
+ }
+ if(loaded){
+  enableMenuReordering(host.querySelector('.menu-groups'),'.menu-group','.menu-category-grip','[data-menu-category-move]',async ordered=>{
+   const ids=ordered.map(el=>Number(el.dataset.categoryId));
+   if(ids.length!==menuCategories.length||ids.some(id=>!Number.isSafeInteger(id)||id<=0))throw Error('Ana başlık listesi değişti; yenileyin.');
+   const {error}=await db.rpc('manager_reorder_categories',{p_ids:ids});
+   if(error)throw error;
+   if(!await loadMenu())throw Error('Menü yeniden okunamadı');
+   if(menuCategories.map(c=>Number(c.id)).join(',')!==ids.join(','))throw Error('Ana başlık sırası doğrulanamadı');
+   menuExpandedGroup=ordered.find(el=>el.open)?.querySelector('.menu-group-heading')?.textContent||menuExpandedGroup;
+   await managerMenu();renderEditor();message('Ana başlık sırası kaydedildi.');
+  });
+ }
+ document.querySelectorAll('.menu-group-body').forEach(body=>{
+  enableMenuReordering(body,'[data-sort-id]','.menu-drag-handle','[data-menu-order]',async ordered=>{
+   const group=body.closest('.menu-group');
+   const category=group?.querySelector('.menu-group-heading')?.textContent;
+   const ids=ordered.map(el=>Number(el.dataset.sortId));
+   if(!category||!ids.length)throw Error('Ürün listesi bulunamadı');
+   const {error}=await db.rpc('manager_reorder_menu',{p_category:category,p_ids:ids});
+   if(error)throw error;
+   if(!await loadMenu())throw Error('Menü yeniden okunamadı');
+   const persisted=menuCatalog.filter(p=>p.category===category).map(p=>Number(p.id));
+   if(ids.join(',')!==persisted.join(','))throw Error('Sıralama tekrar okunurken tutarsızlık oluştu');
+   renderEditor();message('Ürün sırası kaydedildi.');
   });
  });
  document.querySelectorAll('[data-menu-id]').forEach(el=>el.onclick=()=>managerEditMenu(menuCatalog.find(p=>p.id===Number(el.dataset.menuId))));
@@ -2704,6 +2834,7 @@ $('staff-table-search').addEventListener('keydown',async event=>{
 $('staff-tool-cancel').onclick=()=>{
  staffToolMode='search';$('staff-table-search').value='';renderStaffToolPicker();
 };
+$('desktop-staff-close').onclick=()=>{if(state.role==='manager')return;staffToolMode='close';renderStaffToolPicker()};
 $('desktop-staff-split').onclick=()=>{
  if(state.role==='manager')return;
  staffToolMode='split';renderStaffToolPicker();
