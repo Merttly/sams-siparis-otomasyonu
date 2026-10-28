@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sam’s Sipariş · Kullanıcı Önizlemesi (DEMO)</title><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#242722"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Sam’s Sipariş"><meta name="application-name" content="Sam’s Sipariş"><meta name="mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./sams-icon-192.png?v=3"><link rel="apple-touch-icon" sizes="180x180" href="./sams-icon-180.png?v=3">
+<script>
+(function(){
+  try { if (localStorage.getItem('sams-pos-theme') === 'dark') document.documentElement.dataset.theme='dark'; }
+  catch (_e) { /* Private browsing or disabled storage: default to light. */ }
+})();
+</script>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#171714;color:#f7f4e9}
+*{box-sizing:border-box}body{margin:0}header{padding:16px;background:#20201d;border-bottom:1px solid #3b3b34;display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font-size:20px;margin:0}small,.muted{color:#c6c6b9}main{max-width:760px;margin:auto;padding:18px}
+.panel{background:#252520;border:1px solid #44443a;border-radius:14px;padding:18px;margin-bottom:16px}
+h2{margin:0 0 14px;font-size:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+button,input,textarea,select{font:inherit}button{background:#a8d4af;color:#17221b;border:0;border-radius:10px;padding:13px;cursor:pointer;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}
+button.alt{background:#3b3b35;color:#faf9f0}button.warn{background:#c89c82;color:#211610}
+input,textarea{width:100%;background:#131310;color:#faf9f0;border:1px solid #666659;border-radius:9px;padding:12px;margin:6px 0 13px}
+table{width:100%;border-collapse:collapse}td{border-bottom:1px solid #4a4a41;padding:10px 2px}td:last-child{text-align:right}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.row button{padding:8px 12px}
+.note{font-size:13px;color:#c6c6b9;line-height:1.5}.status{padding:12px;margin:12px 0;border-radius:9px;background:#35362a}.error{background:#63312d}.good{background:#274732}
+.hidden{display:none!important}.log-entry{padding:14px 3px;border-bottom:1px solid #484840}.log-entry:last-child{border-bottom:0}.log-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.log-table{font-size:17px;font-weight:750}.log-type{font-size:12px;background:#393c34;border-radius:999px;padding:4px 9px;color:#d9e5d8}.log-detail{margin:8px 0;color:#e2e2d8;font-size:14px;line-height:1.55;white-space:pre-line}.log-meta{color:#aaa99b;font-size:12px}.log-date{margin:22px 0 4px;color:#a9bfac;font-weight:750;letter-spacing:.03em}.log-total{font-weight:700;margin-top:7px}.log-intro{color:#bcbcad;font-size:13px}#summary:not(.hidden){position:fixed;z-index:2000;inset:12px;margin:0;overflow-y:auto;max-width:none;box-shadow:0 0 0 999px #000b;border:2px solid #9cbda2}#summary-body{padding-bottom:22px}.product{font-size:14px;padding:12px 7px}.table-open{background:#81b9a3}#tables button small{color:#1a3024;font-weight:750;opacity:1}.divider{border-top:1px solid #55554a;margin:14px 0}
+#editor:not(.hidden){position:fixed;inset:0;z-index:1500;overflow-y:auto;overscroll-behavior:contain;margin:0;border:0;border-radius:0;max-width:none;padding:18px max(18px,calc((100vw - 760px)/2));background:#1d1d19;height:100vh;height:100dvh}
+#editor #table-title{margin:18px 0 12px}
+#editor > .row:first-child{position:sticky;top:-18px;z-index:2;background:#1d1d19;padding:10px 0}
+body:has(#editor:not(.hidden)){overflow:hidden}
+.option-overlay{position:fixed;inset:0;background:#000b;z-index:2600;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.option-sheet{background:#292923;border:1px solid #626258;border-radius:18px 18px 14px 14px;padding:20px;width:100%;max-width:540px;max-height:85dvh;overflow-y:auto}
+.option-sheet h3{margin:0 0 14px}.option-choices{display:grid;gap:10px}.option-choices button{width:100%;text-align:left;background:#3d4038;color:#f8f6ea;padding:16px}.option-choices button:hover{background:#4c594e}.option-choices .cancel{background:#282821;border:1px solid #65655a;text-align:center}
+.manager-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:14px 0}.manager-tabs button{padding:12px 5px;font-size:13px}.manager-tabs .active{background:#a8d4af;color:#17221b}.manager-date-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.manager-date-row label{min-width:0;font-size:13px;color:#d5d4c8}.manager-date-row input,.manager-date-row select{font-size:14px;max-width:100%;margin:4px 0 10px}.manager-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}.manager-stat{background:#34372e;border-radius:12px;padding:15px}.manager-stat b{display:block;margin-top:7px;font-size:19px}.manager-record{padding:12px 2px;border-bottom:1px solid #484840}.manager-record-title{font-weight:700}.manager-record-info{font-size:13px;color:#cacac0;margin-top:4px}.manager-exports{margin-top:18px}.manager-record .log-detail{margin:8px 0}.manager-days{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}.manager-days button{font-size:12px}.manager-muted{color:#bab9ad;font-size:13px}.manager-table{width:100%;font-size:13px}.manager-table td,.manager-table th{padding:9px 4px;border-bottom:1px solid #45453e;text-align:left}.manager-table th:last-child,.manager-table td:last-child{text-align:right}@media print{header,#msg,#workspace,#manager-back,.manager-tabs,#manager-date-tools,#manager-log-filters,#manager-exports,#manager-feedback,.manager-days{display:none!important}#manager-screen{display:block!important}main{max-width:none;padding:0}body{background:white!important;color:black!important}.panel{border:0;background:white;color:black}.manager-stat{background:#eee;color:#111}.manager-record-info,.manager-muted{color:#444}.manager-record{break-inside:avoid}}
+
+/* Sam's cream & sage design system — visual-only first pass */
+:root{color-scheme:light;--cream:#f5f0e6;--paper:#fffdf7;--sage:#b5be9a;--sage-dark:#46523e;--ink:#30382d;--muted:#6f7665;--line:#dcdccb;--soft:#e9eadf;background:var(--cream);color:var(--ink)}
+body{background:var(--cream);color:var(--ink);line-height:1.5}
+header{background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 2px 12px #46523e0b;padding:18px max(18px,calc((100vw - 760px)/2))}
+header h1{color:var(--sage-dark);font-size:21px;letter-spacing:.025em}
+header small,small,.muted{color:var(--muted)}
+main{padding-top:24px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:0 6px 24px #46523e0b;padding:20px}
+h2,h3,h4{color:var(--sage-dark)}
+button{background:var(--sage-dark);color:#fffdf7;border-radius:12px;transition:background .15s ease,transform .15s ease}
+button:hover:not(:disabled){filter:brightness(1.07)}
+button:active:not(:disabled){transform:scale(.99)}
+button.alt{background:var(--soft);color:var(--sage-dark);border:1px solid var(--line)}
+button.warn{background:#c88b71;color:#fff}
+input,textarea,select{background:#fffef9;color:var(--ink);border:1px solid #c9cebd;border-radius:11px;outline-color:var(--sage-dark)}
+input:focus,textarea:focus,select:focus{border-color:#82916c;box-shadow:0 0 0 3px #b5be9a55}
+.note,.log-intro,.manager-muted,.manager-record-info{color:var(--muted)}
+.status{background:#e9eddf;color:var(--sage-dark)}
+.error{background:#f5dfd8;color:#823e35}
+.good{background:#e0ecdd;color:#345c37}
+.divider{border-color:var(--line)}
+.log-entry,.manager-record,.manager-table td,.manager-table th,td{border-color:var(--line)}
+.log-type{background:#e7ebdd;color:var(--sage-dark)}
+.log-detail{color:var(--ink)}
+.log-meta{color:var(--muted)}
+.log-date{color:#65764f}
+#summary:not(.hidden){background:var(--paper);box-shadow:0 0 0 999px #1d241b99;border-color:var(--sage)}
+.table-open{background:#a9b995;color:#263224}
+#tables button small{color:inherit}
+#editor:not(.hidden){background:var(--cream);color:var(--ink)}
+#editor > .row:first-child{background:var(--cream)}
+.option-overlay{background:#1d241b99}
+.option-sheet{background:var(--paper);border-color:var(--line);box-shadow:0 -12px 48px #1d241b30}
+.option-choices button{background:#e9eadf;color:var(--ink)}
+.option-choices button:hover{background:#dbe2ce}
+.option-choices .cancel{background:var(--paper);border-color:var(--line)}
+.manager-tabs .active{background:var(--sage-dark);color:#fff}
+.manager-date-row label{color:var(--ink)}
+.manager-stat{background:#edf0e6;border:1px solid var(--line)}
+.manager-record{padding:14px 2px}
+#auth{max-width:490px;margin:32px auto;padding:28px}
+#auth h2{font-size:25px;margin-bottom:18px}
+#auth .row button{flex:1;min-width:150px}
+#menu-option-list .manager-record{background:#f5f6ef;border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+@media(max-width:480px){header{padding:15px 16px}main{padding:14px}.panel{padding:16px;border-radius:16px}#auth{margin:18px auto;padding:20px}button{min-height:43px}}
+@media print{body{background:#fff!important;color:#111!important}.panel{background:#fff!important;color:#111!important;box-shadow:none}.manager-stat{background:#eee!important;color:#111!important}}
+/* Sam's charcoal & olive theme — visual-only override */
+:root{color-scheme:dark;--cream:#242722;--paper:#2e322c;--sage:#929e78;--sage-dark:#a6b58c;--ink:#f0efe7;--muted:#c1c6b8;--line:#4d5548;--soft:#414a38;background:#242722;color:#f0efe7}
+body{background:#242722;color:#f0efe7}
+header{background:#2b3029;border-bottom-color:#4d5548;box-shadow:0 2px 12px #0002}
+header h1,h2,h3,h4{color:#e8e6dc}
+header small,small,.muted,.note,.log-intro,.manager-muted,.manager-record-info{color:#c1c6b8}
+.panel{background:#30352e;border-color:#4d5548;box-shadow:0 6px 24px #0002}
+button{background:#929e78;color:#182018}
+button.alt{background:#414a38;color:#f0efe7;border-color:#5b6650}
+button.warn{background:#bc816a;color:#fff}
+input,textarea,select{background:#242922;color:#f0efe7;border-color:#67715f;outline-color:#a6b58c}
+input:focus,textarea:focus,select:focus{border-color:#a6b58c;box-shadow:0 0 0 3px #929e7855}
+.status{background:#414a38;color:#f0efe7}.error{background:#693d37;color:#fff}.good{background:#38503b;color:#fff}
+.divider,.log-entry,.manager-record,.manager-table td,.manager-table th,td{border-color:#4d5548}
+.log-type{background:#414a38;color:#e8e6dc}.log-detail{color:#f0efe7}.log-meta{color:#c1c6b8}.log-date{color:#b8c7a0}
+#summary:not(.hidden){background:#30352e;border-color:#929e78}
+.table-open{background:#929e78;color:#182018}
+#editor:not(.hidden),#editor > .row:first-child{background:#242722;color:#f0efe7}
+.option-sheet{background:#30352e;border-color:#596250}
+.option-choices button{background:#414a38;color:#f0efe7}.option-choices button:hover{background:#566349}.option-choices .cancel{background:#30352e;border-color:#67715f}
+#manager-screen .manager-tabs .active{background:#a3b18a;color:#18261c}
+.manager-date-row label{color:#f0efe7}.manager-stat{background:#3a4136;border-color:#586250}
+#menu-option-list .manager-record{background:#3a4136;border-color:#586250}
+
+/* Sam's mobile app experience */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;touch-action:manipulation}
+button svg{flex-shrink:0}
+#tables{gap:12px}
+#tables button{min-height:94px;border-radius:17px;padding:16px 12px;flex-direction:column;gap:7px;font-size:16px;letter-spacing:.01em;box-shadow:inset 0 0 0 1px #ffffff14}
+#tables button.table-open{box-shadow:inset 0 0 0 1px #e8e6dc44}
+#products{gap:10px}
+#products button{min-height:78px;text-align:left;align-items:flex-start;flex-direction:column;padding:14px;border-radius:14px;line-height:1.35}
+#categories{gap:8px;overflow-x:auto;flex-wrap:nowrap;padding:3px 0 10px;scrollbar-width:thin}
+#categories button{white-space:nowrap;flex-shrink:0;border-radius:999px;min-height:40px}
+#editor #table-title{font-size:25px;letter-spacing:-.025em}
+#total{font-size:23px;color:#dbe5cb}
+#workspace>.panel>.row:first-child{margin-bottom:12px}
+#workspace>.panel>.row:first-child h2{margin:0;font-size:25px}
+#manager-screen .manager-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.manager-tabs button{min-height:56px;line-height:1.25;border-radius:12px}
+#auth{box-shadow:0 20px 55px #0003}
+#auth h2{letter-spacing:-.03em}
+#auth input{min-height:48px}
+:focus-visible{outline:2px solid #c5d4a6;outline-offset:3px}
+@media(max-width:560px){
+ header{position:sticky;top:0;z-index:100;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:12px}
+ header h1{font-size:18px}
+ header small{font-size:11px}
+ main{padding:14px 12px max(24px,env(safe-area-inset-bottom))}
+ .panel{margin-bottom:12px}
+ #workspace>.panel>.row:last-child{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #workspace>.panel>.row:last-child button{width:100%;min-width:0;font-size:12px;padding:11px 8px}
+ #editor:not(.hidden){padding:12px 12px max(24px,env(safe-area-inset-bottom))}
+ #editor > .row:first-child{top:-12px;padding:12px 0}
+ #editor > .row:first-child button{font-size:13px}
+ #editor .row{gap:9px}
+ #editor .row button{font-size:13px}
+ #products button{font-size:13px}
+ .manager-tabs button{font-size:12px}
+}
+@media(display-mode:standalone){header{padding-top:max(16px,env(safe-area-inset-top))}}
+@media print{header{position:static}button svg{display:none}}
+
+/* Compact mobile refinements */
+header h1{font-size:19px;letter-spacing:-.025em}header .header-sub{font-weight:400;color:#c1c6b8}header small{font-size:10px;letter-spacing:.11em}header #logout{font-size:13px;padding:9px 14px;min-height:38px}
+#tables{gap:9px}#tables button{min-height:94px;padding:13px 8px;border-radius:16px;font-size:15px;line-height:1.3}#tables button small{display:block;margin-top:7px;font-size:12px}
+#workspace>.panel>.row:first-child h2{font-size:23px;margin:0}#refresh{font-size:13px;padding:9px 12px;min-height:38px}
+#workspace>.panel>.divider+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#workspace>.panel>.divider+.row button{min-width:0;padding:12px 8px;font-size:12px;min-height:49px}
+@media(max-width:480px){header{padding:14px 16px}header h1{font-size:18px}main{padding:10px}#workspace>.panel{padding:15px}#tables button{min-height:89px}#workspace>.panel>.divider+.row button{font-size:12px}}
+#tables button{display:flex;align-items:center;justify-content:center;text-align:center;gap:3px}#tables .table-symbol{display:block;font-size:24px;line-height:1;color:#303b2b}#tables .table-label{display:block;font-weight:750}#tables button small{margin-top:2px}
+
+/* Sam's POS mobile dashboard v1 */
+body{background:#232922}header{border:0;background:#232922;box-shadow:none}main{max-width:850px}#workspace>.panel:first-child{background:transparent;border:0;box-shadow:none;padding:0}#pos-hero{background:linear-gradient(145deg,#34483a,#273b31);border:1px solid #536a50;border-radius:25px;padding:20px;margin:4px 0 18px;overflow:hidden}#pos-hero .pos-kicker{font-size:11px;letter-spacing:.16em;color:#c9d6bb;font-weight:750}#pos-hero h2{font-size:27px;margin:8px 0 4px;color:#fff8e9}#pos-hero p{font-size:13px;color:#d0d9c9;margin:0 0 18px}#pos-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#pos-metrics>div{background:#ffffff13;border:1px solid #ffffff1a;border-radius:15px;padding:13px}#pos-metrics small{font-size:11px;color:#d4dccd}#pos-metrics strong{display:block;font-size:24px;margin-top:3px;color:#fff8e9}#pos-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:23px}#pos-actions button{display:flex;flex-direction:column;gap:8px;min-width:0;background:transparent;border:0;color:#e9ede4;font-size:11px;font-weight:600;padding:6px 0;line-height:1.2}#pos-actions .pos-action-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#e9eedf;color:#334936;font-size:22px}#pos-actions button:disabled{opacity:.45}#pos-table-heading{display:flex;align-items:center;justify-content:space-between;margin:4px 0 13px}#pos-table-heading h2{font-size:21px;margin:0}#pos-table-heading button{min-height:36px;font-size:12px}#tables button{background:#d7dfc8;color:#2b3c2e;min-height:125px;border-radius:21px;box-shadow:none!important;gap:5px}#tables button.table-open{background:#9cb68e;color:#1e3025}#tables .table-symbol{font-size:25px;color:#46604a}#tables .table-label{font-size:15px}#tables button small{font-size:12px;color:#53664d}#pos-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:120;display:none;background:#29352c;border-top:1px solid #4c5e4d;padding:9px 10px max(9px,env(safe-area-inset-bottom));grid-template-columns:repeat(4,1fr);gap:5px}#pos-bottom-nav button{display:flex;flex-direction:column;gap:4px;min-height:49px;background:transparent;border:0;color:#c8d1c4;font-size:10px;padding:4px}#pos-bottom-nav button .nav-icon{font-size:21px}#pos-bottom-nav button.active{color:#e2eecb}#pos-bottom-nav button:disabled{opacity:.35}#workspace>.panel:first-child>.divider,#workspace>.panel:first-child>.divider+.row{display:none!important}@media(max-width:600px){main{padding:10px 14px 100px}header{padding:16px 18px}#pos-bottom-nav:not(.hidden){display:grid}#pos-hero{padding:19px}#tables{gap:10px}#tables button{min-height:119px;padding:12px 6px}#pos-actions .pos-action-icon{width:49px;height:49px}#workspace>.panel:first-child{padding:0!important}#editor:not(.hidden){z-index:1500}}@media(min-width:601px){#pos-bottom-nav:not(.hidden){display:grid;max-width:850px;margin:auto;position:sticky;bottom:0;border-radius:18px 18px 0 0}main{padding-bottom:24px}}
+
+/* Sam's POS · Studio refresh v2: compact native-feel design */
+:root{--pos-ink:#172b24;--pos-forest:#24483a;--pos-mint:#e1ebd8;--pos-cream:#f5f6ee}
+body{background:#f5f6ee;color:#203b30;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#f5f6ee!important;color:#203b30;border:0!important;padding:17px max(20px,calc((100vw - 760px)/2 + 20px)) 12px!important;min-height:72px}
+header h1{font-size:22px;letter-spacing:-.9px;font-weight:820;color:#16392e;line-height:1.1}
+header .header-sub{font-weight:400;color:#416356}header small{display:block;font-size:9px;letter-spacing:.23em;color:#8b998c;margin-top:5px;font-weight:750}
+header #logout{font-size:12px;border:1px solid #dce2d8;color:#365a49;background:#eef2e8;border-radius:12px;min-height:34px;padding:7px 12px}
+main{max-width:760px;padding:4px 18px 104px;color:#203b30}
+#msg.good{background:#e6efdf;color:#44664b;border:1px solid #d8e4d4}
+#workspace:not(.hidden)~#msg{display:none}
+main:has(#workspace:not(.hidden)) #msg.good{display:none!important}
+#workspace>.panel:first-child{margin-bottom:12px}
+#pos-hero{border:0;border-radius:22px;padding:19px 20px 18px;margin:0 0 11px;box-shadow:0 12px 30px #28443120;background:linear-gradient(115deg,#204435 0%,#35634d 100%);position:relative}
+#pos-hero:after{content:"";position:absolute;right:-34px;top:-60px;width:180px;height:180px;border:1px solid #ffffff14;border-radius:50%;pointer-events:none}
+#pos-hero .pos-kicker{font-size:9px;letter-spacing:.19em;color:#c6d9c2;margin-bottom:10px}
+#pos-hero h2{font-size:23px;letter-spacing:-.6px;line-height:1.15;margin:0 0 4px;color:#fffaf0;display:flex;align-items:center;justify-content:space-between}
+#pos-hero p{font-size:11px;color:#d4e4d3;margin:0 0 15px}
+.pos-live{display:inline-flex;align-items:center;gap:6px;border:1px solid #ffffff35;border-radius:40px;padding:6px 8px;font-size:8px;font-weight:800;letter-spacing:.08em;color:#ddf0d4}
+.pos-live i{width:5px;height:5px;background:#b7eb9c;border-radius:50%}
+#pos-metrics{gap:9px}
+#pos-metrics>div{padding:12px 14px;background:#ffffff15;border:1px solid #ffffff24;border-radius:13px}
+#pos-metrics small{font-size:10px;display:block;color:#e2eee0;line-height:1.3}
+#pos-metrics strong{font-size:22px;font-weight:760;letter-spacing:-.5px;margin:5px 0 0}
+#pos-actions{background:#fff;border-radius:18px;padding:12px 5px 9px;gap:0;margin:0 0 20px;box-shadow:0 5px 22px #1c3b2910;border:1px solid #e5ebdf}
+#pos-actions button{font-size:10px;gap:7px;color:#375448;min-height:73px;padding:1px 0 5px;font-weight:680}
+#pos-actions .pos-action-icon{width:43px;height:43px;border-radius:15px;background:#edf4e8;color:#2e5d43;font-size:22px;font-weight:500}
+#pos-actions button:first-child .pos-action-icon{background:#25533f;color:#f8fff1}
+#pos-table-heading{margin:0 2px 12px;align-items:end}
+.pos-overline{font-size:9px;font-weight:800;letter-spacing:.2em;color:#85988b;margin:0 0 3px}
+#pos-table-heading h2{font-size:22px;letter-spacing:-.6px;color:#203b2d}
+#pos-table-heading #refresh{min-height:32px;border-radius:11px;background:#e6eddf!important;color:#3a5c49!important;padding:5px 10px;font-size:11px}
+#pos-table-heading #refresh svg{width:14px;height:14px}
+#tables{gap:10px}
+#tables button{background:#fff;color:#284837;border:1px solid #e4eade;box-shadow:0 3px 12px #193b2210!important;min-height:100px;border-radius:17px;gap:4px;position:relative;padding:12px 6px}
+#tables button.table-open{background:#e1efe0;color:#224a35;border-color:#aacbb0}
+#tables button::before{content:"";position:absolute;right:12px;top:12px;width:6px;height:6px;border-radius:50%;background:#cbd6cb}
+#tables button.table-open::before{background:#4ca168}
+#tables .table-symbol{font-size:20px;color:#567360}
+#tables .table-label{font-size:13px;line-height:1.15;letter-spacing:-.1px}
+#tables button small{font-size:10px;color:#77907e}
+#pos-bottom-nav{background:#fff!important;border-top:1px solid #e4e9df;box-shadow:0 -6px 24px #21382b12;padding:6px 12px max(8px,env(safe-area-inset-bottom));gap:3px}
+#pos-bottom-nav button{color:#819286;font-weight:650;font-size:9px;min-height:49px;gap:3px;border-radius:12px}
+#pos-bottom-nav button .nav-icon{font-size:21px;font-weight:450}
+#pos-bottom-nav button.active{color:#245b3c;background:#edf4e8}
+#editor.panel,#manager-screen .panel{background:#fff;border:1px solid #e3e8de;color:#284132;box-shadow:0 5px 18px #203c2a10}
+#editor h2,#editor h3{color:#274633}
+#editor .alt{background:#e8eee3;color:#315941}
+#editor input,#editor textarea{background:#f7f9f4;color:#263f31;border-color:#d4e1d5}
+#editor #products button{border-radius:13px}
+@media(max-width:600px){
+  body{background:#f5f6ee}
+  header{padding:15px 18px 11px!important;min-height:65px}
+  main{padding:4px 14px 95px}
+  #pos-hero{padding:17px;margin:0 0 10px;border-radius:20px}
+  #pos-hero h2{font-size:22px}
+  #pos-hero p{margin-bottom:13px}
+  #pos-metrics>div{padding:11px 12px}
+  #pos-metrics strong{font-size:21px}
+  #pos-actions{margin-bottom:18px}
+  #tables button{min-height:98px;padding:10px 5px}
+  #pos-actions .pos-action-icon{width:42px;height:42px}
+  #pos-bottom-nav:not(.hidden){display:grid}
+}
+@media(min-width:601px){#pos-bottom-nav{border-radius:18px 18px 0 0;max-width:760px}}
+
+/* Mobile editor polish — design-only improvements */
+#editor > .row:first-child{display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:10px;min-width:0;padding:8px 0 10px}
+#back-table{flex:0 1 auto;min-width:0;min-height:36px;padding:7px 11px;border-radius:10px;font-size:12px;line-height:1.2;white-space:nowrap}
+#back-table svg{width:15px;height:15px}
+#revision{flex:0 0 auto;min-width:0;max-width:42%;font-size:11px;white-space:nowrap;text-align:right;color:#718375}
+#editor #table-title{margin:10px 0 12px;font-size:22px;line-height:1.2}
+#editor h3{font-size:16px;margin:14px 0 10px}
+#editor .tariff-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0 0 12px;padding:4px;border:1px solid #dfe8dc;background:#edf2e9;border-radius:13px}
+#editor .tariff-switch button{width:100%;min-width:0;min-height:38px;padding:7px 9px;border-radius:10px;font-size:12px;line-height:1.2;box-shadow:none}
+#editor .tariff-switch button.alt{background:transparent;border:1px solid transparent;color:#446452}
+#categories{display:flex;flex-wrap:nowrap!important;justify-content:flex-start!important;gap:6px;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 1px 9px;margin-bottom:9px!important}
+#categories::-webkit-scrollbar{display:none}
+#categories button{flex:0 0 auto;white-space:nowrap;min-height:36px;padding:7px 12px;border-radius:999px;font-size:12px;line-height:1.2}
+#products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+#products button.product{display:flex;align-items:stretch;justify-content:space-between;min-width:0;min-height:65px;height:100%;padding:10px 11px;border-radius:12px;gap:7px;text-align:left;line-height:1.2}
+#products .product-name{display:block;overflow-wrap:anywhere;hyphens:auto;font-size:12px;font-weight:700;line-height:1.3;color:inherit}
+#products .product-price{display:block;margin-top:auto;font-size:11px;font-weight:650;line-height:1.25;color:#54735d}
+@media(max-width:600px){
+ header{min-height:54px!important;padding:9px 15px 8px!important;gap:8px}
+ header>div{min-width:0}
+ header h1{font-size:18px;line-height:1.05}
+ header small{font-size:9px;margin-top:3px}
+ header #logout{flex-shrink:0;min-height:32px;padding:6px 9px}
+ #editor:not(.hidden){padding:10px 13px max(24px,env(safe-area-inset-bottom))}
+ #editor > .row:first-child{top:-10px;padding:8px 0 9px}
+ #editor #table-title{font-size:21px;margin-top:8px}
+ #products button.product{min-height:65px;padding:10px}
+}
+@media(max-width:360px){#back-table{font-size:11px;padding:7px 9px}#revision{font-size:10px}#products .product-name{font-size:11px}}
+
+/* Sam's manager mobile alignment / dashboard cleanup */
+#pos-table-heading #refresh{display:none!important}
+#manager-screen>.panel{max-width:760px;margin:0 auto;padding:20px;border-radius:18px}
+#manager-screen>.panel>.row:first-child{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:nowrap;margin-bottom:8px}
+#manager-back{flex:0 0 auto;white-space:nowrap;min-height:38px;padding:8px 11px;font-size:12px}
+#manager-screen>.panel>.row:first-child h2{font-size:20px;line-height:1.2;margin:0;min-width:0}
+#manager-screen>.panel>.note{margin:5px 0 16px;line-height:1.4}
+#manager-screen .manager-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 18px}
+#manager-screen .manager-tabs button{width:100%;min-width:0;min-height:48px;padding:9px 8px;white-space:normal;overflow-wrap:break-word;text-align:center;font-size:12px;line-height:1.25}
+#manager-screen #manager-date-tools{margin-bottom:14px}
+#manager-screen .manager-date-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#manager-screen .manager-date-row label{display:block;min-width:0;font-size:12px}
+#manager-screen .manager-date-row input,#manager-screen .manager-date-row select{width:100%;min-width:0;max-width:100%;margin:5px 0 8px}
+#manager-screen #manager-date-tools>.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#manager-screen #manager-date-tools>.row button{width:100%;min-width:0;min-height:40px;padding:8px;font-size:12px}
+#manager-screen #manager-content{min-width:0;overflow-wrap:anywhere}
+#manager-screen .manager-exports{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px}
+#manager-screen .manager-exports button{min-width:0;width:100%;padding:9px;font-size:12px;white-space:normal}
+#manager-screen .manager-record{min-width:0;overflow-wrap:anywhere}
+#tables .table-symbol{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#edf3e8;color:#365c46;font-family:system-ui,sans-serif;font-size:24px;font-weight:650;line-height:1}
+#tables button.table-open .table-symbol{background:#d0e6ce}
+@media(max-width:600px){
+#manager-screen>.panel{padding:15px 13px}
+#manager-screen>.panel>.row:first-child{gap:9px}
+#manager-screen>.panel>.row:first-child h2{font-size:18px}
+#manager-back{font-size:11px;padding:7px 9px}
+#manager-screen .manager-tabs{gap:7px}
+#manager-screen .manager-tabs button{font-size:11px;min-height:46px}
+}
+/* October UI polish: compact editor, legible overview, aligned audit history */
+#editor>.row:first-child{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;position:sticky;top:-10px;z-index:5;min-height:50px}
+#editor #back-table{justify-self:start;width:auto;max-width:100%;min-height:36px;padding:7px 11px!important;font-size:12px!important;line-height:1.2;white-space:nowrap;flex:none}
+#editor #back-table svg{width:14px;height:14px}
+#editor #revision{justify-self:end;max-width:none;min-width:0;margin:0;font-size:11px;color:#617667;text-align:right;white-space:nowrap}
+#manager-screen{min-width:0}
+#manager-screen>.panel{min-width:0;overflow:hidden;padding:clamp(14px,3vw,22px)}
+#manager-screen>.panel>.row:first-child{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#manager-screen>.panel>.row:first-child h2{font-size:clamp(17px,4vw,23px);margin:0;text-align:right}
+#manager-screen #manager-back{flex-shrink:0;min-height:38px;padding:8px 11px;font-size:12px;white-space:nowrap}
+#manager-screen .manager-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:16px 0 18px}
+#manager-screen .manager-tabs button{width:100%;min-width:0;min-height:55px;padding:10px 7px;font-size:12px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+#manager-screen #manager-date-tools,#manager-screen #manager-log-filters{min-width:0}
+#manager-screen .manager-date-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#manager-screen .manager-date-row label{display:block;min-width:0;color:#425c49;font-weight:650;font-size:12px}
+#manager-screen .manager-date-row input,#manager-screen .manager-date-row select{display:block;width:100%;max-width:100%;min-width:0;min-height:43px;margin:6px 0 12px;padding:8px 9px;font-size:13px;box-sizing:border-box;background:#f7f9f4;border:1px solid #d8e3d7;color:#263e30}
+#manager-screen #manager-date-tools>.row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:1px 0 15px}
+#manager-screen #manager-date-tools>.row button{width:100%;min-width:0;min-height:43px;padding:8px 4px;font-size:11px;line-height:1.2;white-space:normal}
+#manager-screen #manager-feedback{min-height:0;margin:9px 0;color:#566d59;line-height:1.45}
+#manager-screen #manager-content{min-width:0;overflow-wrap:anywhere}
+#manager-screen #manager-content>h3{color:#263e31;font-size:18px;line-height:1.3;margin:17px 0 11px}
+#manager-screen .manager-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+#manager-screen .manager-stat{min-width:0;background:#edf3e9!important;color:#263f31!important;border:1px solid #d8e3d3;border-radius:14px;padding:14px}
+#manager-screen .manager-stat span{display:block;color:#4c6251!important;font-weight:600;font-size:12px;line-height:1.45}
+#manager-screen .manager-stat b{display:block;color:#223e2d!important;font-weight:800;font-size:clamp(17px,4vw,23px);line-height:1.2;overflow-wrap:anywhere;margin-top:8px}
+#manager-screen #manager-content>.note{color:#526b59!important;font-size:12px;line-height:1.7}
+#manager-screen #overview-refresh{background:#e5eddf!important;color:#284b36!important;border:1px solid #d4e2d0;min-height:43px}
+#manager-screen .manager-record{background:#f8faf5;border:1px solid #e1e9dc;border-radius:13px;padding:13px 14px;margin:9px 0;min-width:0}
+#manager-screen .manager-record>.row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap}
+#manager-screen .manager-record-title{font-size:14px;color:#274533;line-height:1.35;overflow-wrap:anywhere}
+#manager-screen .manager-record .log-type{display:inline-flex;align-items:center;max-width:100%;background:#e6eddf;color:#335842;font-size:11px;font-weight:650;white-space:normal;line-height:1.4}
+#manager-screen .manager-record .log-detail{margin:10px 0 8px;color:#334a3a;font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+#manager-screen .manager-record-info{font-size:11px;line-height:1.5;color:#607563!important;overflow-wrap:anywhere}
+#manager-screen .manager-exports{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:18px;padding-top:15px;border-top:1px solid #e0e8dc}
+#manager-screen .manager-exports button{width:100%;min-width:0;min-height:44px;padding:10px 8px;font-size:12px;line-height:1.3;white-space:normal}
+@media(max-width:400px){#manager-screen>.panel{padding:13px}#manager-screen .manager-tabs{gap:7px}#manager-screen .manager-date-row{gap:8px}#manager-screen #manager-date-tools>.row{grid-template-columns:repeat(2,minmax(0,1fr))}#manager-screen .manager-stats{gap:8px}#manager-screen .manager-stat{padding:12px}#manager-screen .manager-record{padding:12px}#editor #revision{font-size:10px}}
+@media(max-width:330px){#editor #back-table{font-size:11px!important;padding:7px 8px!important}#manager-screen .manager-stats{grid-template-columns:1fr}}
+@media print{#manager-screen .manager-stat{background:#eee!important;color:#111!important}#manager-screen .manager-stat span,#manager-screen .manager-stat b{color:#111!important}#manager-screen .manager-record{background:#fff!important;border:1px solid #ddd}}
+
+
+/* Final responsive layout: legacy actions remain operational but out of view */
+#workspace>#legacy-divider,#workspace>#legacy-actions{display:none!important}
+#pos-table-heading{align-items:center;gap:10px}
+#pos-table-heading>div:first-child{flex:1;min-width:0}
+#pos-table-heading #custom{flex-shrink:0;min-height:35px;padding:8px 12px;background:#e7eee1;color:#335741;border:1px solid #dce6d8;border-radius:11px;font-size:12px;font-weight:700}
+#pos-actions .pos-action-icon svg{display:block;width:23px;height:23px}
+#tables .table-symbol svg{display:block;width:27px;height:27px}
+#manager-screen .manager-record .row button{min-width:0;max-width:100%;white-space:normal}
+@media(max-width:380px){#pos-table-heading #custom{padding:7px 9px;font-size:11px}}
+
+/* Editor toolbar: align with light app theme; hide internal revision counter */
+#editor:not(.hidden){background:#fff!important;color:#284132!important}
+#editor>.row:first-child{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-wrap:nowrap!important;
+  gap:10px!important;
+  background:#fff!important;
+  color:#284132!important;
+  border-bottom:1px solid #e7ede4;
+  box-shadow:none!important;
+  min-height:52px;
+  padding:8px 0 11px!important;
+}
+#editor #back-table{
+  flex:0 0 auto!important;
+  border:1px solid #dbe5d8!important;
+  background:#e9f0e5!important;
+  color:#315c43!important;
+  box-shadow:none!important;
+  min-height:38px!important;
+}
+#editor #revision{display:none!important}
+
+/* Quiet oversized table numbers; keep real table icons and status legible. */
+#tables button{overflow:hidden;isolation:isolate}
+#tables .table-watermark{
+ position:absolute;right:11px;bottom:-13px;z-index:0;
+ font-size:clamp(59px,17vw,78px);font-weight:850;line-height:1;letter-spacing:-.075em;
+ color:#3f6a50;opacity:.095;pointer-events:none;user-select:none;
+}
+#tables button.table-open .table-watermark{color:#255b3d;opacity:.12}
+#tables button.table-custom .table-watermark{font-size:clamp(52px,14vw,68px);letter-spacing:-.085em;right:8px;bottom:-9px}
+#tables button>.table-symbol,#tables button>.table-label,#tables button>small{position:relative;z-index:1}
+#tables .table-symbol svg{display:block;width:27px;height:27px}
+
+/* Table cards: minimalist round cafe table with four seats. */
+#tables .table-symbol{
+ display:grid;place-items:center;width:40px;height:40px;
+ border-radius:50%;border:1px solid #dee8da;
+ background:#f0f4ec;color:#395c47;
+}
+#tables button.table-open .table-symbol{background:#d5e8d2;border-color:#b8d1b5}
+#tables .table-symbol svg{display:block;width:28px;height:28px}
+
+/* Order rows: no inherited dark/sticky editor toolbar styling. */
+#editor #lines{min-width:0}
+#editor #lines .order-lines{display:block}
+#editor #lines .order-line{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;gap:12px;padding:13px 0;
+ border-bottom:1px solid #dfe7dc;background:transparent;
+ position:static;box-shadow:none;min-width:0;
+}
+#editor #lines .order-line-details{min-width:0}
+#editor #lines .order-line-name{color:#294535;font-size:14px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+#editor #lines .order-line-meta{margin-top:5px;color:#7b887d;font-size:11px;line-height:1.3}
+#editor #lines .order-line-actions{display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:0}
+#editor #lines .order-line-sum{font-size:15px;color:#2c4738;white-space:nowrap;font-weight:750;font-variant-numeric:tabular-nums}
+#editor #lines .order-line-stepper{
+ display:grid;grid-template-columns:40px 26px 40px;align-items:center;
+ gap:3px;padding:3px;border:1px solid #dce6d8;
+ border-radius:13px;background:#edf3e9;
+}
+#editor #lines .order-line-step{
+ display:grid;place-items:center;width:40px;height:40px;min-height:40px;
+ padding:0;margin:0;border-radius:10px;background:#fff!important;
+ color:#315941!important;font-size:21px;font-weight:750;line-height:1;
+ border:1px solid #dae4d5;box-shadow:none;touch-action:manipulation;
+}
+#editor #lines .order-line-qty{text-align:center;font-size:13px;font-weight:750;color:#2c4837;font-variant-numeric:tabular-nums}
+@media(max-width:360px){
+ #editor #lines .order-line{gap:7px}
+ #editor #lines .order-line-name{font-size:13px}
+ #editor #lines .order-line-sum{font-size:14px}
+ #editor #lines .order-line-stepper{grid-template-columns:36px 22px 36px}
+ #editor #lines .order-line-step{width:36px;height:38px;min-height:38px}
+}
+
+/* Compact, uniform seating-zone separators: table cards remain the focus. */
+#tables{display:flex;flex-direction:column;gap:13px}
+#tables .table-section{min-width:0}
+#tables .table-section-header{
+ display:flex;align-items:center;justify-content:space-between;gap:9px;
+ padding:5px 9px;margin:0 0 9px;border-radius:7px;
+ border:0;border-bottom:1px solid #dce6db;
+ background:#f0f4ed;color:#526b57;
+ min-height:25px;
+}
+#tables .table-section-header h3{
+ margin:0;font-size:10px;font-weight:750;line-height:1.25;
+ letter-spacing:.065em;text-transform:uppercase;color:inherit;
+}
+#tables .table-section-count{
+ flex:0 0 auto;padding:0;border:0;border-radius:0;
+ background:transparent;color:inherit;
+ font-size:9px;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap;
+ opacity:.85;
+}
+#tables .table-section-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+}
+#tables .table-section-empty{
+ margin:3px 0 2px;padding:12px 14px;color:#7e8b7c;
+ font-size:12px;border:1px dashed #dce5d7;border-radius:12px;
+}
+@media(max-width:380px){
+ #tables .table-section-header{padding:5px 8px;min-height:24px}
+ #tables .table-section-header h3{font-size:9px}
+ #tables .table-section-grid{gap:9px}
+}
+
+
+/* Optional, locally remembered night mode. The original light theme stays the default. */
+header .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+header #theme-toggle{
+ width:37px;height:37px;min-width:37px;min-height:37px;padding:0;
+ display:grid;place-items:center;flex:0 0 auto;border-radius:11px;
+ border:1px solid #dce2d8;background:#eef2e8;color:#365a49;box-shadow:none;
+}
+#theme-toggle svg{display:block}
+#theme-toggle .theme-sun{display:none}
+html[data-theme="dark"] #theme-toggle .theme-moon{display:none}
+html[data-theme="dark"] #theme-toggle .theme-sun{display:block}
+#theme-toggle:focus-visible{outline:2px solid #6d9679;outline-offset:3px}
+@media(max-width:380px){
+ header .header-actions{gap:5px}
+ header #theme-toggle{width:34px;height:34px;min-width:34px;min-height:34px}
+}
+
+/* Colors across POS, editor, reports, users, and overlays; no functionality changes. */
+html[data-theme="dark"]{
+ color-scheme:dark;
+ --cream:#1c231e;--paper:#273229;--sage:#82987f;--sage-dark:#b7c8a7;
+ --ink:#ebf1e5;--muted:#a5b5a4;--line:#435549;--soft:#37473b;
+ --pos-ink:#eaf2e8;--pos-forest:#acccb0;--pos-mint:#344a3a;--pos-cream:#1c231e;
+ background:#1c231e;color:#ebf1e5;
+}
+html[data-theme="dark"] body{background:#1c231e;color:#ebf1e5}
+html[data-theme="dark"] header{background:#202b23!important;color:#e9f0e6;border-bottom:1px solid #34483b!important}
+html[data-theme="dark"] header h1{color:#f0f4e9}
+html[data-theme="dark"] header .header-sub{color:#b1c8b7}
+html[data-theme="dark"] header small{color:#98ac9e}
+html[data-theme="dark"] header #theme-toggle,
+html[data-theme="dark"] header #logout{
+ background:#35493b;color:#ecf3e8;border-color:#4c6753;
+}
+html[data-theme="dark"] main{color:#eaf0e7}
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4{color:#eaf0e7}
+html[data-theme="dark"] .panel{
+ background:#273229;color:#e9f0e7;border-color:#435549;
+ box-shadow:0 7px 26px #0b140f33;
+}
+html[data-theme="dark"] small,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .note,
+html[data-theme="dark"] .log-intro,
+html[data-theme="dark"] .manager-muted{color:#a9b9aa}
+html[data-theme="dark"] .divider{border-color:#435549}
+html[data-theme="dark"] .status,
+html[data-theme="dark"] #msg.good{background:#324839;color:#d9eed9;border:1px solid #466651}
+html[data-theme="dark"] .status.error{background:#603d3a;color:#fff1ed;border-color:#875750}
+html[data-theme="dark"] button.alt{background:#384c3d;color:#ecf2e7;border-color:#536953}
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select{
+ background:#1f2c24;color:#edf2ea;border-color:#536a59;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#9aada0}
+html[data-theme="dark"] td{border-color:#46594a}
+html[data-theme="dark"] #pos-hero{
+ background:linear-gradient(120deg,#264735 0%,#1a392e 100%);
+ box-shadow:0 12px 30px #09160d66;
+}
+html[data-theme="dark"] #pos-actions{
+ background:#27352b;border-color:#435849;box-shadow:0 7px 24px #0a150b44;
+}
+html[data-theme="dark"] #pos-actions button{color:#e1eddf}
+html[data-theme="dark"] #pos-actions .pos-action-icon{background:#394f40;color:#dcead8}
+html[data-theme="dark"] #pos-actions button:first-child .pos-action-icon{background:#a0b99b;color:#183326}
+html[data-theme="dark"] #pos-table-heading h2{color:#ebf2e8}
+html[data-theme="dark"] .pos-overline{color:#a5b9a8}
+html[data-theme="dark"] #pos-table-heading #custom{
+ background:#334a3a;color:#dbeddf;border-color:#4a6850;
+}
+html[data-theme="dark"] #tables .table-section-header{
+ background:#2b3c30;color:#b9d0be;border-bottom-color:#49604e;
+}
+html[data-theme="dark"] #tables .table-section-count{
+ background:transparent;color:inherit;border:0;
+}
+html[data-theme="dark"] #tables button{
+ background:#2a382e;color:#eaf0e7;border-color:#465d4a;
+ box-shadow:0 3px 13px #07130c44!important;
+}
+html[data-theme="dark"] #tables button.table-open{
+ background:#3d614b;color:#fffcef;border-color:#729279;
+}
+html[data-theme="dark"] #tables button::before{background:#7f9485}
+html[data-theme="dark"] #tables button.table-open::before{background:#add9a7}
+html[data-theme="dark"] #tables button small{color:#b9cabc}
+html[data-theme="dark"] #tables .table-watermark{color:#bddbb9;opacity:.13}
+html[data-theme="dark"] #tables button.table-open .table-watermark{color:#d1f1c7;opacity:.12}
+html[data-theme="dark"] #tables .table-symbol{
+ background:#354c3d;color:#c4d9c0;border-color:#506b55;
+}
+html[data-theme="dark"] #tables button.table-open .table-symbol{
+ background:#51705b;color:#eef6e8;border-color:#799a7c;
+}
+html[data-theme="dark"] #tables .table-section-empty{
+ border-color:#516550;color:#b5c8b4;
+}
+html[data-theme="dark"] #pos-bottom-nav{
+ background:#25352a!important;border-color:#3d5344;box-shadow:0 -5px 22px #06140a55;
+}
+html[data-theme="dark"] #pos-bottom-nav button{color:#aebfb0}
+html[data-theme="dark"] #pos-bottom-nav button.active{background:#405d48;color:#f1f7ea}
+html[data-theme="dark"] #editor:not(.hidden),
+html[data-theme="dark"] #editor.panel{
+ background:#253129!important;color:#e9efe6!important;border-color:#425647!important;
+}
+html[data-theme="dark"] #editor>.row:first-child{
+ background:#253129!important;color:#e9efe6!important;border-color:#405447;
+}
+html[data-theme="dark"] #editor h2,
+html[data-theme="dark"] #editor h3,
+html[data-theme="dark"] #editor #table-title{color:#edf3e9}
+html[data-theme="dark"] #editor #back-table{
+ background:#364b3b!important;color:#f0f5ed!important;border-color:#55735a!important;
+}
+html[data-theme="dark"] #editor .tariff-switch{
+ background:#2c4233;border-color:#496451;
+}
+html[data-theme="dark"] #editor .tariff-switch button.alt{
+ background:transparent;color:#bdd5c0;border-color:transparent;
+}
+html[data-theme="dark"] #editor .alt{background:#38513f;color:#e6f2e3;border-color:#516b55}
+html[data-theme="dark"] #editor #products button{background:#344638;color:#e8f1e6;border-color:#536956}
+html[data-theme="dark"] #editor #products .product-price{color:#b7d7b9}
+html[data-theme="dark"] #editor input,
+html[data-theme="dark"] #editor textarea{
+ background:#1d2b22;color:#ecf4e9;border-color:#536b56;
+}
+html[data-theme="dark"] #editor #dirty-notice{color:#d3dfce}
+html[data-theme="dark"] #editor #lines .order-line{border-color:#415748}
+html[data-theme="dark"] #editor #lines .order-line-name,
+html[data-theme="dark"] #editor #lines .order-line-sum{color:#ecf4e8}
+html[data-theme="dark"] #editor #lines .order-line-meta{color:#a9bdab}
+html[data-theme="dark"] #editor #lines .order-line-stepper{
+ background:#304537;border-color:#506956;
+}
+html[data-theme="dark"] #editor #lines .order-line-step{
+ background:#425d49!important;color:#f4f7ee!important;border-color:#65816a;
+}
+html[data-theme="dark"] #editor #lines .order-line-qty{color:#f1f6e9}
+html[data-theme="dark"] #manager-screen .panel{
+ background:#273229;color:#ecf0e7;border-color:#46594b;
+}
+html[data-theme="dark"] #manager-screen .manager-tabs button:not(.active){
+ background:#3a4b3d;color:#e6eee2;border:1px solid #516652;
+}
+html[data-theme="dark"] #manager-screen .manager-tabs .active{
+ background:#afc6a2;color:#172e20;
+}
+html[data-theme="dark"] #manager-screen .manager-date-row label{color:#dceadc}
+html[data-theme="dark"] #manager-screen .manager-date-row input,
+html[data-theme="dark"] #manager-screen .manager-date-row select{
+ background:#1e2e24;color:#eaf3e6;border-color:#506a55;
+}
+html[data-theme="dark"] #manager-screen #manager-feedback,
+html[data-theme="dark"] #manager-screen #manager-content>h3{color:#dcebdc}
+html[data-theme="dark"] #manager-screen .manager-stat{
+ background:#34483a!important;color:#eaf2e4!important;border-color:#55705a;
+}
+html[data-theme="dark"] #manager-screen .manager-stat span{color:#bacfba!important}
+html[data-theme="dark"] #manager-screen .manager-stat b{color:#f4f8ef!important}
+html[data-theme="dark"] #manager-screen #manager-content>.note{color:#b6cbb8!important}
+html[data-theme="dark"] #manager-screen #overview-refresh{
+ background:#3a5540!important;color:#e6f2e2!important;border-color:#55755b;
+}
+html[data-theme="dark"] #manager-screen .manager-record{
+ background:#303f34;color:#e7eee5;border-color:#4b6250;
+}
+html[data-theme="dark"] #manager-screen .manager-record-title{color:#edf4e9}
+html[data-theme="dark"] #manager-screen .manager-record .log-type{
+ background:#48624d;color:#e7f4e3;
+}
+html[data-theme="dark"] #manager-screen .manager-record .log-detail{color:#d4e5d6}
+html[data-theme="dark"] #manager-screen .manager-record-info{color:#b4c6b6!important}
+html[data-theme="dark"] #manager-screen .manager-exports{border-color:#425747}
+html[data-theme="dark"] #summary:not(.hidden){
+ background:#29392f;color:#e9f3e5;border-color:#64826a;
+}
+html[data-theme="dark"] #summary h2,
+html[data-theme="dark"] #summary h3{color:#ebf3e7}
+html[data-theme="dark"] .log-entry{border-color:#46594a}
+html[data-theme="dark"] .log-detail{color:#ddebd9}
+html[data-theme="dark"] .log-meta{color:#adbfae}
+html[data-theme="dark"] .option-sheet{
+ background:#29392e;color:#ecf3e9;border-color:#56705b;
+}
+html[data-theme="dark"] .option-choices button{
+ background:#3c5241;color:#eaf2e7;
+}
+html[data-theme="dark"] .option-choices .cancel{
+ background:#26372b;color:#eaf2e7;border-color:#526b57;
+}
+html[data-theme="dark"] #auth{
+ background:#29382f;color:#e9f1e6;border-color:#425a49;
+}
+@media print{
+ html[data-theme="dark"] #manager-screen .panel,
+ html[data-theme="dark"] #manager-screen .manager-record{
+  background:#fff!important;color:#111!important;border-color:#ddd!important;
+ }
+ html[data-theme="dark"] #manager-screen .manager-stat{
+  background:#eee!important;color:#111!important;
+ }
+ html[data-theme="dark"] #manager-screen .manager-stat span,
+ html[data-theme="dark"] #manager-screen .manager-stat b{color:#111!important}
+}
+
+/* Discreet maker's signature: visible at the bottom, never fixed over controls. */
+.dalai-signature{
+ display:block;
+ margin:14px auto 0;
+ padding:6px 0 0;
+ width:100%;
+ text-align:center;
+ font-size:9px;
+ line-height:1.45;
+ font-weight:400;
+ letter-spacing:.035em;
+ color:#87998c;
+ opacity:.75;
+ user-select:none;
+}
+.dalai-signature span{font-weight:650;letter-spacing:.045em}
+html[data-theme="dark"] .dalai-signature{color:#a5b9ab;opacity:.67}
+@media print{.dalai-signature{display:none!important}}
+
+/* Flat outline icon and compact management labels in both navigation rows. */
+#pos-actions #pos-admin .pos-action-label{
+ display:block;max-width:100%;font-size:10px;line-height:1.16;
+ font-weight:680;text-align:center;overflow-wrap:normal;
+}
+#pos-bottom-nav #pos-nav-admin{min-width:0;padding-inline:1px;gap:3px}
+#pos-bottom-nav #pos-nav-admin .nav-icon{display:grid;place-items:center;line-height:1}
+#pos-bottom-nav #pos-nav-admin .nav-icon svg{
+ display:block;width:21px;height:21px;stroke:currentColor;
+}
+#pos-bottom-nav #pos-nav-admin .nav-label{
+ display:block;max-width:100%;white-space:nowrap;
+ font-size:clamp(8px,2.3vw,9px);letter-spacing:-.025em;
+ line-height:1.2;font-weight:650;text-align:center;
+}
+@media(max-width:350px){
+ #pos-actions #pos-admin .pos-action-label{font-size:9px}
+}
+
+/* History action: full-size flat icon and tidy two-word label. */
+#pos-actions #pos-history .pos-action-icon svg{
+ display:block;width:26px;height:26px;stroke:currentColor;
+}
+#pos-actions #pos-history .pos-action-label{
+ display:block;max-width:100%;
+ font-size:10px;line-height:1.16;font-weight:680;
+ text-align:center;white-space:normal;overflow-wrap:normal;
+}
+@media(max-width:350px){
+ #pos-actions #pos-history .pos-action-label{font-size:9px}
+}
+
+/* Table cards · visual hierarchy refinement 2026-10-22 (CSS only) */
+#tables .table-section-grid{gap:12px}
+#tables .table-section-header{margin-bottom:12px}
+#tables button{
+  min-height:125px;
+  padding:13px 9px 15px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;overflow:hidden;
+}
+#tables button::before{top:13px;right:13px;width:6px;height:6px}
+#tables .table-symbol{
+  flex:0 0 40px;width:40px;height:40px;
+  margin:0 0 8px;
+}
+#tables .table-symbol svg{width:27px;height:27px}
+#tables .table-label{
+  display:block;max-width:100%;margin:0 0 6px;
+  font-size:15px;font-weight:780;line-height:1.18;letter-spacing:-.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#tables button small{
+  display:block;margin:0;
+  font-size:12px;font-weight:650;line-height:1.2;
+  letter-spacing:-.015em;font-variant-numeric:tabular-nums;
+  white-space:nowrap;color:#6f8775;
+}
+#tables button.table-open small{
+  font-size:15px;font-weight:800;letter-spacing:-.025em;color:#2d6546;
+}
+#tables .table-watermark{
+  right:6px;bottom:-10px;
+  font-size:clamp(48px,12vw,64px);
+  line-height:1;letter-spacing:-.065em;opacity:.052;
+}
+#tables button.table-open .table-watermark{opacity:.062}
+#tables button.table-custom .table-watermark{
+  right:6px;bottom:-9px;font-size:clamp(42px,11vw,58px);
+}
+html[data-theme="dark"] #tables button small{color:#b9cabc}
+html[data-theme="dark"] #tables button.table-open small{color:#e6f4e4}
+html[data-theme="dark"] #tables .table-watermark{opacity:.08}
+html[data-theme="dark"] #tables button.table-open .table-watermark{opacity:.075}
+.dalai-signature{margin-top:25px;padding:10px 0 22px}
+@media(max-width:380px){
+  #tables .table-section-grid{gap:9px}
+  #tables button{min-height:118px;padding:11px 6px 13px}
+  #tables .table-label{font-size:14px}
+  #tables button.table-open small{font-size:14px}
+  #tables .table-symbol{margin-bottom:7px}
+}
+
+/* Account panel: header user icon and isolated account modal */
+.header-actions #account-btn{width:37px;height:37px;min-width:37px;min-height:37px;padding:0;display:grid;place-items:center;border:1px solid #dce2d8;background:#eef2e8;color:#365a49;border-radius:11px}
+.header-actions #account-btn svg{display:block}
+@media(max-width:380px){.header-actions #account-btn{width:34px;height:34px;min-width:34px;min-height:34px}}
+.account-overlay{position:fixed;inset:0;z-index:3000;background:#13291b99;display:flex;align-items:center;justify-content:center;padding:18px;overscroll-behavior:contain}
+.account-card{width:100%;max-width:450px;max-height:calc(100dvh - 36px);overflow-y:auto;border:1px solid #d8e3d5;border-radius:21px;background:#fffefa;color:#2a4838;box-shadow:0 20px 68px #15291f49;padding:24px}
+.account-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:19px}
+.account-eyebrow{font-size:10px;letter-spacing:.17em;color:#8a9b8c;font-weight:750}
+.account-top h2{font-size:23px;line-height:1.25;margin:5px 0 0;color:#274736}
+.account-top #account-close{width:34px;height:34px;min-width:34px;min-height:34px;padding:0;border-radius:9px}
+.account-field{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border-bottom:1px solid #e3e9df;padding:12px 0}
+.account-field span{color:#738777;font-size:12px;white-space:nowrap}
+.account-field strong{font-size:13px;font-weight:750;min-width:0;text-align:right;overflow-wrap:anywhere}
+.account-card h3{font-size:16px;margin:23px 0 8px;color:#2c503c}
+.account-card .note{font-size:12px;line-height:1.6;color:#697c6d}
+.account-card #account-reset-request,.account-card #account-password-submit{display:flex;width:100%;margin-top:16px;min-height:47px}
+.account-card #account-recovery-cancel{width:100%;margin-top:10px}
+.account-card input{width:100%;margin:5px 0 14px;min-height:45px;background:#f8faf6;border-color:#cfdfd0;color:#2a4637}
+.account-card label{display:block;font-size:12px;font-weight:700;color:#3f6049}
+.account-feedback{margin:13px 0 0;line-height:1.5;font-size:12px;color:#47694d}
+.account-feedback.is-error{color:#ad423b}
+html[data-theme="dark"] .header-actions #account-btn{background:#35493b;color:#ecf3e8;border-color:#4c6753}
+html[data-theme="dark"] .account-card{background:#27352b;border-color:#4b604f;color:#eaf1e8}
+html[data-theme="dark"] .account-top h2,html[data-theme="dark"] .account-card h3{color:#edf5e8}
+html[data-theme="dark"] .account-field{border-color:#405646}
+html[data-theme="dark"] .account-field span,html[data-theme="dark"] .account-eyebrow{color:#aec0af}
+html[data-theme="dark"] .account-card .note{color:#b0c1b1}
+html[data-theme="dark"] .account-card label{color:#d0e3d2}
+html[data-theme="dark"] .account-card input{background:#1e2a22;border-color:#536b57;color:#ecf4e8}
+html[data-theme="dark"] .account-feedback{color:#c4d9c6}
+html[data-theme="dark"] .account-feedback.is-error{color:#ffb9ae}
+
+/* Admin menu with collapsible categories, add heading and in-group products */
+#manager-content .menu-admin-title{margin:0;color:#2c4b38;font-size:20px}
+#manager-content .menu-admin-intro{margin:7px 0 15px;line-height:1.55}
+#manager-content .menu-admin-actions,#manager-content .menu-category-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#manager-content .menu-admin-actions{margin:0 0 15px}
+#manager-content .menu-admin-actions button,#manager-content .menu-category-actions button{min-width:0;min-height:43px;font-size:12px;padding:8px}
+#manager-content .menu-add-category{border:1px solid #ccdecf;background:#f3f8f0;border-radius:14px;padding:14px;margin:0 0 15px}
+#manager-content .menu-add-category label{display:block;color:#365841;font-weight:700;font-size:12px;margin-bottom:7px}
+#manager-content .menu-add-category input{box-sizing:border-box;display:block;width:100%;min-height:44px;background:#fff;color:#294837;border:1px solid #ccdecf;margin:0 0 10px;padding:9px 11px}
+#manager-content .menu-groups{display:flex;flex-direction:column;gap:10px}
+#manager-content .menu-group{border:1px solid #dce7d9;border-radius:15px;background:#fcfdfa;overflow:hidden}
+#manager-content .menu-group[open]{background:#fff;border-color:#b9d1bb}
+#manager-content .menu-group summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;padding:14px 13px;min-height:56px;background:#f0f6ed;user-select:none}
+#manager-content .menu-group summary::-webkit-details-marker{display:none}
+#manager-content .menu-group summary::marker{content:""}
+#manager-content .menu-group-heading{font-size:15px;font-weight:800;color:#2e513c;overflow-wrap:anywhere}
+#manager-content .menu-group-count{margin-left:auto;white-space:nowrap;font-size:11px;color:#738b78;font-weight:600}
+#manager-content .menu-chevron{font-size:21px;line-height:1;color:#65806d;transition:transform .18s}
+#manager-content .menu-group[open] .menu-chevron{transform:rotate(180deg)}
+#manager-content .menu-group-body{padding:2px 13px 13px}
+#manager-content .menu-product-row{display:flex;align-items:center;gap:9px;border-bottom:1px solid #e5ece4;padding:12px 0}
+#manager-content .menu-product-row.inactive{opacity:.7}
+#manager-content .menu-product-info{min-width:0;flex:1}
+#manager-content .menu-product-info b{display:inline;font-size:13px;color:#2c4936;overflow-wrap:anywhere}
+#manager-content .menu-product-info small{display:block;font-size:11px;color:#778d7b;line-height:1.45;margin-top:5px}
+#manager-content .menu-product-inactive{font-size:10px;color:#a37642;font-weight:700}
+#manager-content .menu-product-edit{flex:0 0 auto;min-width:70px;width:auto;min-height:36px;margin:0;padding:7px 10px;font-size:12px;border-radius:10px}
+#manager-content .menu-category-product{width:100%;min-height:41px;padding:8px;margin-top:12px;font-size:12px}
+#manager-content .menu-category-empty{text-align:center;color:#819484;font-size:12px;margin:20px 0 10px}
+#manager-content #menu-cat{display:block;box-sizing:border-box;width:100%;min-height:44px;color:#2e4d39;background:#f8fbf7;border:1px solid #d4e1d4;margin-top:6px}
+html[data-theme="dark"] #manager-content .menu-admin-title,html[data-theme="dark"] #manager-content .menu-group-heading,html[data-theme="dark"] #manager-content .menu-product-info b{color:#e5f2e5}
+html[data-theme="dark"] #manager-content .menu-group{background:#28392d;border-color:#45614b}
+html[data-theme="dark"] #manager-content .menu-group[open]{background:#2d4133;border-color:#5f8568}
+html[data-theme="dark"] #manager-content .menu-group summary{background:#344b3a}
+html[data-theme="dark"] #manager-content .menu-group-count,html[data-theme="dark"] #manager-content .menu-product-info small,html[data-theme="dark"] #manager-content .menu-chevron{color:#bad0bb}
+html[data-theme="dark"] #manager-content .menu-product-row{border-color:#4a604e}
+html[data-theme="dark"] #manager-content .menu-add-category{background:#2d4234;border-color:#526f59}
+html[data-theme="dark"] #manager-content .menu-add-category label{color:#d5e4d4}
+html[data-theme="dark"] #manager-content .menu-add-category input,html[data-theme="dark"] #manager-content #menu-cat{background:#203528;color:#e6f3e5;border-color:#536f57}
+@media(max-width:380px){#manager-content .menu-group summary{gap:6px;padding:12px 9px}#manager-content .menu-group-heading{font-size:14px}#manager-content .menu-group-count{font-size:10px}#manager-content .menu-group-body{padding:2px 9px 11px}#manager-content .menu-product-edit{min-width:64px;padding:7px;font-size:11px}}
+/* 2026-10-22: report readability and manager-heading alignment (UI only). */
+#summary:not(.hidden){
+  inset:auto;
+  top:50%;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  transform:translate(-50%,-50%);
+  width:min(680px,calc(100vw - 24px));
+  max-height:calc(100vh - 24px);
+  max-height:calc(100dvh - 24px);
+  box-sizing:border-box;
+  padding:clamp(17px,4vw,26px);
+  border-radius:18px;
+  color:#edf2e9;
+}
+#summary>.row:first-child{align-items:center;gap:10px;margin-bottom:16px}
+#summary #summary-title{flex:1 1 auto;min-width:0;margin:0;color:#f5f6ef;font-size:clamp(20px,4.8vw,26px);line-height:1.25}
+#summary #summary-close{flex:0 0 auto}
+#summary-body{color:#e5ede2;line-height:1.55;overflow-wrap:anywhere}
+#summary-body p{color:#e5ede2;line-height:1.55}
+#summary-body b,#summary-body strong{color:#fffdf6}
+#summary-body h3,#summary-body h4{color:#f5f6ef}
+#summary-body .note{color:#b8cbb9}
+#summary-body>h3{margin:20px 0 12px}
+#manager-screen>.panel>.row:first-child h2{color:#294936}
+#manager-screen>.panel>.manager-subtitle{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  margin:18px 0 18px;
+  padding:0;
+  text-align:left;
+  color:#58705c;
+  font-size:13px;
+  line-height:1.5;
+  overflow-wrap:break-word;
+}
+html[data-theme="dark"] #manager-screen>.panel>.row:first-child h2{color:#edf4e9}
+html[data-theme="dark"] #manager-screen>.panel>.manager-subtitle{color:#bccfbb}
+#manager-screen{--manager-feedback-normal:#405846;--manager-feedback-error:#a93b2f}
+#manager-screen #manager-feedback.date-range{position:relative;top:0;margin-top:3px;margin-bottom:17px}
+html[data-theme="dark"] #manager-screen{--manager-feedback-normal:#bfceb9;--manager-feedback-error:#ffb4a8}
+/* Same-product grouping: daily report and end-of-day breakdown. */
+#summary-body .sold-product-entry{padding:10px 0;border-bottom:1px solid #51604f}
+#summary-body .sold-product-entry:last-of-type{border-bottom:0}
+#summary-body .sold-product-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;color:#f2f5ef}
+#summary-body .sold-product-line strong{color:#fffdf5}
+.sold-variant-list{margin:5px 0 0 10px;padding-left:10px;border-left:2px solid #839b80;font-size:12px;line-height:1.6}
+.sold-variant{color:#bcd0bf;overflow-wrap:anywhere}
+#manager-screen #manager-day-detail>h3,#manager-screen #manager-day-detail>h4{color:#294634}
+#manager-screen #manager-day-detail .sold-product-row.with-variants td{border-bottom:0;padding-bottom:2px}
+#manager-screen #manager-day-detail .sold-detail-row td{padding:0 8px 12px;text-align:left!important;border-bottom:1px solid #d9e5d7}
+#manager-screen #manager-day-detail .sold-detail-row .sold-variant-list{margin:2px 0 0 0;border-color:#b6cab5}
+#manager-screen #manager-day-detail .sold-detail-row .sold-variant{color:#59715e}
+html[data-theme="dark"] #manager-screen #manager-day-detail>h3,
+html[data-theme="dark"] #manager-screen #manager-day-detail>h4{color:#edf4e9}
+html[data-theme="dark"] #manager-screen #manager-day-detail .sold-detail-row td{border-color:#48604c}
+html[data-theme="dark"] #manager-screen #manager-day-detail .sold-detail-row .sold-variant{color:#bfd0bf}
+@media print{
+ #manager-screen #manager-day-detail>h3,#manager-screen #manager-day-detail>h4{color:#111!important}
+ #manager-screen #manager-day-detail .sold-detail-row .sold-variant{color:#444!important}
+}
+/* Custom table controls: keep POS table identity stable, show edit/archive safely. */
+#tables .custom-table-card{min-width:0;display:flex;flex-direction:column;gap:7px}
+#tables .custom-table-card>button[data-table]{width:100%;min-width:0;flex:1}
+#tables .custom-table-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+#tables .custom-table-actions button{
+  display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;
+  min-height:34px;height:34px;width:100%;min-width:0;margin:0;padding:4px 6px;
+  background:#e9f0e6;color:#345742;border:1px solid #d7e4d6;
+  border-radius:9px;box-shadow:none!important;letter-spacing:0;font-size:10px;font-weight:700;
+  overflow:hidden;line-height:1.1;white-space:nowrap;
+}
+#tables .custom-table-actions button::before{display:none!important}
+#tables .custom-table-actions button svg{display:block;width:14px;height:14px;flex:0 0 14px}
+#tables .custom-table-actions button[data-custom-archive]{color:#8a4942;background:#f6eeea;border-color:#eddbd5}
+#tables .custom-table-actions button:focus-visible{outline:2px solid #688e72;outline-offset:2px}
+html[data-theme="dark"] #tables .custom-table-actions button{background:#354b3a;color:#e2eddf;border-color:#516b56}
+html[data-theme="dark"] #tables .custom-table-actions button[data-custom-archive]{background:#503a35;color:#ffded5;border-color:#77554e}
+/* 2026-10-22: Compact navigation with identical 2-row grid for all four tabs.
+   A grid (instead of flex) avoids old #pos-nav-admin's higher-specificity gap rule. */
+#pos-bottom-nav{
+  padding:4px 10px max(5px,env(safe-area-inset-bottom));
+  gap:3px;
+}
+#pos-bottom-nav button,
+#pos-bottom-nav #pos-nav-admin{
+  box-sizing:border-box;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:26px 18px;
+  align-content:center;
+  justify-items:center;
+  row-gap:4px;
+  column-gap:0;
+  min-height:60px;
+  width:100%;
+  min-width:0;
+  padding:5px 2px;
+  border-radius:12px;
+}
+#pos-bottom-nav button .nav-icon,
+#pos-bottom-nav #pos-nav-admin .nav-icon{
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  align-self:center;
+  justify-self:center;
+  width:26px;
+  height:26px;
+  min-width:26px;
+  min-height:26px;
+  margin:0;
+  padding:0;
+  font-size:0;
+  line-height:1;
+}
+#pos-bottom-nav button .nav-icon svg,
+#pos-bottom-nav #pos-nav-admin .nav-icon svg{
+  display:block;
+  width:24px;
+  height:24px;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+#pos-bottom-nav button .nav-label,
+#pos-bottom-nav #pos-nav-admin .nav-label{
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  width:100%;
+  max-width:100%;
+  min-height:18px;
+  height:18px;
+  margin:0;
+  padding:0;
+  font-size:clamp(8px,2.25vw,9.5px);
+  font-weight:650;
+  line-height:1;
+  letter-spacing:-.02em;
+  text-align:center;
+  white-space:nowrap;
+  overflow:visible;
+}
+/* Consistent normal/esnaf variant hierarchy in sales analysis, matching daily archive. */
+#manager-screen #manager-content .manager-analysis-table .sold-product-row.with-variants td{border-bottom:0;padding-bottom:2px}
+#manager-screen #manager-content .manager-analysis-table .sold-detail-row td{padding:0 8px 12px;text-align:left!important;border-bottom:1px solid #d9e5d7}
+#manager-screen #manager-content .manager-analysis-table .sold-detail-row .sold-variant-list{margin:2px 0 0;border-color:#b6cab5}
+#manager-screen #manager-content .manager-analysis-table .sold-detail-row .sold-variant{color:#59715e}
+html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table .sold-detail-row td{border-color:#48604c}
+html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table .sold-detail-row .sold-variant{color:#bfd0bf}
+@media print{#manager-screen #manager-content .manager-analysis-table .sold-detail-row .sold-variant{color:#444!important}}
+/* Optical alignment: move only the Ana Sayfa house icon 2px down. */
+#pos-bottom-nav #pos-nav-tables .nav-icon svg{transform:translateY(2px)}
+/* Date inputs: keep native iOS date controls inside their grid cells. Layout only. */
+#manager-screen #manager-date-tools .manager-date-row,
+#manager-screen #manager-log-filters.manager-date-row{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;width:100%;max-width:100%}
+#manager-screen #manager-date-tools .manager-date-row>label,
+#manager-screen #manager-log-filters.manager-date-row>label{display:block;width:100%;min-width:0;max-width:100%;overflow:hidden}
+#manager-screen #manager-date-tools .manager-date-row input[type="date"]{display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;padding:8px 6px;font-size:clamp(11px,3.2vw,13px);text-align:center;overflow:hidden;-webkit-appearance:none;appearance:none}
+#manager-screen #manager-date-tools .manager-date-row input[type="date"]::-webkit-date-and-time-value{min-width:0;width:100%;text-align:center}
+#manager-screen #manager-date-tools .manager-date-row input[type="date"]::-webkit-datetime-edit{min-width:0;max-width:100%;padding:0}
+/* User performance: fixed columns and aligned numeric headers/cells on mobile. */
+#manager-screen .manager-performance-table{table-layout:fixed;width:100%;border-collapse:collapse}
+#manager-screen .manager-performance-table th,#manager-screen .manager-performance-table td{box-sizing:border-box;vertical-align:middle;padding:10px 5px}
+#manager-screen .manager-performance-table th:first-child,#manager-screen .manager-performance-table td:first-child{text-align:left;overflow-wrap:anywhere}
+#manager-screen .manager-performance-table th:not(:first-child),#manager-screen .manager-performance-table td:not(:first-child){text-align:center}
+#manager-screen .manager-performance-table th{font-size:clamp(10px,2.9vw,13px);line-height:1.25;overflow-wrap:normal}
+/* Keep sales analysis quantities and currency values on one line on narrow screens. */
+#manager-screen .manager-analysis-table{table-layout:fixed;width:100%}
+#manager-screen .manager-analysis-table th:first-child,#manager-screen .manager-analysis-table td:first-child{width:47%;overflow-wrap:anywhere}
+#manager-screen .manager-analysis-table th:nth-child(2),#manager-screen .manager-analysis-table td:nth-child(2){width:15%;text-align:center;white-space:nowrap}
+#manager-screen .manager-analysis-table th:nth-child(3),#manager-screen .manager-analysis-table td:nth-child(3){width:38%;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+#manager-screen .manager-analysis-table th,#manager-screen .manager-analysis-table td{box-sizing:border-box;padding:9px 3px}
+/* Signed-in name integrated with account control in the header. */
+header .header-actions #account-btn{width:auto;max-width:min(31vw,190px);padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+header .header-actions #account-btn.hidden{display:none}
+header .header-user-name{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px;font-weight:650;letter-spacing:-.02em;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+header .header-actions #account-btn svg{flex:0 0 auto}
+@media(max-width:540px){header .header-actions #account-btn{max-width:112px;padding:0 7px;gap:5px}header .header-user-name{font-size:10.5px}}
+@media(max-width:380px){header .header-actions #account-btn{max-width:88px;padding:0 5px}header .header-user-name{font-size:10px}}
+/* High contrast section headings in Sales Analysis (light and dark themes). */
+#manager-screen #manager-content>h4{color:#263e31;font-weight:750;opacity:1}
+html[data-theme="dark"] #manager-screen #manager-content>h4{color:#eaf2e4}
+/* Manager report-specific compact visuals */
+#manager-screen .manager-analysis-bars{display:grid;gap:12px;margin:12px 0 22px}
+#manager-screen .manager-analysis-bar-head{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-bottom:5px}
+#manager-screen .manager-analysis-bar-head span{min-width:0;overflow-wrap:anywhere}
+#manager-screen .manager-analysis-track{height:8px;background:#dce8da;border-radius:20px;overflow:hidden}
+#manager-screen .manager-analysis-fill{height:100%;background:#477d58;border-radius:20px}
+html[data-theme="dark"] #manager-screen .manager-analysis-track{background:#3b5341}
+html[data-theme="dark"] #manager-screen .manager-analysis-fill{background:#a1c7a1}
+#manager-screen .manager-days button.active{background:#245b3c;color:white}
+/* Mobile spacing fixes: manager adjustment controls and custom-table footer clearance. */
+#adjust-preview > label{
+  display:block;
+  width:100%;
+  min-width:0;
+  margin:0 0 18px;
+  color:var(--ink);
+  font-size:13px;
+  line-height:1.45;
+  font-weight:700;
+}
+#adjust-preview > label > select,
+#adjust-preview > label > input{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  min-height:46px;
+  margin:8px 0 0;
+  padding:10px 12px;
+  background:var(--paper);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:11px;
+  font-size:16px;
+  line-height:1.35;
+  font-weight:500;
+}
+#adjust-preview #adj-units{margin:7px 0 17px}
+#adjust-preview #adj-units > label{min-width:0;column-gap:12px;row-gap:8px}
+#adjust-preview #adj-units > label > span{min-width:0;flex:1 1 160px;overflow-wrap:anywhere}
+#adjust-preview #adj-units > label > b{flex:0 0 auto;white-space:nowrap}
+#adjust-preview #adj-summary{padding-top:3px}
+@media(max-width:600px){
+  main:has(#workspace:not(.hidden)){
+    padding-bottom:calc(140px + env(safe-area-inset-bottom));
+  }
+  #tables .table-section:last-child{padding-bottom:12px}
+}
+
+/* Next release: distinctive, legible mustard edit action on all screens. */
+#tables .custom-table-actions button[data-custom-rename]{
+ background:#f4de96;color:#634707;border-color:#d6b85a;
+}
+html[data-theme="dark"] #tables .custom-table-actions button[data-custom-rename]{
+ background:#83631d;color:#fff0c5;border-color:#ae8a37;
+}
+/* Accessible category and item reordering controls. */
+#manager-content .menu-group-count{margin-left:0}
+#manager-content .menu-group-controls{
+ display:inline-flex;align-items:center;gap:4px;margin-left:auto;flex:0 0 auto;
+}
+#manager-content .menu-group-controls button,
+#manager-content .menu-order-step{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-width:29px;width:29px;height:30px;min-height:30px;
+ padding:2px 3px;border-radius:8px;font-weight:800;font-size:15px;line-height:1;
+ background:#e1eadb;color:#34543e;border:1px solid #ccdec9;
+}
+#manager-content .menu-group-controls button:disabled,
+#manager-content .menu-order-step:disabled{opacity:.35;cursor:default}
+#manager-content .menu-order-buttons{display:inline-flex;gap:3px;flex:0 0 auto}
+#manager-content .menu-category-grip{cursor:grab;touch-action:none}
+#manager-content .menu-drag-handle{touch-action:none;cursor:grab}
+#manager-content .menu-group.is-reordering,#manager-content .menu-product-row.is-reordering{opacity:.7}
+html[data-theme="dark"] #manager-content .menu-group-controls button,
+html[data-theme="dark"] #manager-content .menu-order-step{
+ background:#45604a;color:#e9f6e7;border-color:#6b876f;
+}
+@media(max-width:440px){
+ #manager-content .menu-group summary{flex-wrap:wrap}
+ #manager-content .menu-group-controls{gap:3px}
+ #manager-content .menu-product-row{gap:6px}
+ #manager-content .menu-order-step{min-width:28px;width:28px}
+}
+
+</style><style>
+/* Staff preview: the same layout/CSS as live, with explicit demo branding. */
+#demo-bar{position:sticky;top:0;z-index:1005;background:#d5ab4c;color:#241e11;
+ padding:8px 18px;display:flex;justify-content:center;align-items:center;gap:16px;
+ box-shadow:0 2px 9px #0003;font:700 13px/1.5 system-ui,sans-serif;flex-wrap:wrap}
+#demo-bar b{letter-spacing:.04em}
+#demo-bar small{font-weight:600;opacity:.85}
+#demo-bar button,#demo-bar a{border:1px solid #61501c;border-radius:8px;background:#f7eed6;
+ color:#342a19!important;padding:5px 12px;min-height:30px;font:700 12px system-ui,sans-serif;text-decoration:none}
+#demo-toast{position:fixed;bottom:23px;right:20px;z-index:3002;padding:14px 17px;
+ border-radius:12px;color:#fff;background:#234b33;box-shadow:0 8px 28px #0005;font:700 13px system-ui,sans-serif}
+#demo-toast[hidden]{display:none}
+#demo-toast[data-error="true"]{background:#a83227}
+.demo-modal{position:fixed;inset:0;background:#000a;z-index:3000;display:grid;place-items:center;padding:18px}
+.demo-sheet{width:min(540px,96vw);max-height:min(82vh,690px);overflow:auto;
+ box-sizing:border-box;border-radius:18px;border:1px solid #b0c5af;background:#f7faf5;color:#254331;
+ padding:24px;box-shadow:0 20px 60px #0008}
+.demo-modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:15px}
+.demo-modal-head h3{margin:0;font-size:20px}
+.demo-modal-head button{width:34px;height:34px;min-height:34px;padding:0;background:#e5efe1;color:#294934}
+.demo-dialog-body p{font-size:14px;line-height:1.6}
+.demo-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}
+.demo-options button{min-width:0;white-space:normal;min-height:46px}
+.demo-options button small{display:block;font-size:11px;margin-top:5px;opacity:.7}
+.demo-split-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0}
+.demo-split-row input{width:100px;max-width:100px;min-height:38px;font-size:14px;padding:8px}
+.demo-dialog-body label{display:block;margin:11px 0}
+.demo-dialog-body select{margin-top:7px;width:100%;padding:11px}
+#workspace.desktop-staff #desktop-quick{display:none!important}
+#pos-hero .pos-live{background:#d5ab4c;color:#242516;border-color:#d5ab4c}
+#editor .editor-popular-plus svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round}
+html[data-theme="dark"] .demo-sheet{background:#292f30;color:#e5f2de;border-color:#52675a}
+html[data-theme="dark"] .demo-modal-head button{background:#3c4c43;color:#e5f2de}
+@media(max-width:620px){.demo-options{grid-template-columns:1fr}#demo-bar{gap:8px;font-size:11px;padding:7px}}
+</style><link rel="stylesheet" href="./desktop.css?v=20261027-13"><link rel="stylesheet" href="./charcoal-theme.css?v=20261028-2"><link rel="stylesheet" href="./desktop-panels.css?v=20261028-5"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261027-3"></head><body><div id="demo-bar"><b>● KULLANICI ÖNİZLEMESİ</b><small>ÖRNEK VERİ · GERÇEK KAYIT / ÖDEME YOK</small><button type="button" id="demo-reset">Örnekleri Sıfırla</button><a href="./shared-test.html">Gerçek Panele Dön</a></div><div id="demo-toast" hidden role="status" aria-live="polite"></div>
+<header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
+<section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
+  <div class="account-card">
+   <div class="account-top"><div><span class="account-eyebrow">SAM’S SİPARİŞ</span><h2 id="account-title">Kullanıcı Paneli</h2></div><button type="button" id="account-close" class="alt" aria-label="Kapat">✕</button></div>
+   <div id="account-details">
+    <div class="account-field"><span>Ad Soyad</span><strong id="account-name">—</strong></div>
+    <div class="account-field"><span>E-posta</span><strong id="account-email">—</strong></div>
+    <div class="account-field"><span>Yetki</span><strong id="account-role">—</strong></div>
+    <h3>Şifre değişikliği</h3>
+    <p class="note">Kayıtlı e-posta adresine şifre yenileme bağlantısı gönderilir. Bağlantıyla yeni şifreni belirleyebilirsin; mevcut yetkilerin korunur.</p>
+    <button type="button" id="account-reset-request">Şifre değiştirme e-postası gönder</button>
+    <p id="account-feedback" class="account-feedback" role="status" aria-live="polite"></p>
+   </div>
+   <form id="account-recovery" class="hidden" autocomplete="off">
+    <h3>Yeni şifreni oluştur</h3>
+    <p class="note">E-postadaki bağlantı doğrulandı. Yeni şifreni belirledikten sonra tekrar giriş yapabilirsin.</p>
+    <label>Yeni şifre<input id="account-password" type="password" minlength="8" autocomplete="new-password" required placeholder="En az 8 karakter"></label>
+    <label>Yeni şifre tekrar<input id="account-password-confirm" type="password" minlength="8" autocomplete="new-password" required placeholder="Yeni şifreni tekrar yaz"></label>
+    <button type="submit" id="account-password-submit">Yeni şifreyi kaydet</button>
+    <button type="button" id="account-recovery-cancel" class="alt">Vazgeç ve çıkış yap</button>
+    <p id="account-recovery-feedback" class="account-feedback" role="status" aria-live="polite"></p>
+   </form>
+  </div>
+ </section>
+<main>
+<div id="msg" class="status">Bağlanılıyor...</div>
+<section id="auth" class="panel hidden">
+<div id="auth-login">
+<h2>Personel girişi</h2>
+<label>E-posta<input id="email" type="email" autocomplete="username" placeholder="ornek@eposta.com"></label>
+<label>Şifre<input id="password" type="password" autocomplete="current-password" placeholder="Şifreniz"></label>
+<div class="row"><button id="signin">Giriş yap</button><button id="open-signup" class="alt">Yeni kullanıcı</button></div>
+<button type="button" id="forgot-password" class="alt" style="margin-top:12px">Şifremi unuttum</button>
+</div>
+<div id="auth-signup" class="hidden">
+<h2>Yeni kullanıcı oluştur</h2>
+<label>Ad<input id="first-name" autocomplete="given-name" maxlength="60" placeholder="Adınız"></label>
+<label>Soyad<input id="last-name" autocomplete="family-name" maxlength="60" placeholder="Soyadınız"></label>
+<label>E-posta<input id="signup-email" type="email" autocomplete="email" placeholder="ornek@eposta.com"></label>
+<label>Şifre<input id="signup-password" type="password" autocomplete="new-password" placeholder="En az 8 karakter"></label>
+<div class="row"><button id="signup">Kayıt oluştur</button><button id="back-login" class="alt">Giriş ekranına dön</button></div>
+<p class="note">Yeni kayıtlar yönetici onayı bekler. Yönetici onaylayana kadar masalara erişilemez. Şifrenizi kimseyle paylaşmayın.</p>
+</div>
+</section>
+<section id="workspace" class="hidden">
+<div class="panel"><div id="pos-hero"><div class="pos-kicker">SAM’S COFFEE</div><h2>Günün Özeti <span class="pos-live"><i></i> CANLI</span></h2><p>Sam’s Coffee · Masa ve sipariş kontrolü</p><div id="pos-metrics"><div><small>Açık masa</small><strong id="pos-open-count">0</strong></div><div><small>Aktif sipariş tutarı</small><strong id="pos-open-total">0 TL</strong></div></div></div><div id="pos-actions"><button id="pos-new-order" type="button"><span class="pos-action-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v16l-3-2-4 2-4-2-3 2V5a2 2 0 0 1 2-2Z"/><path d="M9 9h6M12 12v5M9.5 14.5h5"/></svg></span>Yeni sipariş</button><button id="pos-day-end" type="button"><span class="pos-action-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg></span>Gün sonu</button><button id="pos-history" type="button" aria-label="İşlem Geçmişi"><span class="pos-action-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l3.7 2.3"/></svg></span><span class="pos-action-label">İşlem Geçmişi</span></button><button id="pos-admin" type="button" aria-label="Yönetici Paneli"><span class="pos-action-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="pos-action-label">Yönetici Paneli</span></button></div><div id="pos-table-heading"><div><div class="pos-overline">SİPARİŞ YÖNETİMİ</div><h2>Masalar</h2></div><button id="custom" class="alt" type="button">Özel Masa</button><button id="refresh" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6"/><path d="M20 4v7h-7"/></svg><span>Yenile</span></button></div></div><div id="tables" class="grid"></div><aside id="desktop-quick" aria-label="Yönetici hızlı erişim">
+ <h3>Hızlı Erişim</h3>
+ <p>Yönetici işlemlerine kısayollar</p>
+ <div class="desktop-shortcuts">
+ <button type="button" data-desktop-manager="analysis"><span class="shortcut-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 16v5"/><path d="M16 14v7"/><path d="M20 10v11"/><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0l-2.292-2.292a.5.5 0 0 0-.708 0L2 17"/><path d="M17 3h5v5"/><path d="M4 20v1"/><path d="M8 14v7"/></svg></span><span class="shortcut-copy">Satış Analizi<small>Ürün ve satış performansı</small></span></button>
+ <button type="button" data-desktop-manager="corrections"><span class="shortcut-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><span class="shortcut-copy">Ödeme Düzeltmeleri<small>Hatalı tahsilat kayıtları</small></span></button>
+ <button type="button" data-desktop-manager="menu"><span class="shortcut-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h15v17H6a2 2 0 0 1-2-2zM4 18a2 2 0 0 1 2-2h13M8 8h7m-7 4h7"/></svg></span><span class="shortcut-copy">Menü Yönetimi<small>Ürünler ve fiyatlar</small></span></button>
+ <button type="button" data-desktop-manager="users"><span class="shortcut-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 21v-2a7 7 0 0 1 14 0v2M17 5a3 3 0 0 1 0 6m1 4a6 6 0 0 1 4 6"/></svg></span><span class="shortcut-copy">Kullanıcı Yönetimi<small>Personel ve yetkiler</small></span></button>
+ <div class="shortcut-divider"></div>
+ <button type="button" class="desktop-all" data-desktop-manager="overview"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Yönetici Paneli</span></button>
+ </div>
+</aside>
+<aside id="desktop-staff-quick" aria-label="Kullanıcı servis araçları">
+ <h3>Servis Araçları</h3>
+ <p>Masa bul, hesap ve taşıma işlemlerine ulaş.</p>
+ <label class="staff-search-label" for="staff-table-search">Masa Bul</label>
+ <div class="staff-search-wrap">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg>
+  <input id="staff-table-search" type="search" placeholder="Masa adı veya numarası" autocomplete="off" aria-controls="staff-tool-results">
+ </div>
+  <div class="staff-close-action">
+  <button type="button" id="desktop-staff-close"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.7 2.7L16 9.4"/></svg><span>Masa Kapat</span></button>
+ </div>
+<div class="staff-quick-actions">
+  <button type="button" id="desktop-staff-split"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h3M8 16h3m5-4v5m-2.5-2.5h5"/></svg><span>Parça Hesap Al</span></button>
+  <button type="button" id="desktop-staff-transfer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14m-4-4 4 4-4 4M19 17H5m4-4-4 4 4 4"/></svg><span>Masa Taşı / Birleştir</span></button>
+ </div>
+ <button type="button" id="desktop-staff-last" class="staff-last-table" disabled>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.4"/></svg>
+  <span><strong>Son Çalıştığım Masa</strong><small id="staff-last-label">Henüz masa açılmadı</small></span>
+  <span class="staff-last-arrow" aria-hidden="true">›</span>
+ </button>
+ <div id="staff-tool-picker" class="staff-tool-picker hidden" aria-live="polite">
+  <div class="staff-tool-heading"><strong id="staff-tool-heading">Masa seç</strong><button type="button" id="staff-tool-cancel" aria-label="Seçimi kapat">Kapat</button></div>
+  <div id="staff-tool-results" class="staff-tool-results"></div>
+ </div>
+</aside><div class="divider hidden" id="legacy-divider"></div><div class="row hidden" id="legacy-actions"><button id="report" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg><span>Gün Sonu</span></button><button id="audit" class="alt hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18M3 9h18M3 14h12M3 19h8"/></svg><span>İşlem Geçmişi</span></button><button id="staff-admin" class="alt hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Kullanıcı Yönetimi</span></button><button id="manager-dashboard" class="alt hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg><span>Yönetici Paneli</span></button></div></div>
+<div id="editor" class="panel hidden">
+<div class="row"><button id="back-table" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Masalara Dön</span></button><span id="revision" class="muted"></span></div><h2 id="table-title">Masa</h2>
+<p id="dirty-notice" class="note hidden">Kaydedilmemiş değişiklikler var. Hesap/taşıma işleminden önce bu değişiklikler kaydedilecek. Başka cihazdaki güncellemeler birbiri üzerine yazılmaz.</p>
+<section id="editor-popular" class="editor-popular" aria-label="Popüler Ürünler">
+ <div class="editor-popular-heading"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.6 6.5 7 .5-5.4 4.6 1.8 6.8L12 17l-6 3.4 1.8-6.8L2.4 9l7-.5L12 2Z"/></svg><div><h3>Popüler Ürünler</h3><p>Sık satılan ürünleri tek dokunuşla siparişe ekle.</p></div><button type="button" id="editor-popular-sort-toggle" class="editor-popular-sort-toggle hidden" aria-pressed="false">Sırala</button></div>
+ <div id="popular-shortcuts" class="editor-popular-grid"></div>
+</section>
+<div class="desktop-order-menu">
+<h3>Ürün ekle</h3><div class="row tariff-switch" role="group" aria-label="Fiyat tarifesi"><button id="tariff-normal">Normal Menü</button><button id="tariff-esnaf" class="alt">Esnaf Tarifesi</button></div><div id="categories" class="row" style="justify-content:start;margin-bottom:14px"></div><div id="products" class="grid"></div>
+</div><!-- desktop-order-menu -->
+<div class="desktop-order-cart">
+<div class="divider"></div><h3>Sipariş</h3><div id="lines"></div>
+<label>Not<textarea rows="2" id="note" placeholder="Sipariş notu"></textarea></label>
+<div class="row"><b id="total">0 TL</b><button id="save"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg><span>Siparişi Kaydet</span></button></div>
+<div class="divider"></div>
+<div class="row"><button id="pay-cash" class="warn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg><span>Nakit Kapat</span></button><button id="pay-card" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>Kart Kapat</span></button><button id="split" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg><span>Parça Hesap Al</span></button><button id="transfer" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h14m-4-4 4 4-4 4M17 17H3m4-4-4 4 4 4"/></svg><span>Masa Taşı / Birleştir</span></button></div>
+<p class="note">Ödeme ve masa taşıma öncesinde siparişi kaydedin. Aynı masada eşzamanlı değişiklik olursa eski sürümle işlem engellenir.</p>
+</div><!-- desktop-order-cart -->
+</div>
+<section id="summary" class="panel hidden"><div class="row"><h2 id="summary-title">Gün Sonu</h2><button class="alt" id="summary-close">Kapat</button></div><div id="summary-body"></div></section>
+
+</section>
+<section id="manager-screen" class="hidden">
+ <div class="panel">
+  <div class="row"><button id="manager-back" class="alt"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Masalara Dön</span></button><h2>Yönetici Paneli</h2></div>
+  <p class="note manager-subtitle">Sam's Coffee · Geçmiş raporlar ve kayıt arşivi</p>
+  <div class="manager-tabs">
+   <button class="alt" data-manager-tab="overview">Genel Bakış</button><button class="alt" data-manager-tab="reports">Günlük Raporlar</button>
+   <button class="alt" data-manager-tab="logs">İşlem Geçmişi</button>
+   <button class="alt" data-manager-tab="analysis">Satış Analizi</button><button class="alt" data-manager-tab="performance">Kullanıcı Performansı</button><button class="alt" data-manager-tab="corrections">Ödeme Düzeltmeleri</button>
+   <button class="alt" data-manager-tab="users">Kullanıcı Yönetimi</button><button class="alt" data-manager-tab="menu">Menü Yönetimi</button>
+  </div>
+  <div id="manager-date-tools">
+   <div class="manager-date-row">
+    <label>Başlangıç <input id="manager-from" type="date"></label>
+    <label>Bitiş <input id="manager-to" type="date"></label>
+   </div>
+   <div class="row"><button id="manager-today" class="alt">Bugün</button><button id="manager-week" class="alt">Son 7 Gün</button><button id="manager-month" class="alt">Bu Ay</button><button id="manager-load">Tarih Aralığı</button></div>
+  </div>
+  <div id="manager-log-filters" class="hidden manager-date-row">
+   <label>Çalışan <select id="manager-person"><option value="">Tüm çalışanlar</option></select></label>
+   <label>Masa <select id="manager-table"><option value="">Tüm masalar</option></select></label>
+  </div>
+  <div id="manager-feedback" class="note" role="status"></div>
+  <div id="manager-content"></div>
+  <div class="row manager-exports" id="manager-exports">
+   <button id="manager-export" class="alt">Excel (CSV) İndir</button>
+   <button id="manager-print" class="alt">Yazdır / PDF</button>
+  </div>
+ </div>
+</section>
+<div id="mobile-manager-shortcuts" class="hidden" role="dialog" aria-modal="false" aria-label="Yönetici hızlı erişim">
+ <button type="button" class="mobile-shortcuts-backdrop" id="mobile-manager-backdrop" aria-label="Hızlı erişim menüsünü kapat"></button>
+ <section class="mobile-shortcuts-panel">
+  <div class="mobile-shortcuts-heading"><h3 id="mobile-shortcuts-title" tabindex="-1">Hızlı Erişim</h3><button type="button" id="mobile-manager-close" aria-label="Kapat">×</button></div>
+  <div class="mobile-shortcuts-grid"><button type="button" data-mobile-manager="analysis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4M4 20h16M8 16v-5M13 16V7M18 16V9"/></svg><span>Satış Analizi</span><small>Ürün ve satış performansı</small></button>
+<button type="button" data-mobile-manager="corrections"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>Ödeme Düzeltmeleri</span><small>Tahsilat kayıtlarını düzenle</small></button>
+<button type="button" data-mobile-manager="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h15v17H6a2 2 0 0 1-2-2zM4 18a2 2 0 0 1 2-2h13M8 8h7m-7 4h7"/></svg><span>Menü Yönetimi</span><small>Ürünler ve fiyatlar</small></button>
+<button type="button" data-mobile-manager="users"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 21v-2a7 7 0 0 1 14 0v2M17 5a3 3 0 0 1 0 6m1 4a6 6 0 0 1 4 6"/></svg><span>Kullanıcı Yönetimi</span><small>Personel ve yetkiler</small></button></div>
+  <button type="button" data-mobile-manager="overview"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Yönetici Paneli</button>
+ </section>
+</div>
+<nav id="pos-bottom-nav" class="hidden nav-manager" aria-label="Mobil hızlı erişim menüsü">
+<button type="button" id="pos-nav-tables" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg></span><span class="nav-label">Ana Sayfa</span></button>
+<button type="button" id="pos-nav-orders"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9h12v5.5A4.5 4.5 0 0 1 12 19H9a4.5 4.5 0 0 1-4.5-4.5z"/><path d="M16.5 10h1.7a2.8 2.8 0 0 1 0 5.6h-1.7"/><path d="M3 21h16"/><path d="M7.5 3.5v2.2M12 3.5v2.2"/></svg></span><span class="nav-label">Siparişler</span></button>
+<button type="button" id="pos-nav-report"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg></span><span class="nav-label">Gün Sonu</span></button>
+<button type="button" id="pos-nav-history"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg></span><span class="nav-label">Geçmiş</span></button>
+<button type="button" id="pos-nav-admin" aria-haspopup="dialog" aria-controls="mobile-manager-shortcuts" aria-expanded="false"><span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Yönetici</span></button>
+</nav>
+<aside id="desktop-sidebar" aria-label="Masaüstü ana menü">
+ <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong></div>
+ <div class="desktop-nav">
+  <div class="desktop-nav-label">ÇALIŞMA ALANI</div>
+  <button type="button" class="desktop-active" data-desktop-nav="home"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span>Ana Sayfa</span></button>
+  <button type="button" data-desktop-nav="orders"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6zM17 10h2a2.5 2.5 0 0 1 0 5h-2M3 22h17M8 3v3m5-3v3"/></svg><span>Siparişler</span></button>
+  <button type="button" class="desktop-manager-only" data-desktop-nav="reports"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg><span>Gün Sonu</span></button>
+  <button type="button" class="desktop-manager-only" data-desktop-nav="logs"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg><span>İşlem Geçmişi</span></button>
+  <button type="button" class="desktop-manager-only" data-desktop-nav="manager"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Yönetici Paneli</span></button>
+ </div>
+ <div class="desktop-footer"><span>Aktif kullanıcı</span><b id="desktop-username">Kullanıcı</b></div>
+</aside>
+<footer class="dalai-signature" aria-label="Geliştirici imzası">Created by <span>Dalai Creative</span></footer>
+</main>
+<script src="./staff-demo.js?v=20261028-1"></script>
+</body></html>
