@@ -1287,3 +1287,14 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-popular-row.is
     gap:12px;
   }
 }
+
+/* 2026-10-28 — Make order total clearly legible in both themes.
+   Only the order total is changed; prices and payment controls retain their design. */
+#editor #total{
+  color:#244b36!important;
+  font-weight:800!important;
+  opacity:1!important;
+}
+html[data-theme="dark"] #editor #total{
+  color:#e7f3e3!important;
+}
