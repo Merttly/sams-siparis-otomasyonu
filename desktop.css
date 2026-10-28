@@ -527,3 +527,31 @@
   }
   html:not([data-theme="dark"]) #tables button.table-open .table-watermark{opacity:.23}
 }
+
+/* Manager employee-preview shortcut: distinct non-operational module at the bottom. */
+@media screen and (min-width:1024px){
+ #workspace.desktop-manager #desktop-quick .desktop-shortcuts button#desktop-demo-launch{
+   background:#e6eafa;border:1px solid #c8d3ef;color:#394c76;min-height:54px;
+ }
+ #workspace.desktop-manager #desktop-quick .desktop-shortcuts button#desktop-demo-launch:hover{
+   background:#dae3f8;border-color:#a8bde9;
+ }
+ #workspace.desktop-manager #desktop-quick #desktop-demo-launch .shortcut-icon{
+   background:#d4ddf5;color:#445e9d;
+ }
+ #workspace.desktop-manager #desktop-quick #desktop-demo-launch .shortcut-copy small{
+   color:#566b94;
+ }
+ html[data-theme="dark"] #workspace.desktop-manager #desktop-quick .desktop-shortcuts button#desktop-demo-launch{
+   background:#394d70;border-color:#7188b5;color:#f1f4ff;
+ }
+ html[data-theme="dark"] #workspace.desktop-manager #desktop-quick .desktop-shortcuts button#desktop-demo-launch:hover{
+   background:#465d84;border-color:#9db3dc;
+ }
+ html[data-theme="dark"] #workspace.desktop-manager #desktop-quick #desktop-demo-launch .shortcut-icon{
+   background:#526b99;color:#f1f4ff;
+ }
+ html[data-theme="dark"] #workspace.desktop-manager #desktop-quick #desktop-demo-launch .shortcut-copy small{
+   color:#d0dfff;
+ }
+}
