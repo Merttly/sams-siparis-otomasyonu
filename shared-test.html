@@ -990,6 +990,21 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table
 #manager-screen #manager-date-tools .manager-date-row input[type="date"]{display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;padding:8px 6px;font-size:clamp(11px,3.2vw,13px);text-align:center;overflow:hidden;-webkit-appearance:none;appearance:none}
 #manager-screen #manager-date-tools .manager-date-row input[type="date"]::-webkit-date-and-time-value{min-width:0;width:100%;text-align:center}
 #manager-screen #manager-date-tools .manager-date-row input[type="date"]::-webkit-datetime-edit{min-width:0;max-width:100%;padding:0}
+/* Mobile report dates: center the native date value without changing picker behavior. */
+@media (max-width:767px){
+ #manager-screen #manager-date-tools .manager-date-row input[type="date"]{
+  height:44px;min-height:44px;padding:0 6px;line-height:normal;
+  text-align:center;text-align-last:center;
+ }
+ #manager-screen #manager-date-tools .manager-date-row input[type="date"]::-webkit-date-and-time-value{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;min-width:0;height:100%;margin:0 auto;text-align:center;
+ }
+ #manager-screen #manager-date-tools .manager-date-row input[type="date"]::-webkit-datetime-edit{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:100%;min-width:0;max-width:100%;margin:0 auto;padding:0;
+ }
+}
 /* User performance: fixed columns and aligned numeric headers/cells on mobile. */
 #manager-screen .manager-performance-table{table-layout:fixed;width:100%;border-collapse:collapse}
 #manager-screen .manager-performance-table th,#manager-screen .manager-performance-table td{box-sizing:border-box;vertical-align:middle;padding:10px 5px}
