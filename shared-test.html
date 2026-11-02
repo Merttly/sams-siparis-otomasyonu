@@ -1113,6 +1113,33 @@ html[data-theme="dark"] #manager-content .menu-order-step{
  #manager-content .menu-order-step{min-width:28px;width:28px}
 }
 
+/* Visually separate newly added (unsaved) items on mobile and desktop, in both themes. */
+#editor #lines .order-new-section{
+ margin:13px 0 2px;padding:10px 12px 4px;
+ border:1px solid #b5d8bd;border-radius:13px;background:#eef8ef;
+}
+#editor #lines .order-new-heading{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:5px;margin:0 0 3px;color:#2f6744;font-size:12px;line-height:1.35;
+}
+#editor #lines .order-new-heading strong{font-size:13px;font-weight:800}
+#editor #lines .order-new-heading span{color:#4e795c;font-size:11px;font-weight:650}
+#editor #lines .order-new-section .order-line{padding:11px 3px;border-color:#cde5d0}
+#editor #lines .order-new-section .order-line:last-child{border-bottom:0}
+#editor #products .product-added-count{
+ display:inline-flex;align-items:center;align-self:flex-start;
+ margin-top:4px;padding:3px 7px;border-radius:7px;
+ background:#d8efdb;color:#28603b;font-size:11px;font-weight:800;line-height:1.25;
+}
+html[data-theme="dark"] #editor #lines .order-new-section{background:#253c2e;border-color:#4e795a}
+html[data-theme="dark"] #editor #lines .order-new-heading{color:#d1f1d2}
+html[data-theme="dark"] #editor #lines .order-new-heading span{color:#b3d6b8}
+html[data-theme="dark"] #editor #lines .order-new-section .order-line{border-color:#42654b}
+html[data-theme="dark"] #editor #products .product-added-count{background:#496950;color:#e3f6e0}
+@media (max-width:380px){
+ #editor #lines .order-new-section{padding:9px 9px 3px}
+ #editor #lines .order-new-heading span{font-size:10px}
+}
 </style><link rel="stylesheet" href="./desktop.css?v=20261028-2"><link rel="stylesheet" href="./charcoal-theme.css?v=20261028-2"><link rel="stylesheet" href="./desktop-panels.css?v=20261028-5"><link rel="stylesheet" href="./mobile-shortcuts.css?v=20261027-3"></head><body>
 <header><div><h1>SAM’S <span class="header-sub">Sipariş</span></h1></div><div class="header-actions"><button type="button" id="account-btn" class="alt account-btn hidden" aria-label="Kullanıcı paneli" title="Kullanıcı paneli" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7"/><path d="M4.8 20v-1.1a7.2 7.2 0 0 1 14.4 0V20"/></svg><span id="header-user-name" class="header-user-name"></span></button><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Karanlık temaya geç" aria-pressed="false" title="Açık / koyu tema"><svg class="theme-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg><svg class="theme-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button><button id="logout" class="alt hidden">Çıkış</button></div></header>
 <section id="account-dialog" class="account-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
@@ -1600,19 +1627,33 @@ $('categories').innerHTML=[...new Set(menuCatalog.filter(x=>x.active).map(x=>x.c
 document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=[...new Set(menuCatalog.filter(x=>x.active).map(x=>x.category))][Number(b.dataset.category)];renderEditor()});
 if(!menuCatalog.some(x=>x.category===category&&x.active))category=menuCatalog.find(x=>x.active)?.category||category;
 const list=menuCatalog.filter(x=>x.category===category&&x.active).map(x=>({c:x.category,n:x.name,p:Number(x.normal_price),b:x.kind==='bowl'?'dynamic':null,ch:x.kind==='options',menu:x}));
-$('products').innerHTML=list.map((x,i)=>'<button class="alt product" data-product="'+i+'"><span class="product-name">'+esc(x.n)+'</span><span class="product-price">'+(x.b?'Seçenekleri gör':money(activeTariff==='esnaf'&&x.menu.esnaf_price!=null?Number(x.menu.esnaf_price):x.p))+'</span></button>').join('');
+$('products').innerHTML=list.map((x,i)=>{
+  const pendingQty=state.lines.reduce((sum,line)=>sum+(line.pending&&(line.n===x.n||line.n.startsWith(x.n+' · '))?line.q:0),0);
+  return '<button class="alt product" data-product="'+i+'"><span class="product-name">'+esc(x.n)+'</span><span class="product-price">'+(x.b?'Seçenekleri gör':money(activeTariff==='esnaf'&&x.menu.esnaf_price!=null?Number(x.menu.esnaf_price):x.p))+'</span>'+
+   (pendingQty?'<span class="product-added-count">✓ +'+pendingQty+' eklendi</span>':'')+'</button>';
+ }).join('');
 document.querySelectorAll('[data-product]').forEach(b=>b.onclick=()=>pickProduct(list[Number(b.dataset.product)]));
-$('lines').innerHTML=state.lines.length?'<div class="order-lines">'+state.lines.map((x,i)=>
- '<div class="order-line"><div class="order-line-details">'+
- '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+(x.kind==='gift'?' · İkram':x.kind==='discount'?' · %'+x.rate+' İndirim':'')+'</div>'+
- '<div class="order-line-meta">Birim '+money(x.p)+(x.kind?' · Menü '+money(x.gross):'')+'</div>'+(x.kind&&state.role==='manager'?'<button type="button" class="alt" data-undo-adjust="'+x.id+'" style="margin-top:6px;min-height:32px;padding:5px 9px;font-size:12px">İşlemi Geri Al</button>':'')+'</div>'+
- '<div class="order-line-actions"><strong class="order-line-sum">'+money(x.p*x.q)+'</strong>'+
- '<div class="order-line-stepper" role="group" aria-label="'+esc(x.n)+' adedi">'+
- '<button type="button" class="order-line-step" data-minus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' azalt">−</button>'+
- '<span class="order-line-qty">'+x.q+'</span>'+
- '<button type="button" class="order-line-step" data-plus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' artır">+</button>'+
- '</div></div></div>').join('')+'</div>':'<p class="muted">Masa boş.</p>';
-document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.minus),-1));
+const indexedLines=state.lines.map((x,i)=>({x,i}));
+ const savedLines=indexedLines.filter(({x})=>!x.pending);
+ const addedLines=indexedLines.filter(({x})=>!!x.pending);
+ const orderLineHtml=({x,i})=>
+  '<div class="order-line"><div class="order-line-details">'+
+  '<div class="order-line-name">'+esc(x.n)+(x.tariff==='esnaf'?' · Esnaf':'')+(x.kind==='gift'?' · İkram':x.kind==='discount'?' · %'+x.rate+' İndirim':'')+'</div>'+
+  '<div class="order-line-meta">Birim '+money(x.p)+(x.kind?' · Menü '+money(x.gross):'')+'</div>'+(x.kind&&state.role==='manager'?'<button type="button" class="alt" data-undo-adjust="'+x.id+'" style="margin-top:6px;min-height:32px;padding:5px 9px;font-size:12px">İşlemi Geri Al</button>':'')+'</div>'+
+  '<div class="order-line-actions"><strong class="order-line-sum">'+money(x.p*x.q)+'</strong>'+
+  '<div class="order-line-stepper" role="group" aria-label="'+esc(x.n)+' adedi">'+
+  '<button type="button" class="order-line-step" data-minus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' azalt">−</button>'+
+  '<span class="order-line-qty">'+x.q+'</span>'+
+  '<button type="button" class="order-line-step" data-plus="'+i+'" '+(x.kind?'disabled title="İşlemi geri almak için yönetici yetkisi gerekir"':'')+' aria-label="'+esc(x.n)+' artır">+</button>'+
+  '</div></div></div>';
+ const addedQty=addedLines.reduce((sum,{x})=>sum+x.q,0);
+ $('lines').innerHTML=state.lines.length?
+  (savedLines.length?'<div class="order-lines">'+savedLines.map(orderLineHtml).join('')+'</div>':'')+
+  (addedLines.length?'<section class="order-new-section" aria-label="Yeni eklenen ürünler">'+
+   '<div class="order-new-heading"><strong>Yeni Eklenenler</strong><span>+'+addedQty+' adet · Kaydedilmedi</span></div>'+
+   '<div class="order-lines">'+addedLines.map(orderLineHtml).join('')+'</div></section>':'')
+  :'<p class="muted">Masa boş.</p>';
+ document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.minus),-1));
 document.querySelectorAll('[data-plus]').forEach(b=>b.onclick=()=>change(Number(b.dataset.plus),1));
 document.querySelectorAll('[data-undo-adjust]').forEach(b=>b.onclick=()=>undoAdjustment(Number(b.dataset.undoAdjust)));
 
@@ -1621,7 +1662,12 @@ $('pay-cash').disabled=$('pay-card').disabled=$('split').disabled=$('transfer').
 let previewBtn=$('adjust-preview-btn');if(!previewBtn){previewBtn=document.createElement('button');previewBtn.id='adjust-preview-btn';previewBtn.type='button';previewBtn.className='alt';previewBtn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span>İndirim - İkram</span>';$('split').insertAdjacentElement('afterend',previewBtn);previewBtn.onclick=previewAdjustment;}previewBtn.style.display=state.role==='manager'?'':'none';previewBtn.disabled=state.loading||!state.lines.some(x=>!x.kind);
 let giftBtn=$('gift-close-btn');if(!giftBtn){giftBtn=document.createElement('button');giftBtn.id='gift-close-btn';giftBtn.type='button';giftBtn.className='alt';giftBtn.innerHTML='<span>🎁</span><span>Ücretsiz Hesabı Tamamla</span>';$('split').insertAdjacentElement('afterend',giftBtn);giftBtn.onclick=()=>pay('Ücretsiz');}const zeroOnly=state.lines.length>0&&state.lines.every(x=>x.kind&&x.p===0);giftBtn.style.display=state.role==='manager'&&zeroOnly?'':'none';giftBtn.disabled=state.loading||!zeroOnly;if(zeroOnly){$('pay-cash').disabled=true;$('pay-card').disabled=true;}
 }
-function addProduct(n,p,tariff=activeTariff){let x=state.lines.find(z=>!z.kind&&z.n===n&&z.p===p&&z.tariff===tariff);if(x)x.q++;else state.lines.push({n,p,q:1,tariff});markDirty()}
+function addProduct(n,p,tariff=activeTariff){
+ let x=state.lines.find(z=>z.pending&&!z.kind&&z.n===n&&z.p===p&&z.tariff===tariff);
+ if(x)x.q++;
+ else state.lines.push({n,p,q:1,tariff,pending:true});
+ markDirty();
+}
 function showOptions(title, options){
  const overlay=document.createElement('div');overlay.className='option-overlay';
  const sheet=document.createElement('div');sheet.className='option-sheet';
@@ -1653,14 +1699,29 @@ function pickProduct(x,tariff=activeTariff){
  }else addProduct(x.n,base,tariff);
 }
 function markDirty(){state.note=$('note').value;state.dirty=true;renderEditor()}
-function change(i,d){let x=state.lines[i];if(x.kind){message('İndirimli/ikram ürünü değiştirmek için yönetici önce işlemi geri almalı.',true);return}x.q+=d;if(x.q<=0)state.lines.splice(i,1);markDirty()}
+function change(i,d){
+ const x=state.lines[i];if(!x)return;
+ if(x.kind){message('İndirimli/ikram ürünü değiştirmek için yönetici önce işlemi geri almalı.',true);return}
+ // A + tap on a saved product counts as a new addition, not a silent change to the old line.
+ if(d>0&&!x.pending){addProduct(x.n,x.p,x.tariff||'normal');return}
+ x.q+=d;
+ if(x.q<=0)state.lines.splice(i,1);
+ markDirty();
+}
 async function save(){
  if(!state.selected||state.loading)return false;
  // Avoid creating a database 'open order' record when an untouched table has no items.
  if(!state.order&&!state.lines.length){message('Bu masada kaydedilecek ürün yok.',true);return false}
  state.loading=true;$('save').disabled=true;
  try{
-  const payload=state.lines.map(x=>({id:x.id??null,n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
+  // Keep draft additions distinct on screen; combine matching saved lines only in the RPC payload.
+   const saved=state.lines.filter(x=>!x.pending);
+   const payload=saved.map(x=>({id:x.id??null,n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'}));
+   for(const x of state.lines.filter(x=>x.pending)){
+    const existingIndex=saved.findIndex(row=>!row.kind&&row.n===x.n&&row.p===x.p&&(row.tariff||'normal')===(x.tariff||'normal'));
+    if(existingIndex>=0)payload[existingIndex].q+=x.q;
+    else payload.push({id:null,n:x.n,p:x.p,q:x.q,tariff:x.tariff||'normal'});
+   }
   const {error}=await db.rpc('cafe_save_order',{p_table:state.selected,p_version:state.order?.version||0,p_items:payload,p_note:$('note').value});
   if(error)throw error;
   state.dirty=false;await readSelected();await refreshOrders();
