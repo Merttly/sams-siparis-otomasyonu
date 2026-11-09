@@ -987,7 +987,7 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table
 /* Optical alignment: move only the Ana Sayfa house icon 2px down. */
 #pos-bottom-nav #pos-nav-tables .nav-icon svg{transform:translateY(2px)}
 
-/* Match mobile glyph bounds and center each icon-label group in an equal column. */
+/* Preserve icon proportions and optically center the mobile icon-label groups. */
 @media(max-width:600px){
   #pos-bottom-nav{
     grid-template-columns:none;
@@ -1029,14 +1029,21 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table
     transform:matrix(1,0,0,1,0,0);
   }
   #pos-bottom-nav #pos-nav-orders .nav-glyph{
-    transform:matrix(1,0,0,1.02857143,0,-0.6);
+    transform:matrix(1.12,0,0,1.12,-1.44,-0.72);
   }
   #pos-bottom-nav #pos-nav-report .nav-glyph{
-    transform:matrix(1.125,0,0,0.94736842,-1.5,0.15789474);
+    transform:matrix(0.94736842,0,0,0.94736842,0.63157896,0.15789474);
+  }
+  #pos-bottom-nav #pos-nav-history .nav-glyph{
+    transform:translateY(1px);
   }
   #pos-bottom-nav button .nav-label,
   #pos-bottom-nav #pos-nav-admin .nav-label{
-    width:100%;
+    display:block;
+    width:max-content;
+    max-width:100%;
+    letter-spacing:normal;
+    line-height:18px;
     margin:0;
     padding:0;
     text-align:center;
