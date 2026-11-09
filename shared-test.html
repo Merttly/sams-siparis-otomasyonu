@@ -987,24 +987,60 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table
 /* Optical alignment: move only the Ana Sayfa house icon 2px down. */
 #pos-bottom-nav #pos-nav-tables .nav-icon svg{transform:translateY(2px)}
 
-/* Align mobile navigation glyphs within their shared icon row. */
+/* Match mobile glyph bounds and center each icon-label group in an equal column. */
 @media(max-width:600px){
-  #pos-bottom-nav button .nav-icon svg{
-    width:24px;
-    height:24px;
-    transform:none;
-    transform-origin:center;
+  #pos-bottom-nav{
+    grid-template-columns:none;
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(0,1fr);
+    gap:0;
   }
-  #pos-bottom-nav #pos-nav-tables .nav-icon svg{
-    transform:translateY(.5px);
+  #pos-bottom-nav button,
+  #pos-bottom-nav #pos-nav-admin{
+    grid-template-rows:26px 18px;
+    justify-items:center;
+    align-items:center;
+    row-gap:6px;
+    padding:5px 0;
   }
-  #pos-bottom-nav #pos-nav-orders .nav-icon svg{
+  #pos-bottom-nav button .nav-icon,
+  #pos-bottom-nav #pos-nav-admin .nav-icon{
     width:26px;
     height:26px;
-    transform:translateY(-1px);
+    place-items:center;
   }
-  #pos-bottom-nav #pos-nav-report .nav-icon svg{
-    transform:translateY(-.5px);
+  #pos-bottom-nav button .nav-icon svg,
+  #pos-bottom-nav #pos-nav-admin .nav-icon svg,
+  #pos-bottom-nav #pos-nav-tables .nav-icon svg{
+    width:24px;
+    height:24px;
+    display:block;
+    transform:none;
+    fill:none;
+  }
+  #pos-bottom-nav .nav-glyph{
+    transform-box:view-box;
+    transform-origin:0 0;
+  }
+  #pos-bottom-nav .nav-glyph > *{
+    vector-effect:non-scaling-stroke;
+  }
+  #pos-bottom-nav #pos-nav-tables .nav-glyph{
+    transform:matrix(1,0,0,1,0,0);
+  }
+  #pos-bottom-nav #pos-nav-orders .nav-glyph{
+    transform:matrix(1,0,0,1.02857143,0,-0.6);
+  }
+  #pos-bottom-nav #pos-nav-report .nav-glyph{
+    transform:matrix(1.125,0,0,0.94736842,-1.5,0.15789474);
+  }
+  #pos-bottom-nav button .nav-label,
+  #pos-bottom-nav #pos-nav-admin .nav-label{
+    width:100%;
+    margin:0;
+    padding:0;
+    text-align:center;
+    justify-self:center;
   }
 }
 
@@ -1279,11 +1315,11 @@ html[data-theme="dark"] #editor #products .product-added-count{background:#49695
  </section>
 </div>
 <nav id="pos-bottom-nav" class="hidden nav-manager" aria-label="Mobil hızlı erişim menüsü">
-<button type="button" id="pos-nav-tables" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></svg></span><span class="nav-label">Ana Sayfa</span></button>
-<button type="button" id="pos-nav-orders"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9h12v5.5A4.5 4.5 0 0 1 12 19H9a4.5 4.5 0 0 1-4.5-4.5z"/><path d="M16.5 10h1.7a2.8 2.8 0 0 1 0 5.6h-1.7"/><path d="M3 21h16"/><path d="M7.5 3.5v2.2M12 3.5v2.2"/></svg></span><span class="nav-label">Siparişler</span></button>
-<button type="button" id="pos-nav-report"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg></span><span class="nav-label">Gün Sonu</span></button>
-<button type="button" id="pos-nav-history"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg></span><span class="nav-label">Geçmiş</span></button>
-<button type="button" id="pos-nav-admin" aria-haspopup="dialog" aria-controls="mobile-manager-shortcuts" aria-expanded="false"><span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Yönetici</span></button>
+<button type="button" id="pos-nav-tables" class="active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="nav-glyph"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></g></svg></span><span class="nav-label">Ana Sayfa</span></button>
+<button type="button" id="pos-nav-orders"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="nav-glyph"><path d="M4.5 9h12v5.5A4.5 4.5 0 0 1 12 19H9a4.5 4.5 0 0 1-4.5-4.5z"/><path d="M16.5 10h1.7a2.8 2.8 0 0 1 0 5.6h-1.7"/><path d="M3 21h16"/><path d="M7.5 3.5v2.2M12 3.5v2.2"/></g></svg></span><span class="nav-label">Siparişler</span></button>
+<button type="button" id="pos-nav-report"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="nav-glyph"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m8.5 14 2.5 2.5 4.5-5"/></g></svg></span><span class="nav-label">Gün Sonu</span></button>
+<button type="button" id="pos-nav-history"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="nav-glyph"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></g></svg></span><span class="nav-label">Geçmiş</span></button>
+<button type="button" id="pos-nav-admin" aria-haspopup="dialog" aria-controls="mobile-manager-shortcuts" aria-expanded="false"><span class="nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><g class="nav-glyph"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></g></svg></span><span class="nav-label">Yönetici</span></button>
 </nav>
 <aside id="desktop-sidebar" aria-label="Masaüstü ana menü">
  <div class="desktop-brand"><strong>SAM’S <span>Sipariş</span></strong><small>OTOMASYONU</small></div>
