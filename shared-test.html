@@ -982,6 +982,28 @@ html[data-theme="dark"] #manager-screen #manager-content .manager-analysis-table
 @media print{#manager-screen #manager-content .manager-analysis-table .sold-detail-row .sold-variant{color:#444!important}}
 /* Optical alignment: move only the Ana Sayfa house icon 2px down. */
 #pos-bottom-nav #pos-nav-tables .nav-icon svg{transform:translateY(2px)}
+
+/* Align mobile navigation glyphs within their shared icon row. */
+@media(max-width:600px){
+  #pos-bottom-nav button .nav-icon svg{
+    width:24px;
+    height:24px;
+    transform:none;
+    transform-origin:center;
+  }
+  #pos-bottom-nav #pos-nav-tables .nav-icon svg{
+    transform:translateY(.5px);
+  }
+  #pos-bottom-nav #pos-nav-orders .nav-icon svg{
+    width:26px;
+    height:26px;
+    transform:translateY(-1px);
+  }
+  #pos-bottom-nav #pos-nav-report .nav-icon svg{
+    transform:translateY(-.5px);
+  }
+}
+
 /* Date inputs: keep native iOS date controls inside their grid cells. Layout only. */
 #manager-screen #manager-date-tools .manager-date-row,
 #manager-screen #manager-log-filters.manager-date-row{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;width:100%;max-width:100%}
